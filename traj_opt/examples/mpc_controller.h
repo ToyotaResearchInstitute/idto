@@ -4,29 +4,29 @@
 #include <vector>
 
 #include <drake/common/trajectories/piecewise_polynomial.h>
+#include "traj_opt/problem_definition.h"
+#include "traj_opt/solver_parameters.h"
+#include "traj_opt/trajectory_optimizer.h"
+#include "traj_opt/warm_start.h"
 
 #include "drake/multibody/plant/multibody_plant.h"
 #include "drake/systems/framework/basic_vector.h"
 #include "drake/systems/framework/leaf_system.h"
-#include "drake/traj_opt/problem_definition.h"
-#include "drake/traj_opt/solver_parameters.h"
-#include "drake/traj_opt/trajectory_optimizer.h"
-#include "drake/traj_opt/warm_start.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace mpc {
 
-using systems::BasicVector;
-using systems::Context;
-using systems::Diagram;
-using systems::EventStatus;
-using systems::InputPort;
-using systems::LeafSystem;
-using systems::OutputPort;
-using systems::State;
-using trajectories::PiecewisePolynomial;
+using drake::systems::BasicVector;
+using drake::systems::Context;
+using drake::systems::Diagram;
+using drake::systems::EventStatus;
+using drake::systems::InputPort;
+using drake::systems::LeafSystem;
+using drake::systems::OutputPort;
+using drake::systems::State;
+using drake::trajectories::PiecewisePolynomial;
 
 /// A little struct for holding an optimal trajectory so that we can track it
 /// between MPC solves.
@@ -134,7 +134,7 @@ class ModelPredictiveController : public LeafSystem<double> {
   int trajectory_output_port_;
 
   // Index for the abstract state used to store optimal trajectories
-  systems::AbstractStateIndex stored_trajectory_;
+  drake::systems::AbstractStateIndex stored_trajectory_;
 };
 
 /// A simple system block that recieves a StoredTrajectory (at a low frequency)
@@ -191,4 +191,4 @@ class Interpolator : public LeafSystem<double> {
 }  // namespace mpc
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

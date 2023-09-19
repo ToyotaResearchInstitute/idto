@@ -1,8 +1,15 @@
-#include "drake/traj_opt/trajectory_optimizer.h"
+#include "traj_opt/trajectory_optimizer.h"
 
 #include <algorithm>
 
 #include <gtest/gtest.h>
+#include "traj_opt/inverse_dynamics_partials.h"
+#include "traj_opt/penta_diagonal_matrix.h"
+#include "traj_opt/penta_diagonal_solver.h"
+#include "traj_opt/problem_definition.h"
+#include "traj_opt/trajectory_optimizer_state.h"
+#include "traj_opt/trajectory_optimizer_workspace.h"
+#include "traj_opt/velocity_partials.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/common/test_utilities/eigen_matrix_compare.h"
@@ -12,18 +19,12 @@
 #include "drake/multibody/plant/multibody_plant_config_functions.h"
 #include "drake/multibody/tree/planar_joint.h"
 #include "drake/systems/framework/diagram_builder.h"
-#include "drake/traj_opt/inverse_dynamics_partials.h"
-#include "drake/traj_opt/penta_diagonal_matrix.h"
-#include "drake/traj_opt/penta_diagonal_solver.h"
-#include "drake/traj_opt/problem_definition.h"
-#include "drake/traj_opt/trajectory_optimizer_state.h"
-#include "drake/traj_opt/trajectory_optimizer_workspace.h"
-#include "drake/traj_opt/velocity_partials.h"
+#include "common/find_resource.h"
 
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
 class TrajectoryOptimizerTester {
@@ -67,7 +68,8 @@ class TrajectoryOptimizerTester {
 
   static void CalcGradientFiniteDiff(
       const TrajectoryOptimizer<double>& optimizer,
-      const TrajectoryOptimizerState<double>& state, EigenPtr<VectorXd> g) {
+      const TrajectoryOptimizerState<double>& state,
+      drake::EigenPtr<VectorXd> g) {
     optimizer.CalcGradientFiniteDiff(state, g);
   }
 
@@ -87,22 +89,25 @@ class TrajectoryOptimizerTester {
 
 namespace internal {
 
+using drake::AutoDiffXd;
+using drake::CompareMatrices;
+using drake::MatrixCompareType;
+using drake::math::RigidTransformd;
+using drake::math::RotationMatrixd;
+using drake::multibody::DiscreteContactSolver;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::MultibodyPlantConfig;
+using drake::multibody::Parser;
+using drake::multibody::PlanarJoint;
+using drake::multibody::RigidBody;
+using drake::systems::DiagramBuilder;
+using drake::test::LimitMalloc;
 using Eigen::Matrix2d;
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
 using Eigen::Vector2d;
 using Eigen::Vector3d;
 using Eigen::VectorXd;
-using math::RigidTransformd;
-using math::RotationMatrixd;
-using multibody::DiscreteContactSolver;
-using multibody::MultibodyPlant;
-using multibody::MultibodyPlantConfig;
-using multibody::Parser;
-using multibody::PlanarJoint;
-using multibody::RigidBody;
-using systems::DiagramBuilder;
-using test::LimitMalloc;
 
 /**
  * Test optimization for a simple system with quaternion DoFs.
@@ -113,9 +118,10 @@ GTEST_TEST(TrajectoryOptimizerTest, QuaternionDofs) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const RigidBody<double>& body = plant.AddRigidBody(
-      "body", multibody::SpatialInertia<double>::MakeUnitary());
+      "body", drake::multibody::SpatialInertia<double>::MakeUnitary());
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -132,7 +138,7 @@ GTEST_TEST(TrajectoryOptimizerTest, QuaternionDofs) {
   opt_prob.num_steps = num_steps;
   opt_prob.q_init = VectorXd(7);
   opt_prob.q_init << 1, 0, 0, 0, 0, 0, 0;
-  opt_prob.v_init = Vector6d::Zero();
+  opt_prob.v_init = drake::Vector6d::Zero();
   opt_prob.q_nom.resize(num_steps + 1);
   opt_prob.v_nom.resize(num_steps + 1);
 
@@ -179,9 +185,10 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactGradientMethods) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = 1.0;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
-  Parser(&plant).AddAllModelsFromFile(FindResourceOrThrow(
-      "drake/traj_opt/examples/models/spinner_sphere.urdf"));
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
+  Parser(&plant).AddAllModelsFromFile(idto::FindIDTOResourceOrThrow(
+      "traj_opt/examples/models/spinner_sphere.urdf"));
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -284,24 +291,25 @@ GTEST_TEST(TrajectoryOptimizerTest, DoglegPoint) {
 
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.0);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.0);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 0.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 0.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 1.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 0.0 * MatrixXd::Identity(1, 1);
   opt_prob.R = 1.0 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(0.0));
-    opt_prob.v_nom.push_back(Vector1d(0.0));
+    opt_prob.q_nom.push_back(drake::Vector1d(0.0));
+    opt_prob.v_nom.push_back(drake::Vector1d(0.0));
   }
 
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -314,9 +322,9 @@ GTEST_TEST(TrajectoryOptimizerTest, DoglegPoint) {
 
   // Choose a q that is away from the optimal solution
   std::vector<VectorXd> q;
-  q.push_back(Vector1d(0.0));
-  q.push_back(Vector1d(1.5));
-  q.push_back(Vector1d(1.5));
+  q.push_back(drake::Vector1d(0.0));
+  q.push_back(drake::Vector1d(1.5));
+  q.push_back(drake::Vector1d(1.5));
   state.set_q(q);
 
   // Allocate variables for small, medium, and large trust region sizes.
@@ -366,25 +374,26 @@ GTEST_TEST(TrajectoryOptimizerTest, TrustRatio) {
 
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.1);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.1);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 1.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 2.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 3.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 4.0 * MatrixXd::Identity(1, 1);
   opt_prob.R = 5.0 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(M_PI));
-    opt_prob.v_nom.push_back(Vector1d(-0.3));
+    opt_prob.q_nom.push_back(drake::Vector1d(M_PI));
+    opt_prob.v_nom.push_back(drake::Vector1d(-0.3));
   }
 
   // Create a pendulum model
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
@@ -430,25 +439,26 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumSwingup) {
 
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.1);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.1);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 1.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 0.1 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 1000 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 1 * MatrixXd::Identity(1, 1);
   opt_prob.R = 0.01 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(M_PI));
-    opt_prob.v_nom.push_back(Vector1d(0));
+    opt_prob.q_nom.push_back(drake::Vector1d(M_PI));
+    opt_prob.v_nom.push_back(drake::Vector1d(0));
   }
 
   // Create a pendulum model
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -508,9 +518,10 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianAcrobot) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file =
-      FindResourceOrThrow("drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file = drake::FindResourceOrThrow(
+      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -535,7 +546,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianAcrobot) {
   MatrixXd H = H_sparse.MakeDense();
 
   // Set up an autodiff copy of the optimizer and plant
-  auto diagram_ad = systems::System<double>::ToAutoDiffXd(*diagram);
+  auto diagram_ad = drake::systems::System<double>::ToAutoDiffXd(*diagram);
   const auto& plant_ad = dynamic_cast<const MultibodyPlant<AutoDiffXd>&>(
       diagram_ad->GetSubsystemByName(plant.get_name()));
   TrajectoryOptimizer<AutoDiffXd> optimizer_ad(diagram_ad.get(), &plant_ad,
@@ -547,7 +558,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianAcrobot) {
   for (int t = 0; t <= num_steps; ++t) {
     for (int i = 0; i < nq; ++i) {
       q_ad[t].segment<1>(i) =
-          math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
+          drake::math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
       ++ad_idx;
     }
   }
@@ -593,9 +604,9 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianAcrobot) {
   r.segment(num_steps * 6 + 2, 2) =
       Qfv_sqrt * (v_ad[num_steps] - opt_prob.v_nom[num_steps]);
 
-  MatrixXd J = math::ExtractGradient(r);
+  MatrixXd J = drake::math::ExtractGradient(r);
   AutoDiffXd L_lsqr = 0.5 * r.transpose() * r;
-  VectorXd g_lsqr = J.transpose() * math::ExtractValue(r);
+  VectorXd g_lsqr = J.transpose() * drake::math::ExtractValue(r);
   MatrixXd H_lsqr = J.transpose() * J;
 
   // Check that the cost from our least-squares formulation is correct
@@ -636,25 +647,26 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianPendulum) {
 
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.1);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.1);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 0.1 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 0.2 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 0.3 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 0.4 * MatrixXd::Identity(1, 1);
   opt_prob.R = 0.05 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(0.1));
-    opt_prob.v_nom.push_back(Vector1d(-0.1));
+    opt_prob.q_nom.push_back(drake::Vector1d(0.1));
+    opt_prob.v_nom.push_back(drake::Vector1d(-0.1));
   }
 
   // Create a pendulum model without gravity
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
@@ -696,25 +708,26 @@ GTEST_TEST(TrajectoryOptimizerTest, AutodiffGradient) {
 
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.1);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.1);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 0.1 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 0.2 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 0.3 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 0.4 * MatrixXd::Identity(1, 1);
   opt_prob.R = 0.5 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(0.1));
-    opt_prob.v_nom.push_back(Vector1d(-0.1));
+    opt_prob.q_nom.push_back(drake::Vector1d(0.1));
+    opt_prob.v_nom.push_back(drake::Vector1d(-0.1));
   }
 
   // Create a pendulum model
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -737,7 +750,7 @@ GTEST_TEST(TrajectoryOptimizerTest, AutodiffGradient) {
   optimizer.CalcGradient(state, &g);
 
   // Compute the gradient using autodiff
-  auto diagram_ad = systems::System<double>::ToAutoDiffXd(*diagram);
+  auto diagram_ad = drake::systems::System<double>::ToAutoDiffXd(*diagram);
   const auto& plant_ad = dynamic_cast<const MultibodyPlant<AutoDiffXd>&>(
       diagram_ad->GetSubsystemByName(plant.get_name()));
   TrajectoryOptimizer<AutoDiffXd> optimizer_ad(diagram_ad.get(), &plant_ad,
@@ -747,7 +760,7 @@ GTEST_TEST(TrajectoryOptimizerTest, AutodiffGradient) {
 
   std::vector<VectorX<AutoDiffXd>> q_ad(num_steps + 1);
   for (int t = 0; t <= num_steps; ++t) {
-    q_ad[t] = math::InitializeAutoDiff(q[t], num_steps + 1, t);
+    q_ad[t] = drake::math::InitializeAutoDiff(q[t], num_steps + 1, t);
   }
   state_ad.set_q(q_ad);
 
@@ -769,8 +782,9 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientKuka) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = FindResourceOrThrow(
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file = drake::FindResourceOrThrow(
       "drake/manipulation/models/iiwa_description/urdf/"
       "iiwa14_no_collision.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
@@ -840,9 +854,10 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientPendulumNoGravity) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
@@ -851,16 +866,16 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientPendulumNoGravity) {
   // Set up a toy optimization problem
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.0);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.0);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 0.1 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 0.2 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 0.3 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 0.4 * MatrixXd::Identity(1, 1);
   opt_prob.R = 0.5 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(M_PI));
-    opt_prob.v_nom.push_back(Vector1d(-0.1));
+    opt_prob.q_nom.push_back(drake::Vector1d(M_PI));
+    opt_prob.v_nom.push_back(drake::Vector1d(-0.1));
   }
 
   // Create an optimizer
@@ -870,21 +885,21 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientPendulumNoGravity) {
 
   // Create some fake data
   std::vector<VectorXd> q;
-  q.push_back(Vector1d(0.0000000000000000000000000));
-  q.push_back(Vector1d(0.0950285641187840757204697));
-  q.push_back(Vector1d(0.2659896360172592788551071));
-  q.push_back(Vector1d(0.4941147113506765831125733));
-  q.push_back(Vector1d(0.7608818755930255584019051));
-  q.push_back(Vector1d(1.0479359055822168311777887));
-  q.push_back(Vector1d(1.3370090901260500704239575));
-  q.push_back(Vector1d(1.6098424281109515732168802));
-  q.push_back(Vector1d(1.8481068641834854648919872));
-  q.push_back(Vector1d(2.0333242222438583368671061));
-  q.push_back(Vector1d(2.1467874956452459578315484));
+  q.push_back(drake::Vector1d(0.0000000000000000000000000));
+  q.push_back(drake::Vector1d(0.0950285641187840757204697));
+  q.push_back(drake::Vector1d(0.2659896360172592788551071));
+  q.push_back(drake::Vector1d(0.4941147113506765831125733));
+  q.push_back(drake::Vector1d(0.7608818755930255584019051));
+  q.push_back(drake::Vector1d(1.0479359055822168311777887));
+  q.push_back(drake::Vector1d(1.3370090901260500704239575));
+  q.push_back(drake::Vector1d(1.6098424281109515732168802));
+  q.push_back(drake::Vector1d(1.8481068641834854648919872));
+  q.push_back(drake::Vector1d(2.0333242222438583368671061));
+  q.push_back(drake::Vector1d(2.1467874956452459578315484));
   state.set_q(q);
 
   // Compute the ground truth gradient with autodiff
-  auto diagram_ad = systems::System<double>::ToAutoDiffXd(*diagram);
+  auto diagram_ad = drake::systems::System<double>::ToAutoDiffXd(*diagram);
   const auto& plant_ad = dynamic_cast<const MultibodyPlant<AutoDiffXd>&>(
       diagram_ad->GetSubsystemByName(plant.get_name()));
   TrajectoryOptimizer<AutoDiffXd> optimizer_ad(diagram_ad.get(), &plant_ad,
@@ -894,7 +909,7 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientPendulumNoGravity) {
 
   std::vector<VectorX<AutoDiffXd>> q_ad(num_steps + 1);
   for (int t = 0; t <= num_steps; ++t) {
-    q_ad[t] = math::InitializeAutoDiff(q[t], num_steps + 1, t);
+    q_ad[t] = drake::math::InitializeAutoDiff(q[t], num_steps + 1, t);
   }
   state_ad.set_q(q_ad);
 
@@ -990,25 +1005,26 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientPendulum) {
 
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.1);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.1);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 0.1 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 0.2 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 0.3 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 0.4 * MatrixXd::Identity(1, 1);
   opt_prob.R = 0.5 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(0.1));
-    opt_prob.v_nom.push_back(Vector1d(-0.1));
+    opt_prob.q_nom.push_back(drake::Vector1d(0.1));
+    opt_prob.v_nom.push_back(drake::Vector1d(-0.1));
   }
 
   // Create a pendulum model
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1048,17 +1064,18 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumDtauDq) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
   // Create a trajectory optimizer
   ProblemDefinition opt_prob;
-  opt_prob.q_init = Vector1d(0.0);
-  opt_prob.v_init = Vector1d(0.1);
+  opt_prob.q_init = drake::Vector1d(0.0);
+  opt_prob.v_init = drake::Vector1d(0.1);
   opt_prob.num_steps = num_steps;
   opt_prob.q_nom.resize(num_steps + 1);
   opt_prob.v_nom.resize(num_steps + 1);
@@ -1069,7 +1086,7 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumDtauDq) {
   std::vector<VectorXd> q;
   q.push_back(opt_prob.q_init);
   for (int t = 1; t <= num_steps; ++t) {
-    q.push_back(Vector1d(0.0 + 0.6 * t));
+    q.push_back(drake::Vector1d(0.0 + 0.6 * t));
   }
   state.set_q(q);
 
@@ -1144,9 +1161,10 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcCostFromState) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
@@ -1155,31 +1173,31 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcCostFromState) {
   // Set up a toy optimization problem
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.q_init = Vector1d(0.0);
-  opt_prob.v_init = Vector1d(0.0);
+  opt_prob.q_init = drake::Vector1d(0.0);
+  opt_prob.v_init = drake::Vector1d(0.0);
   opt_prob.Qq = 0.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qv = 0.1 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_q = 10.0 * MatrixXd::Identity(1, 1);
   opt_prob.Qf_v = 1.0 * MatrixXd::Identity(1, 1);
   opt_prob.R = 1.0 * MatrixXd::Identity(1, 1);
   for (int t = 0; t <= num_steps; ++t) {
-    opt_prob.q_nom.push_back(Vector1d(M_PI));
-    opt_prob.v_nom.push_back(Vector1d(-0.1));
+    opt_prob.q_nom.push_back(drake::Vector1d(M_PI));
+    opt_prob.v_nom.push_back(drake::Vector1d(-0.1));
   }
 
   // Create some fake data, which are very close to optimality.
   std::vector<VectorXd> q;
-  q.push_back(Vector1d(0.0000000000000000000000000));
-  q.push_back(Vector1d(0.0950285641187840757204697));
-  q.push_back(Vector1d(0.2659896360172592788551071));
-  q.push_back(Vector1d(0.4941147113506765831125733));
-  q.push_back(Vector1d(0.7608818755930255584019051));
-  q.push_back(Vector1d(1.0479359055822168311777887));
-  q.push_back(Vector1d(1.3370090901260500704239575));
-  q.push_back(Vector1d(1.6098424281109515732168802));
-  q.push_back(Vector1d(1.8481068641834854648919872));
-  q.push_back(Vector1d(2.0333242222438583368671061));
-  q.push_back(Vector1d(2.1467874956452459578315484));
+  q.push_back(drake::Vector1d(0.0000000000000000000000000));
+  q.push_back(drake::Vector1d(0.0950285641187840757204697));
+  q.push_back(drake::Vector1d(0.2659896360172592788551071));
+  q.push_back(drake::Vector1d(0.4941147113506765831125733));
+  q.push_back(drake::Vector1d(0.7608818755930255584019051));
+  q.push_back(drake::Vector1d(1.0479359055822168311777887));
+  q.push_back(drake::Vector1d(1.3370090901260500704239575));
+  q.push_back(drake::Vector1d(1.6098424281109515732168802));
+  q.push_back(drake::Vector1d(1.8481068641834854648919872));
+  q.push_back(drake::Vector1d(2.0333242222438583368671061));
+  q.push_back(drake::Vector1d(2.1467874956452459578315484));
 
   // Compute the cost as a function of state
   TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob);
@@ -1239,7 +1257,8 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcCost) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1298,9 +1317,10 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumCalcInverseDynamics) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1308,13 +1328,13 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumCalcInverseDynamics) {
   // Make some fake data
   std::vector<VectorXd> q;
   for (int t = 0; t <= num_steps; ++t) {
-    q.push_back(Vector1d(-0.2 + dt * 0.1 * t * t));
+    q.push_back(drake::Vector1d(-0.2 + dt * 0.1 * t * t));
   }
 
   // Create a trajectory optimizer object
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
-  opt_prob.v_init = Vector1d(-0.23);
+  opt_prob.v_init = drake::Vector1d(-0.23);
   opt_prob.q_nom.resize(num_steps + 1);
   opt_prob.v_nom.resize(num_steps + 1);
   TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob);
@@ -1336,9 +1356,9 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumCalcInverseDynamics) {
 
   std::vector<VectorXd> tau_gt;
   for (int t = 0; t < num_steps; ++t) {
-    Vector1d a = (v[t + 1] - v[t]) / dt;
-    Vector1d sin_q = sin(q[t + 1](0)) * MatrixXd::Identity(1, 1);
-    Vector1d tau_t = m * l * l * a + m * g * l * sin_q + b * v[t + 1];
+    drake::Vector1d a = (v[t + 1] - v[t]) / dt;
+    drake::Vector1d sin_q = sin(q[t + 1](0)) * MatrixXd::Identity(1, 1);
+    drake::Vector1d tau_t = m * l * l * a + m * g * l * sin_q + b * v[t + 1];
     tau_gt.push_back(tau_t);
   }
 
@@ -1377,7 +1397,8 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcVelocities) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1427,23 +1448,26 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactJacobians) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
 
   // Inertial properties are irrelevant for this test, since all contact
   // quantities are configuration dependent only.
   const double radius = 0.5;
   const RigidBody<double>& sphere = plant.AddRigidBody(
-      "sphere", multibody::SpatialInertia<double>::MakeUnitary());
+      "sphere", drake::multibody::SpatialInertia<double>::MakeUnitary());
   plant.AddJoint<PlanarJoint>(
       "planar", plant.world_body(),
-      RigidTransformd(math::RollPitchYawd(M_PI_2, 0.0, 0.0), Vector3d::Zero()),
+      RigidTransformd(drake::math::RollPitchYawd(M_PI_2, 0.0, 0.0),
+                      Vector3d::Zero()),
       sphere, {}, Vector3d::Zero());
-  plant.RegisterCollisionGeometry(sphere, RigidTransformd::Identity(),
-                                  geometry::Sphere(radius), "sphere_contact",
-                                  multibody::CoulombFriction<double>());
   plant.RegisterCollisionGeometry(
-      plant.world_body(), RigidTransformd::Identity(), geometry::HalfSpace(),
-      "ground_contact", multibody::CoulombFriction<double>());
+      sphere, RigidTransformd::Identity(), drake::geometry::Sphere(radius),
+      "sphere_contact", drake::multibody::CoulombFriction<double>());
+  plant.RegisterCollisionGeometry(
+      plant.world_body(), RigidTransformd::Identity(),
+      drake::geometry::HalfSpace(), "ground_contact",
+      drake::multibody::CoulombFriction<double>());
 
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1473,7 +1497,7 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactJacobians) {
 
   // Verify the expected value for signed distance pairs.
   for (int t = 0; t < num_steps; ++t) {
-    const std::vector<geometry::SignedDistancePair<double>>& sdf_pairs =
+    const std::vector<drake::geometry::SignedDistancePair<double>>& sdf_pairs =
         optimizer.EvalSignedDistancePairs(state, t);
     const double phi_expected = q[t].y() - radius;
     EXPECT_EQ(sdf_pairs.size(), 1u);
@@ -1491,7 +1515,7 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactJacobians) {
     const RotationMatrixd& R_WC = jacobian_data.R_WC[t][0];
     const auto& body_pair = jacobian_data.body_pairs[t][0];
     const double sign =
-        body_pair.second == multibody::BodyIndex(1) ? 1.0 : -1.0;
+        body_pair.second == drake::multibody::BodyIndex(1) ? 1.0 : -1.0;
 
     // We call the sphere body B. To recover the contact Jacobian for the
     // relative velocity v_AcBc_W, with A the world body, we must take into
@@ -1539,9 +1563,10 @@ GTEST_TEST(TrajectoryOptimizerTest, SpinnerEqualityConstraints) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = FindResourceOrThrow(
-      "drake/traj_opt/examples/models/spinner_friction.urdf");
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file =
+      FindIDTOResourceOrThrow("traj_opt/examples/models/spinner_friction.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1567,7 +1592,7 @@ GTEST_TEST(TrajectoryOptimizerTest, SpinnerEqualityConstraints) {
   EXPECT_TRUE(h.size() == num_steps);
 
   // Set up an autodiff copy of the optimizer and plant
-  auto diagram_ad = systems::System<double>::ToAutoDiffXd(*diagram);
+  auto diagram_ad = drake::systems::System<double>::ToAutoDiffXd(*diagram);
   const auto& plant_ad = dynamic_cast<const MultibodyPlant<AutoDiffXd>&>(
       diagram_ad->GetSubsystemByName(plant.get_name()));
   TrajectoryOptimizer<AutoDiffXd> optimizer_ad(diagram_ad.get(), &plant_ad,
@@ -1581,7 +1606,7 @@ GTEST_TEST(TrajectoryOptimizerTest, SpinnerEqualityConstraints) {
   for (int t = 0; t <= num_steps; ++t) {
     for (int i = 0; i < nq; ++i) {
       q_ad[t].segment<1>(i) =
-          math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
+          drake::math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
       ++ad_idx;
     }
   }
@@ -1589,7 +1614,7 @@ GTEST_TEST(TrajectoryOptimizerTest, SpinnerEqualityConstraints) {
 
   VectorX<AutoDiffXd> h_ad =
       optimizer_ad.EvalEqualityConstraintViolations(state_ad);
-  MatrixXd J_ad = math::ExtractGradient(h_ad);
+  MatrixXd J_ad = drake::math::ExtractGradient(h_ad);
   MatrixXd J = optimizer.EvalEqualityConstraintJacobian(state);
 
   // We get a factor of sqrt(epsilon) since we're doing finite differences to
@@ -1633,9 +1658,10 @@ GTEST_TEST(TrajectoryOptimizerTest, HopperEqualityConstraints) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file =
-      FindResourceOrThrow("drake/traj_opt/examples/models/hopper.urdf");
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file = idto::FindIDTOResourceOrThrow(
+      "traj_opt/examples/models/hopper.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1663,7 +1689,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HopperEqualityConstraints) {
   EXPECT_TRUE(h.size() == num_steps * 3);
 
   // Set up an autodiff copy of the optimizer and plant
-  auto diagram_ad = systems::System<double>::ToAutoDiffXd(*diagram);
+  auto diagram_ad = drake::systems::System<double>::ToAutoDiffXd(*diagram);
   const auto& plant_ad = dynamic_cast<const MultibodyPlant<AutoDiffXd>&>(
       diagram_ad->GetSubsystemByName(plant.get_name()));
   TrajectoryOptimizer<AutoDiffXd> optimizer_ad(diagram_ad.get(), &plant_ad,
@@ -1677,7 +1703,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HopperEqualityConstraints) {
   for (int t = 0; t <= num_steps; ++t) {
     for (int i = 0; i < nq; ++i) {
       q_ad[t].segment<1>(i) =
-          math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
+          drake::math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
       ++ad_idx;
     }
   }
@@ -1685,7 +1711,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HopperEqualityConstraints) {
 
   VectorX<AutoDiffXd> h_ad =
       optimizer_ad.EvalEqualityConstraintViolations(state_ad);
-  MatrixXd J_ad = math::ExtractGradient(h_ad);
+  MatrixXd J_ad = drake::math::ExtractGradient(h_ad);
   MatrixXd J = optimizer.EvalEqualityConstraintJacobian(state);
 
   // We get a factor of sqrt(epsilon) since we're doing finite differences to
@@ -1729,9 +1755,10 @@ GTEST_TEST(TrajectoryOptimizerTest, EqualityConstraintsAndScaling) {
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
-  auto [plant, scene_graph] = multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file =
-      FindResourceOrThrow("drake/traj_opt/examples/models/hopper.urdf");
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file = idto::FindIDTOResourceOrThrow(
+      "traj_opt/examples/models/hopper.urdf");
   Parser(&plant).AddAllModelsFromFile(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1817,4 +1844,4 @@ GTEST_TEST(TrajectoryOptimizerTest, EqualityConstraintsAndScaling) {
 
 }  // namespace internal
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

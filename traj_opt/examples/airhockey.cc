@@ -1,30 +1,31 @@
-#include "drake/common/find_resource.h"
-#include "drake/common/profiler.h"
+#include "traj_opt/examples/example_base.h"
+
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
 #include "drake/multibody/tree/planar_joint.h"
 #include "drake/multibody/tree/prismatic_joint.h"
 #include "drake/multibody/tree/revolute_joint.h"
-#include "drake/traj_opt/examples/example_base.h"
+#include "common/find_resource.h"
+#include "common/profiler.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace airhockey {
 
+using drake::geometry::Box;
+using drake::geometry::Cylinder;
+using drake::geometry::Sphere;
+using drake::math::RigidTransformd;
+using drake::multibody::CoulombFriction;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::PlanarJoint;
+using drake::multibody::PrismaticJoint;
+using drake::multibody::RevoluteJoint;
+using drake::multibody::RigidBody;
+using drake::multibody::SpatialInertia;
+using drake::multibody::UnitInertia;
 using Eigen::Vector3d;
-using geometry::Box;
-using geometry::Cylinder;
-using geometry::Sphere;
-using math::RigidTransformd;
-using multibody::CoulombFriction;
-using multibody::MultibodyPlant;
-using multibody::PlanarJoint;
-using multibody::PrismaticJoint;
-using multibody::RevoluteJoint;
-using multibody::RigidBody;
-using multibody::SpatialInertia;
-using multibody::UnitInertia;
 
 class AirHockeyExample : public TrajOptExample {
  public:
@@ -37,10 +38,10 @@ class AirHockeyExample : public TrajOptExample {
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
     // Colors that we'll use
-    const Vector4<double> red(0.9, 0.1, 0.0, 1.0);
-    const Vector4<double> red2(0.8, 0.1, 0.0, 1.0);
-    const Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
-    const Vector4<double> black(0.0, 0.0, 0.0, 1.0);
+    const drake::Vector4<double> red(0.9, 0.1, 0.0, 1.0);
+    const drake::Vector4<double> red2(0.8, 0.1, 0.0, 1.0);
+    const drake::Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
+    const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Puck parameters
     const double mass = 0.1;
@@ -100,10 +101,10 @@ class AirHockeyExample : public TrajOptExample {
 }  // namespace airhockey
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::airhockey::AirHockeyExample example;
-  example.RunExample("drake/traj_opt/examples/airhockey.yaml");
+  idto::traj_opt::examples::airhockey::AirHockeyExample example;
+  example.RunExample("anzu/traj_opt/examples/airhockey.yaml");
   return 0;
 }

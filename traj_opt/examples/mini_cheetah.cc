@@ -1,22 +1,27 @@
-#include <drake/multibody/tree/prismatic_joint.h>
+#include <gflags/gflags.h>
+#include "traj_opt/examples/example_base.h"
 
-#include "drake/common/find_resource.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
+#include "common/find_resource.h"
 
-namespace drake {
+DEFINE_int32(hills, 0, "number of simulated hills to walk over");
+DEFINE_double(hill_height, 0.05, "height of each simulated hill, in meters");
+DEFINE_double(hill_spacing, 1.0,
+              "distance between each simulated hill, in meters");
+
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace mini_cheetah {
 
+using drake::geometry::Box;
+using drake::geometry::Cylinder;
+using drake::math::RigidTransformd;
+using drake::math::RollPitchYawd;
+using drake::multibody::CoulombFriction;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::Parser;
 using Eigen::Vector3d;
-using geometry::Box;
-using geometry::Cylinder;
-using math::RigidTransformd;
-using math::RollPitchYawd;
-using multibody::CoulombFriction;
-using multibody::MultibodyPlant;
-using multibody::Parser;
 
 /**
  * A model of the MIT mini cheetah quadruped.
@@ -31,11 +36,11 @@ class MiniCheetahExample : public TrajOptExample {
 
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
-    const Vector4<double> green(0.3, 0.6, 0.4, 1.0);
+    const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
 
     // Add the robot
-    std::string urdf_file = FindResourceOrThrow(
-        "drake/traj_opt/examples/models/mini_cheetah_mesh.urdf");
+    std::string urdf_file = idto::FindIDTOResourceOrThrow(
+        "traj_opt/examples/models/mini_cheetah_mesh.urdf");
     Parser(plant).AddAllModelsFromFile(urdf_file);
 
     // Add collision with the ground
@@ -47,15 +52,15 @@ class MiniCheetahExample : public TrajOptExample {
                                      CoulombFriction<double>(0.5, 0.5));
 
     // Add some extra terrain
-    for (int i = 0; i < 2; ++i) {
-      const double px = 2.0 + static_cast<double>(i);
+    for (int i = 0; i < FLAGS_hills; ++i) {
+      const double px = 2.0 + FLAGS_hill_spacing * static_cast<double>(i);
       const std::string name = "hill_" + std::to_string(i);
       const RigidTransformd X_hill(RollPitchYawd(M_PI_2, 0, 0),
-                                   Vector3d(px, 0.0, -0.9));
+                                   Vector3d(px, 0.0, -1.0 + FLAGS_hill_height));
       plant->RegisterVisualGeometry(plant->world_body(), X_hill,
-                                    Cylinder(1, 25), name, green);
+                                    Cylinder(1.0, 25), name, green);
       plant->RegisterCollisionGeometry(plant->world_body(), X_hill,
-                                       Cylinder(1, 25), name,
+                                       Cylinder(1.0, 25), name,
                                        CoulombFriction<double>(0.5, 0.5));
     }
   }
@@ -64,10 +69,11 @@ class MiniCheetahExample : public TrajOptExample {
 }  // namespace mini_cheetah
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
-int main() {
-  drake::traj_opt::examples::mini_cheetah::MiniCheetahExample example;
-  example.RunExample("drake/traj_opt/examples/mini_cheetah.yaml");
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  idto::traj_opt::examples::mini_cheetah::MiniCheetahExample example;
+  example.RunExample("traj_opt/examples/mini_cheetah.yaml");
   return 0;
 }

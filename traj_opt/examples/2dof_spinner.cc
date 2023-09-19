@@ -1,20 +1,21 @@
-#include "drake/common/find_resource.h"
+#include "traj_opt/examples/example_base.h"
+
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
+#include "common/find_resource.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace two_dof_spinner {
 
-using multibody::MultibodyPlant;
-using multibody::Parser;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::Parser;
 
 class TwoDofSpinnerExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
-    const std::string urdf_file =
-        FindResourceOrThrow("drake/traj_opt/examples/models/2dof_spinner.urdf");
+    const std::string urdf_file = idto::FindIDTOResourceOrThrow(
+        "traj_opt/examples/models/2dof_spinner.urdf");
     Parser(plant).AddAllModelsFromFile(urdf_file);
   }
 };
@@ -22,11 +23,11 @@ class TwoDofSpinnerExample : public TrajOptExample {
 }  // namespace two_dof_spinner
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::two_dof_spinner::TwoDofSpinnerExample
+  idto::traj_opt::examples::two_dof_spinner::TwoDofSpinnerExample
       spinner_example;
-  spinner_example.RunExample("drake/traj_opt/examples/2dof_spinner.yaml");
+  spinner_example.RunExample("traj_opt/examples/2dof_spinner.yaml");
   return 0;
 }

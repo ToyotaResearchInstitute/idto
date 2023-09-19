@@ -1,30 +1,32 @@
+#include "traj_opt/examples/example_base.h"
+
 #include "drake/common/find_resource.h"
 #include "drake/geometry/proximity_properties.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
+#include "common/find_resource.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace punyo_hug {
 
+using drake::geometry::AddCompliantHydroelasticProperties;
+using drake::geometry::AddContactMaterial;
+using drake::geometry::Box;
+using drake::geometry::Cylinder;
+using drake::geometry::ProximityProperties;
+using drake::geometry::Sphere;
+using drake::math::RigidTransformd;
+using drake::math::RollPitchYawd;
+using drake::multibody::CoulombFriction;
+using drake::multibody::ModelInstanceIndex;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::Parser;
+using drake::multibody::RigidBody;
+using drake::multibody::SpatialInertia;
+using drake::multibody::UnitInertia;
 using Eigen::Vector3d;
-using geometry::AddCompliantHydroelasticProperties;
-using geometry::AddContactMaterial;
-using geometry::Box;
-using geometry::Cylinder;
-using geometry::ProximityProperties;
-using geometry::Sphere;
-using math::RigidTransformd;
-using math::RollPitchYawd;
-using multibody::CoulombFriction;
-using multibody::ModelInstanceIndex;
-using multibody::MultibodyPlant;
-using multibody::Parser;
-using multibody::RigidBody;
-using multibody::SpatialInertia;
-using multibody::UnitInertia;
 
 class PunyoHugExample : public TrajOptExample {
  public:
@@ -36,16 +38,16 @@ class PunyoHugExample : public TrajOptExample {
 
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
-    const Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
-    const Vector4<double> green(0.3, 0.6, 0.4, 1.0);
-    const Vector4<double> black(0.0, 0.0, 0.0, 1.0);
+    const drake::Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
+    const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
+    const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a humanoid model
     std::string sdf_file =
-        FindResourceOrThrow("drake/traj_opt/examples/models/punyoid.sdf");
+        idto::FindIDTOResourceOrThrow("traj_opt/examples/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModelFromFile(sdf_file);
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
-    plant->disable_gravity(humanoid);
+    // plant->disable_gravity(humanoid);
 
     // Add a free-floating ball to pick up
     ModelInstanceIndex ball_idx = plant->AddModelInstance("ball");
@@ -88,16 +90,16 @@ class PunyoHugExample : public TrajOptExample {
 
   void CreatePlantModelForSimulation(
       MultibodyPlant<double>* plant) const final {
-    const Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
-    const Vector4<double> green(0.3, 0.6, 0.4, 1.0);
-    const Vector4<double> black(0.0, 0.0, 0.0, 1.0);
+    const drake::Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
+    const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
+    const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a humanoid model
     std::string sdf_file =
-        FindResourceOrThrow("drake/traj_opt/examples/models/punyoid.sdf");
+        FindIDTOResourceOrThrow("traj_opt/examples/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModelFromFile(sdf_file);
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
-    plant->disable_gravity(humanoid);
+    // plant->disable_gravity(humanoid);
 
     // Add a free-floating ball to pick up
     const double mass = 1.0;
@@ -145,10 +147,10 @@ class PunyoHugExample : public TrajOptExample {
 }  // namespace punyo_hug
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::punyo_hug::PunyoHugExample example;
-  example.RunExample("drake/traj_opt/examples/punyo_hug.yaml");
+  idto::traj_opt::examples::punyo_hug::PunyoHugExample example;
+  example.RunExample("traj_opt/examples/punyo_hug.yaml");
   return 0;
 }

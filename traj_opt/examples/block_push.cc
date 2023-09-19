@@ -1,24 +1,24 @@
 #include <drake/multibody/tree/prismatic_joint.h>
+#include "traj_opt/examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace block_push {
 
+using drake::geometry::Box;
+using drake::geometry::Sphere;
+using drake::math::RigidTransformd;
+using drake::multibody::CoulombFriction;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::PrismaticJoint;
+using drake::multibody::RigidBody;
+using drake::multibody::SpatialInertia;
+using drake::multibody::UnitInertia;
 using Eigen::Vector3d;
-using geometry::Box;
-using geometry::Sphere;
-using math::RigidTransformd;
-using multibody::CoulombFriction;
-using multibody::MultibodyPlant;
-using multibody::PrismaticJoint;
-using multibody::RigidBody;
-using multibody::SpatialInertia;
-using multibody::UnitInertia;
 
 /**
  * The simplest possible system with a floating base: a box that floats through
@@ -27,9 +27,9 @@ using multibody::UnitInertia;
 class BlockPushExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
     // Colors that we'll use
-    const Vector4<double> red(0.9, 0.1, 0.0, 1.0);
-    const Vector4<double> green(0.3, 0.6, 0.4, 0.5);
-    const Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
+    const drake::Vector4<double> red(0.9, 0.1, 0.0, 1.0);
+    const drake::Vector4<double> green(0.3, 0.6, 0.4, 0.5);
+    const drake::Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
 
     // Block (unactuated) that we'll push. This is modeled as a bunch of spheres
     // which, together, resemble some sort of lumpy box.
@@ -125,10 +125,10 @@ class BlockPushExample : public TrajOptExample {
 }  // namespace block_push
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::block_push::BlockPushExample example;
-  example.RunExample("drake/traj_opt/examples/block_push.yaml");
+  idto::traj_opt::examples::block_push::BlockPushExample example;
+  example.RunExample("traj_opt/examples/block_push.yaml");
   return 0;
 }

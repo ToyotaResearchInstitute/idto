@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: MIT-0
 
-workspace(name = "drake_external_examples")
+workspace(name = "idto-standalone")
 
-DRAKE_COMMIT = "master"
-DRAKE_CHECKSUM = ""
+DRAKE_COMMIT = "0fa91afe3f0d8f9697afbbd3bcf154dc4fded82c"
+DRAKE_CHECKSUM = "0cced19cb36c9bb834250a2245dd176942352104cff694f7527ab6afe8a115bf"
 
 # Or choose a specific revision of Drake to use.
 # DRAKE_COMMIT = "be4f658487f739ba04ec079de46f9459b719636d"

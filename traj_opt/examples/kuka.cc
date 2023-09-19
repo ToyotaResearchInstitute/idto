@@ -1,38 +1,39 @@
-#include "drake/common/find_resource.h"
+#include "traj_opt/examples/example_base.h"
+
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
+#include "common/find_resource.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace kuka {
 
+using drake::geometry::Box;
+using drake::math::RigidTransformd;
+using drake::multibody::CoulombFriction;
+using drake::multibody::ModelInstanceIndex;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::Parser;
 using Eigen::Vector3d;
-using geometry::Box;
-using math::RigidTransformd;
-using multibody::CoulombFriction;
-using multibody::ModelInstanceIndex;
-using multibody::MultibodyPlant;
-using multibody::Parser;
 
 class KukaExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
-    const Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
-    const Vector4<double> green(0.3, 0.6, 0.4, 1.0);
-    const Vector4<double> black(0.0, 0.0, 0.0, 1.0);
+    const drake::Vector4<double> blue(0.1, 0.3, 0.5, 1.0);
+    const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
+    const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a kuka arm
-    std::string robot_file = FindResourceOrThrow(
+    std::string robot_file = drake::FindResourceOrThrow(
         "drake/manipulation/models/iiwa_description/urdf/"
         "iiwa14_spheres_collision.urdf");
     ModelInstanceIndex kuka = Parser(plant).AddModelFromFile(robot_file);
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
-    plant->disable_gravity(kuka);
+    // plant->disable_gravity(kuka);
 
     // Add a manipuland
-    std::string manipuland_file =
-        FindResourceOrThrow("drake/traj_opt/examples/models/box_intel_nuc.sdf");
+    std::string manipuland_file = idto::FindIDTOResourceOrThrow(
+        "traj_opt/examples/models/box_intel_nuc.sdf");
     Parser(plant).AddAllModelsFromFile(manipuland_file);
 
     // Add the ground
@@ -48,10 +49,10 @@ class KukaExample : public TrajOptExample {
 }  // namespace kuka
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::kuka::KukaExample example;
-  example.RunExample("drake/traj_opt/examples/kuka.yaml");
+  idto::traj_opt::examples::kuka::KukaExample example;
+  example.RunExample("traj_opt/examples/kuka.yaml");
   return 0;
 }

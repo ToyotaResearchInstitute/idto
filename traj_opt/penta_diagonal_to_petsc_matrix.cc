@@ -1,13 +1,35 @@
-#include "drake/traj_opt/penta_diagonal_to_petsc_matrix.h"
+#include "traj_opt/penta_diagonal_to_petsc_matrix.h"
 
 #include <vector>
 
 using drake::multibody::fem::internal::PetscSymmetricBlockSparseMatrix;
 using Eigen::MatrixXd;
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace internal {
+
+namespace {
+/* Operation equivalent to
+  A.block(ib * b, jb * b, b, b) = block;
+*/
+template <typename T>
+void TransposedAddToBlock(T* obj, int ib, int jb,
+                          const MatrixX<double>& block) {
+  /* Notice that `MatSetValuesBlocked()` takes row major data whereas
+   Eigen's default format (in `block.data()`) is column major, as in Fortran.
+   Therefore we must make a copy with the proper row major order. */
+  const MatrixX<double> row_major = block.transpose();
+  if (ib == jb) {
+    VectorX<int> indices(1);
+    indices[0] = ib;
+    obj->AddToBlock(indices, row_major);
+  } else {
+    throw std::logic_error(
+        "TODO: potentially nonsymmetric AddToBlock unimplemented");
+  }
+}
+}  // namespace
 
 std::unique_ptr<PetscSymmetricBlockSparseMatrix> PentaDiagonalToPetscMatrix(
     const PentaDiagonalMatrix<double>& M) {
@@ -28,11 +50,11 @@ std::unique_ptr<PetscSymmetricBlockSparseMatrix> PentaDiagonalToPetscMatrix(
     const MatrixXd& D = M.D()[ib];
     const MatrixXd& E = M.E()[ib];
 
-    if (ib >= 2) Mpetsc->AddToBlock(ib, ib - 2, A);
-    if (ib >= 1) Mpetsc->AddToBlock(ib, ib - 1, B);
-    Mpetsc->AddToBlock(ib, ib, C);
-    if (ib < num_block_rows - 1) Mpetsc->AddToBlock(ib, ib + 1, D);
-    if (ib < num_block_rows - 2) Mpetsc->AddToBlock(ib, ib + 2, E);
+    if (ib >= 2) TransposedAddToBlock(&*Mpetsc, ib, ib - 2, A);
+    if (ib >= 1) TransposedAddToBlock(&*Mpetsc, ib, ib - 1, B);
+    TransposedAddToBlock(&*Mpetsc, ib, ib, C);
+    if (ib < num_block_rows - 1) TransposedAddToBlock(&*Mpetsc, ib, ib + 1, D);
+    if (ib < num_block_rows - 2) TransposedAddToBlock(&*Mpetsc, ib, ib + 2, E);
   }
   Mpetsc->AssembleIfNecessary();
 
@@ -41,4 +63,4 @@ std::unique_ptr<PetscSymmetricBlockSparseMatrix> PentaDiagonalToPetscMatrix(
 
 }  // namespace internal
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

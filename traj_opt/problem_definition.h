@@ -4,7 +4,7 @@
 
 #include "drake/common/eigen_types.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
 using Eigen::MatrixXd;
@@ -59,4 +59,4 @@ struct ProblemDefinition {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

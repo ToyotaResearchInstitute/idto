@@ -2,14 +2,16 @@
 
 #include <string>
 
+#include "traj_opt/convergence_criteria_tolerances.h"
+
 #include "drake/common/eigen_types.h"
 #include "drake/common/yaml/yaml_io.h"
-#include "drake/traj_opt/convergence_criteria_tolerances.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 
+using drake::VectorX;
 using Eigen::VectorXd;
 
 /**
@@ -239,4 +241,4 @@ struct TrajOptExampleParams {
 
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

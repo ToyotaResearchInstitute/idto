@@ -1,30 +1,31 @@
-#include "drake/common/find_resource.h"
+#include "traj_opt/examples/example_base.h"
+
 #include "drake/geometry/proximity_properties.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
+#include "common/find_resource.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace jaco_ball {
 
+using drake::geometry::AddCompliantHydroelasticProperties;
+using drake::geometry::AddContactMaterial;
+using drake::geometry::Box;
+using drake::geometry::Cylinder;
+using drake::geometry::ProximityProperties;
+using drake::geometry::Sphere;
+using drake::math::RigidTransformd;
+using drake::math::RollPitchYawd;
+using drake::multibody::CoulombFriction;
+using drake::multibody::ModelInstanceIndex;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::Parser;
+using drake::multibody::RigidBody;
+using drake::multibody::SpatialInertia;
+using drake::multibody::UnitInertia;
 using Eigen::Vector3d;
-using geometry::AddCompliantHydroelasticProperties;
-using geometry::AddContactMaterial;
-using geometry::Box;
-using geometry::Cylinder;
-using geometry::ProximityProperties;
-using geometry::Sphere;
-using math::RigidTransformd;
-using math::RollPitchYawd;
-using multibody::CoulombFriction;
-using multibody::ModelInstanceIndex;
-using multibody::MultibodyPlant;
-using multibody::Parser;
-using multibody::RigidBody;
-using multibody::SpatialInertia;
-using multibody::UnitInertia;
 
 class JacoBallExample : public TrajOptExample {
  public:
@@ -36,18 +37,18 @@ class JacoBallExample : public TrajOptExample {
 
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
-    const Vector4<double> blue(0.1, 0.3, 0.5, 0.8);
-    const Vector4<double> black(0.0, 0.0, 0.0, 0.5);
+    const drake::Vector4<double> blue(0.1, 0.3, 0.5, 0.8);
+    const drake::Vector4<double> black(0.0, 0.0, 0.0, 0.5);
 
     // Add a jaco arm without gravity
-    std::string robot_file = FindResourceOrThrow(
-        "drake/traj_opt/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
+    std::string robot_file = idto::FindIDTOResourceOrThrow(
+        "traj_opt/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModelFromFile(robot_file);
     RigidTransformd X_jaco(RollPitchYawd(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
                       X_jaco);
-    plant->disable_gravity(jaco);
+    // plant->disable_gravity(jaco);
 
     // Add the ball model
     const double mass = 0.3;
@@ -78,8 +79,8 @@ class JacoBallExample : public TrajOptExample {
                                   "ball_marker_three", black);
 
     // Add the ground
-    const Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
-    const Vector4<double> green(0.3, 0.6, 0.4, 1.0);
+    const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
+    const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
     RigidTransformd X_ground(Vector3d(0.0, 0.0, -0.5));
     RigidTransformd X_table(Vector3d(0.6, 0.0, -0.499));
     plant->RegisterVisualGeometry(plant->world_body(), X_ground, Box(25, 25, 1),
@@ -93,18 +94,18 @@ class JacoBallExample : public TrajOptExample {
 
   void CreatePlantModelForSimulation(
       MultibodyPlant<double>* plant) const final {
-    const Vector4<double> blue(0.1, 0.3, 0.5, 0.8);
-    const Vector4<double> black(0.0, 0.0, 0.0, 0.5);
+    const drake::Vector4<double> blue(0.1, 0.3, 0.5, 0.8);
+    const drake::Vector4<double> black(0.0, 0.0, 0.0, 0.5);
 
     // Add a jaco arm without gravity
-    std::string robot_file = FindResourceOrThrow(
-        "drake/traj_opt/examples/models/j2s7s300_arm_hydro_collision.sdf");
+    std::string robot_file = idto::FindIDTOResourceOrThrow(
+        "traj_opt/examples/models/j2s7s300_arm_hydro_collision.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModelFromFile(robot_file);
     RigidTransformd X_jaco(RollPitchYawd(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
                       X_jaco);
-    plant->disable_gravity(jaco);
+    // plant->disable_gravity(jaco);
 
     // Add the ball model
     // N.B. the radius is slightly larger than the model used for optimization,
@@ -139,8 +140,8 @@ class JacoBallExample : public TrajOptExample {
                                   "ball_marker_three", black);
 
     // Add the ground
-    const Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
-    const Vector4<double> green(0.3, 0.6, 0.4, 1.0);
+    const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
+    const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
     RigidTransformd X_ground(Vector3d(0.0, 0.0, -0.5));
     RigidTransformd X_table(Vector3d(0.6, 0.0, -0.499));
     plant->RegisterVisualGeometry(plant->world_body(), X_ground, Box(25, 25, 1),
@@ -156,10 +157,10 @@ class JacoBallExample : public TrajOptExample {
 }  // namespace jaco_ball
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::jaco_ball::JacoBallExample example;
-  example.RunExample("drake/traj_opt/examples/jaco_ball.yaml");
+  idto::traj_opt::examples::jaco_ball::JacoBallExample example;
+  example.RunExample("traj_opt/examples/jaco_ball.yaml");
   return 0;
 }

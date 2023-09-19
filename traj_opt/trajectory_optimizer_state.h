@@ -4,24 +4,25 @@
 #include <utility>
 #include <vector>
 
+#include "traj_opt/inverse_dynamics_partials.h"
+#include "traj_opt/penta_diagonal_matrix.h"
+#include "traj_opt/trajectory_optimizer_workspace.h"
+#include "traj_opt/velocity_partials.h"
+
 #include "drake/common/drake_copyable.h"
 #include "drake/common/eigen_types.h"
 #include "drake/geometry/query_results/signed_distance_pair.h"
 #include "drake/multibody/plant/multibody_plant.h"
 #include "drake/systems/framework/diagram.h"
-#include "drake/traj_opt/inverse_dynamics_partials.h"
-#include "drake/traj_opt/penta_diagonal_matrix.h"
-#include "drake/traj_opt/trajectory_optimizer_workspace.h"
-#include "drake/traj_opt/velocity_partials.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
+using drake::multibody::BodyIndex;
+using drake::multibody::MultibodyPlant;
+using drake::systems::Context;
+using drake::systems::Diagram;
 using internal::PentaDiagonalMatrix;
-using multibody::BodyIndex;
-using multibody::MultibodyPlant;
-using systems::Context;
-using systems::Diagram;
 
 /**
  * Struct for holding quantities that are computed from the optimizer state (q),
@@ -135,7 +136,7 @@ struct TrajectoryOptimizerCache {
   struct SdfData {
     // sdf_pairs[t], with t=0 to num_steps-1, stores the contact pairs for the
     // t-th step.
-    std::vector<std::vector<geometry::SignedDistancePair<T>>> sdf_pairs;
+    std::vector<std::vector<drake::geometry::SignedDistancePair<T>>> sdf_pairs;
     bool up_to_date{false};
   } sdf_data;
 
@@ -144,7 +145,7 @@ struct TrajectoryOptimizerCache {
     std::vector<std::vector<std::pair<BodyIndex, BodyIndex>>> body_pairs;
 
     // R_WC[t] is a std::vector storing R_WC for all contact pairs at time t.
-    std::vector<std::vector<math::RotationMatrix<T>>> R_WC;
+    std::vector<std::vector<drake::math::RotationMatrix<T>>> R_WC;
 
     // Contact Jacobian, std::vector of size num_steps.
     // Each Jacobian matrix has 3*num_contacts rows and num_velocities columns.
@@ -430,4 +431,4 @@ class TrajectoryOptimizerState {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

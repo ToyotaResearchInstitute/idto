@@ -1,18 +1,19 @@
-#include "drake/common/find_resource.h"
-#include "drake/common/profiler.h"
+#include "traj_opt/examples/example_base.h"
+
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
+#include "common/find_resource.h"
+#include "common/profiler.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace spinner {
 
+using drake::math::RigidTransformd;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::Parser;
 using Eigen::Matrix4d;
-using math::RigidTransformd;
-using multibody::MultibodyPlant;
-using multibody::Parser;
 
 class SpinnerExample : public TrajOptExample {
  public:
@@ -27,8 +28,8 @@ class SpinnerExample : public TrajOptExample {
     // N.B. geometry of the spinner is chosen via gflags rather than yaml so
     // that we can use the same yaml format for all of the examples, without
     // cluttering it with spinner-specific options.
-    std::string urdf_file = FindResourceOrThrow(
-        "drake/traj_opt/examples/models/spinner_friction.urdf");
+    std::string urdf_file = idto::FindIDTOResourceOrThrow(
+        "traj_opt/examples/models/spinner_friction.urdf");
     Parser(plant).AddAllModelsFromFile(urdf_file);
   }
 };
@@ -36,10 +37,10 @@ class SpinnerExample : public TrajOptExample {
 }  // namespace spinner
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::spinner::SpinnerExample spinner_example;
-  spinner_example.RunExample("drake/traj_opt/examples/spinner.yaml");
+  idto::traj_opt::examples::spinner::SpinnerExample spinner_example;
+  spinner_example.RunExample("traj_opt/examples/spinner.yaml");
   return 0;
 }

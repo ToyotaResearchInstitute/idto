@@ -6,6 +6,10 @@
 #include <thread>
 #include <vector>
 
+#include "traj_opt/examples/yaml_config.h"
+#include "traj_opt/problem_definition.h"
+#include "traj_opt/trajectory_optimizer.h"
+
 #include "drake/common/find_resource.h"
 #include "drake/geometry/meshcat.h"
 #include "drake/geometry/scene_graph.h"
@@ -14,20 +18,18 @@
 #include "drake/multibody/plant/multibody_plant_config_functions.h"
 #include "drake/systems/analysis/simulator.h"
 #include "drake/systems/framework/diagram_builder.h"
-#include "drake/traj_opt/examples/yaml_config.h"
-#include "drake/traj_opt/problem_definition.h"
-#include "drake/traj_opt/trajectory_optimizer.h"
+#include "common/find_resource.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 
-using geometry::Meshcat;
-using geometry::SceneGraph;
-using multibody::AddMultibodyPlant;
-using multibody::MultibodyPlantConfig;
-using multibody::Parser;
-using systems::DiagramBuilder;
+using drake::geometry::Meshcat;
+using drake::geometry::SceneGraph;
+using drake::multibody::AddMultibodyPlant;
+using drake::multibody::MultibodyPlantConfig;
+using drake::multibody::Parser;
+using drake::systems::DiagramBuilder;
 
 /**
  * Abstract base class for trajectory optimization examples.
@@ -116,6 +118,14 @@ class TrajOptExample {
   virtual void CreatePlantModel(MultibodyPlant<double>*) const {}
 
   /**
+   * Update any custom meshcat visualizations, such as a frame that illustrates
+   * a target pose. In most cases this is not used.
+   *
+   * @param options Options that we read from YAML
+   */
+  virtual void UpdateCustomMeshcatElements(const TrajOptExampleParams&) const {}
+
+  /**
    * Create a MultibodyPlant model of the system to use for simulation (i.e., to
    * test MPC). The default behavior is to use the same model that we use for
    * optimization.
@@ -161,4 +171,4 @@ class TrajOptExample {
 
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

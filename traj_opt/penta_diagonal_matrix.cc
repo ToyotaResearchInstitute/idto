@@ -1,11 +1,11 @@
-#include "drake/traj_opt/penta_diagonal_matrix.h"
+#include "traj_opt/penta_diagonal_matrix.h"
 
 #include <utility>
 
 #include "drake/common/default_scalars.h"
 #include "drake/common/drake_assert.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace internal {
 
@@ -258,7 +258,7 @@ void PentaDiagonalMatrix<T>::ScaleByDiagonal(const VectorX<T>& scale_factor) {
 
 }  // namespace internal
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::traj_opt::internal::PentaDiagonalMatrix)
+    class ::idto::traj_opt::internal::PentaDiagonalMatrix)

@@ -1,4 +1,4 @@
-#include "drake/traj_opt/trajectory_optimizer.h"
+#include "traj_opt/trajectory_optimizer.h"
 
 #include <algorithm>
 #include <chrono>
@@ -11,12 +11,13 @@
 #include <omp.h>
 #endif
 
-#include "drake/common/profiler.h"
+#include "traj_opt/penta_diagonal_solver.h"
+#include "traj_opt/penta_diagonal_to_petsc_matrix.h"
+
 #include "drake/geometry/scene_graph_inspector.h"
 #include "drake/multibody/math/spatial_algebra.h"
 #include "drake/systems/framework/diagram.h"
-#include "drake/traj_opt/penta_diagonal_solver.h"
-#include "drake/traj_opt/penta_diagonal_to_petsc_matrix.h"
+#include "common/profiler.h"
 
 using drake::multibody::fem::internal::PetscSolverStatus;
 using drake::multibody::fem::internal::PetscSymmetricBlockSparseMatrix;
@@ -24,23 +25,24 @@ using drake::multibody::fem::internal::PetscSymmetricBlockSparseMatrix;
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
-using geometry::GeometryId;
-using geometry::SignedDistancePair;
+using drake::AutoDiffXd;
+using drake::geometry::GeometryId;
+using drake::geometry::SignedDistancePair;
+using drake::math::RigidTransform;
+using drake::multibody::Body;
+using drake::multibody::BodyIndex;
+using drake::multibody::Frame;
+using drake::multibody::Joint;
+using drake::multibody::JointIndex;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::SpatialForce;
+using drake::multibody::SpatialVelocity;
+using drake::systems::System;
 using internal::PentaDiagonalFactorization;
 using internal::PentaDiagonalFactorizationStatus;
-using math::RigidTransform;
-using multibody::Body;
-using multibody::BodyIndex;
-using multibody::Frame;
-using multibody::Joint;
-using multibody::JointIndex;
-using multibody::MultibodyPlant;
-using multibody::SpatialForce;
-using multibody::SpatialVelocity;
-using systems::System;
 
 template <typename T>
 TrajectoryOptimizer<T>::TrajectoryOptimizer(const Diagram<T>* diagram,
@@ -82,7 +84,7 @@ TrajectoryOptimizer<T>::TrajectoryOptimizer(const Diagram<T>* diagram,
   if constexpr (std::is_same_v<T, double>) {
     if ((params_.gradients_method == GradientsMethod::kAutoDiff) ||
         params_.exact_hessian) {
-      diagram_ad_ = systems::System<double>::ToAutoDiffXd(*diagram);
+      diagram_ad_ = drake::systems::System<double>::ToAutoDiffXd(*diagram);
       plant_ad_ = dynamic_cast<const MultibodyPlant<AutoDiffXd>*>(
           &diagram_ad_->GetSubsystemByName(plant->get_name()));
       DRAKE_DEMAND(plant_ad_ != nullptr);
@@ -279,10 +281,10 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
   double threshold = -sigma * log(exp(eps / (sigma * k)) - 1.0);
 
   // Get signed distance pairs
-  const geometry::QueryObject<T>& query_object =
+  const drake::geometry::QueryObject<T>& query_object =
       plant()
           .get_geometry_query_input_port()
-          .template Eval<geometry::QueryObject<T>>(context);
+          .template Eval<drake::geometry::QueryObject<T>>(context);
   const drake::geometry::SceneGraphInspector<T>& inspector =
       query_object.inspector();
   const std::vector<SignedDistancePair<T>>& signed_distance_pairs =
@@ -290,46 +292,46 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
 
   for (const SignedDistancePair<T>& pair : signed_distance_pairs) {
     // Normal outwards from A.
-    const Vector3<T> nhat = -pair.nhat_BA_W;
+    const drake::Vector3<T> nhat = -pair.nhat_BA_W;
 
     // Get geometry and transformation data for the witness points
     const GeometryId geometryA_id = pair.id_A;
     const GeometryId geometryB_id = pair.id_B;
 
-    const BodyIndex bodyA_index =
-        plant().geometry_id_to_body_index().at(geometryA_id);
-    const Body<T>& bodyA = plant().get_body(bodyA_index);
-    const BodyIndex bodyB_index =
-        plant().geometry_id_to_body_index().at(geometryB_id);
-    const Body<T>& bodyB = plant().get_body(bodyB_index);
+    const Body<T>& bodyA =
+        *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryA_id)));
+    const BodyIndex bodyA_index = bodyA.index();
+    const Body<T>& bodyB =
+        *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryB_id)));
+    const BodyIndex bodyB_index = bodyB.index();
 
     // Body poses in world.
-    const math::RigidTransform<T>& X_WA =
+    const drake::math::RigidTransform<T>& X_WA =
         plant().EvalBodyPoseInWorld(context, bodyA);
-    const math::RigidTransform<T>& X_WB =
+    const drake::math::RigidTransform<T>& X_WB =
         plant().EvalBodyPoseInWorld(context, bodyB);
 
     // Geometry poses in body frames.
-    const math::RigidTransform<T> X_AGa =
+    const drake::math::RigidTransform<T> X_AGa =
         inspector.GetPoseInFrame(geometryA_id).template cast<T>();
-    const math::RigidTransform<T> X_BGb =
+    const drake::math::RigidTransform<T> X_BGb =
         inspector.GetPoseInFrame(geometryB_id).template cast<T>();
 
     // Position of the witness points in the world frame.
     const auto& p_GaCa_Ga = pair.p_ACa;
     const RigidTransform<T> X_WGa = X_WA * X_AGa;
-    const Vector3<T> p_WCa_W = X_WGa * p_GaCa_Ga;
+    const drake::Vector3<T> p_WCa_W = X_WGa * p_GaCa_Ga;
     const auto& p_GbCb_Gb = pair.p_BCb;
     const RigidTransform<T> X_WGb = X_WB * X_BGb;
-    const Vector3<T> p_WCb_W = X_WGb * p_GbCb_Gb;
+    const drake::Vector3<T> p_WCb_W = X_WGb * p_GbCb_Gb;
 
     // We define the (common, unique) contact point C as the midpoint between
     // witness points Ca and Cb.
-    const Vector3<T> p_WC = 0.5 * (p_WCa_W + p_WCb_W);
+    const drake::Vector3<T> p_WC = 0.5 * (p_WCa_W + p_WCb_W);
 
     // Shift vectors.
-    const Vector3<T> p_AC_W = p_WC - X_WA.translation();
-    const Vector3<T> p_BC_W = p_WC - X_WB.translation();
+    const drake::Vector3<T> p_AC_W = p_WC - X_WA.translation();
+    const drake::Vector3<T> p_BC_W = p_WC - X_WB.translation();
 
     // Velocities.
     const SpatialVelocity<T>& V_WA =
@@ -340,11 +342,12 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
     const SpatialVelocity<T> V_WBc = V_WB.Shift(p_BC_W);
 
     // Relative contact velocity.
-    const Vector3<T> v_AcBc_W = V_WBc.translational() - V_WAc.translational();
+    const drake::Vector3<T> v_AcBc_W =
+        V_WBc.translational() - V_WAc.translational();
 
     // Split into normal and tangential components.
     const T vn = nhat.dot(v_AcBc_W);
-    const Vector3<T> vt = v_AcBc_W - vn * nhat;
+    const drake::Vector3<T> vt = v_AcBc_W - vn * nhat;
 
     // Normal dissipation follows a smoothed Hunt and Crossley model
     T dissipation_factor = 0.0;
@@ -358,7 +361,7 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
     // (Compliant) force in the normal direction increases linearly at a rate
     // of k Newtons per meter, with some smoothing defined by sigma.
     T compliant_fn;
-    const T exponent = - pair.distance / sigma;
+    const T exponent = -pair.distance / sigma;
     if (exponent >= 37) {
       // If the exponent is going to be very large, replace with the
       // functional limit.
@@ -376,18 +379,18 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
     // with the algebraic sigmoid function defined as sigmoid(x) =
     // x/sqrt(1+x^2). The algebraic simplification is performed to avoid
     // division by zero when vt = 0 (or loss of precision when close to zero).
-    const Vector3<T> that_regularized =
+    const drake::Vector3<T> that_regularized =
         -vt / sqrt(vs * vs + vt.squaredNorm());
-    const Vector3<T> ft_BC_W = that_regularized * mu * fn;
+    const drake::Vector3<T> ft_BC_W = that_regularized * mu * fn;
 
     // Total contact force on B at C, expressed in W.
-    const Vector3<T> f_BC_W = nhat * fn + ft_BC_W;
+    const drake::Vector3<T> f_BC_W = nhat * fn + ft_BC_W;
 
     // Spatial contact forces on bodies A and B.
-    const SpatialForce<T> F_BC_W(Vector3<T>::Zero(), f_BC_W);
+    const SpatialForce<T> F_BC_W(drake::Vector3<T>::Zero(), f_BC_W);
     const SpatialForce<T> F_BBo_W = F_BC_W.Shift(-p_BC_W);
 
-    const SpatialForce<T> F_AC_W(Vector3<T>::Zero(), -f_BC_W);
+    const SpatialForce<T> F_AC_W(drake::Vector3<T>::Zero(), -f_BC_W);
     const SpatialForce<T> F_AAo_W = F_AC_W.Shift(-p_AC_W);
 
     // Add the forces into the given MultibodyForces
@@ -403,10 +406,10 @@ void TrajectoryOptimizer<T>::CalcSdfData(
   sdf_data->sdf_pairs.resize(num_steps());
   for (int t = 0; t < num_steps(); ++t) {
     const Context<T>& context = EvalPlantContext(state, t);
-    const geometry::QueryObject<T>& query_object =
+    const drake::geometry::QueryObject<T>& query_object =
         plant()
             .get_geometry_query_input_port()
-            .template Eval<geometry::QueryObject<T>>(context);
+            .template Eval<drake::geometry::QueryObject<T>>(context);
     sdf_data->sdf_pairs[t] =
         query_object.ComputeSignedDistancePairwiseClosestPoints();
   }
@@ -414,7 +417,7 @@ void TrajectoryOptimizer<T>::CalcSdfData(
 }
 
 template <typename T>
-const std::vector<geometry::SignedDistancePair<T>>&
+const std::vector<drake::geometry::SignedDistancePair<T>>&
 TrajectoryOptimizer<T>::EvalSignedDistancePairs(
     const TrajectoryOptimizerState<T>& state, int t) const {
   DRAKE_DEMAND(0 <= t && t < num_steps());
@@ -427,85 +430,85 @@ TrajectoryOptimizer<T>::EvalSignedDistancePairs(
 template <typename T>
 void TrajectoryOptimizer<T>::CalcContactJacobian(
     const Context<T>& context,
-    const std::vector<geometry::SignedDistancePair<T>>& sdf_pairs,
-    MatrixX<T>* J, std::vector<math::RotationMatrix<T>>* R_WC,
+    const std::vector<drake::geometry::SignedDistancePair<T>>& sdf_pairs,
+    MatrixX<T>* J, std::vector<drake::math::RotationMatrix<T>>* R_WC,
     std::vector<std::pair<BodyIndex, BodyIndex>>* body_pairs) const {
-  const geometry::QueryObject<T>& query_object =
-      plant()
-          .get_geometry_query_input_port()
-          .template Eval<geometry::QueryObject<T>>(context);
-  const drake::geometry::SceneGraphInspector<T>& inspector =
-      query_object.inspector();
-
   // TODO(amcastro-tri): consider moving into workspace to avoid heap
   // allocating.
   const int nv = plant().num_velocities();
-  Matrix3X<T> Jv_WAc_W(3, nv);
-  Matrix3X<T> Jv_WBc_W(3, nv);
+  drake::Matrix3X<T> Jv_WAc_W(3, nv);
+  drake::Matrix3X<T> Jv_WBc_W(3, nv);
   const int nc = sdf_pairs.size();
   J->resize(3 * nc, nv);
   R_WC->resize(nc);
   body_pairs->resize(nc);
 
+  const drake::geometry::QueryObject<T>& query_object =
+      plant()
+          .get_geometry_query_input_port()
+          .template Eval<drake::geometry::QueryObject<T>>(context);
+  const drake::geometry::SceneGraphInspector<T>& inspector =
+      query_object.inspector();
+
   int ic = 0;
   const Frame<T>& frame_W = plant().world_frame();
   for (const SignedDistancePair<T>& pair : sdf_pairs) {
     // Normal outwards from A.
-    const Vector3<T> nhat_W = -pair.nhat_BA_W;
+    const drake::Vector3<T> nhat_W = -pair.nhat_BA_W;
 
     // Get geometry and transformation data for the witness points
     const GeometryId geometryA_id = pair.id_A;
     const GeometryId geometryB_id = pair.id_B;
 
-    const BodyIndex bodyA_index =
-        plant().geometry_id_to_body_index().at(geometryA_id);
-    const Body<T>& bodyA = plant().get_body(bodyA_index);
-    const BodyIndex bodyB_index =
-        plant().geometry_id_to_body_index().at(geometryB_id);
-    const Body<T>& bodyB = plant().get_body(bodyB_index);
+    const Body<T>& bodyA =
+        *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryA_id)));
+    const BodyIndex bodyA_index = bodyA.index();
+    const Body<T>& bodyB =
+        *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryB_id)));
+    const BodyIndex bodyB_index = bodyB.index();
 
     body_pairs->at(ic) = std::make_pair(bodyA_index, bodyB_index);
 
     // Body poses in world.
-    const math::RigidTransform<T>& X_WA =
+    const drake::math::RigidTransform<T>& X_WA =
         plant().EvalBodyPoseInWorld(context, bodyA);
-    const math::RigidTransform<T>& X_WB =
+    const drake::math::RigidTransform<T>& X_WB =
         plant().EvalBodyPoseInWorld(context, bodyB);
 
     // Geometry poses in body frames.
-    const math::RigidTransform<T> X_AGa =
+    const drake::math::RigidTransform<T> X_AGa =
         inspector.GetPoseInFrame(geometryA_id).template cast<T>();
-    const math::RigidTransform<T> X_BGb =
+    const drake::math::RigidTransform<T> X_BGb =
         inspector.GetPoseInFrame(geometryB_id).template cast<T>();
 
     // Position of the witness points in the world frame.
     const auto& p_GaCa_Ga = pair.p_ACa;
     const RigidTransform<T> X_WGa = X_WA * X_AGa;
-    const Vector3<T> p_WCa_W = X_WGa * p_GaCa_Ga;
+    const drake::Vector3<T> p_WCa_W = X_WGa * p_GaCa_Ga;
     const auto& p_GbCb_Gb = pair.p_BCb;
     const RigidTransform<T> X_WGb = X_WB * X_BGb;
-    const Vector3<T> p_WCb_W = X_WGb * p_GbCb_Gb;
+    const drake::Vector3<T> p_WCb_W = X_WGb * p_GbCb_Gb;
 
     // We define the (common, unique) contact point C as the midpoint between
     // witness points Ca and Cb.
-    const Vector3<T> p_WC = 0.5 * (p_WCa_W + p_WCb_W);
+    const drake::Vector3<T> p_WC = 0.5 * (p_WCa_W + p_WCb_W);
 
     // Since v_AcBc_W = v_WBc - v_WAc the relative velocity Jacobian will be:
     //   J_AcBc_W = Jv_WBc_W - Jv_WAc_W.
     // That is the relative velocity at C is v_AcBc_W = J_AcBc_W * v.
-    const Vector3<T> p_AoC_A = X_WA.inverse() * p_WC;
+    const drake::Vector3<T> p_AoC_A = X_WA.inverse() * p_WC;
     plant().CalcJacobianTranslationalVelocity(
-        context, multibody::JacobianWrtVariable::kV, bodyA.body_frame(),
+        context, drake::multibody::JacobianWrtVariable::kV, bodyA.body_frame(),
         p_AoC_A, frame_W, frame_W, &Jv_WAc_W);
-    const Vector3<T> p_BoC_B = X_WB.inverse() * p_WC;
+    const drake::Vector3<T> p_BoC_B = X_WB.inverse() * p_WC;
     plant().CalcJacobianTranslationalVelocity(
-        context, multibody::JacobianWrtVariable::kV, bodyB.body_frame(),
+        context, drake::multibody::JacobianWrtVariable::kV, bodyB.body_frame(),
         p_BoC_B, frame_W, frame_W, &Jv_WBc_W);
 
     // Define a contact frame C at the contact point such that the z-axis Cz
     // equals nhat_W. The tangent vectors are arbitrary, with the only
     // requirement being that they form a valid right handed basis with nhat_W.
-    R_WC->at(ic) = math::RotationMatrix<T>::MakeFromOneVector(nhat_W, 2);
+    R_WC->at(ic) = drake::math::RotationMatrix<T>::MakeFromOneVector(nhat_W, 2);
 
     // Contact Jacobian J_AcBc_C, expressed in the contact frame C.
     // That is, vc = J * v stores the contact velocities expressed in the
@@ -532,7 +535,7 @@ void TrajectoryOptimizer<T>::CalcContactJacobianData(
 
   for (int t = 0; t < num_steps(); ++t) {
     const Context<T>& context = EvalPlantContext(state, t);
-    const std::vector<geometry::SignedDistancePair<T>>& sdf_pairs =
+    const std::vector<drake::geometry::SignedDistancePair<T>>& sdf_pairs =
         EvalSignedDistancePairs(state, t);
     CalcContactJacobian(context, sdf_pairs, &contact_jacobian_data->J[t],
                         &contact_jacobian_data->R_WC[t],
@@ -1084,7 +1087,7 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsPartialsAutoDiff(
   for (int t = 1; t <= num_steps(); ++t) {
     // Set derivatives with respect to q[t].
     // q[t] will propagate directly to v[t], v[t+1], a[t-1], a[t] and a[t+1].
-    q_ad[t] = math::InitializeAutoDiff(q[t]);
+    q_ad[t] = drake::math::InitializeAutoDiff(q[t]);
     state_ad_->set_q(q_ad);
 
     // N.B. All dynamics terms are treated implicitly, i.e.,
@@ -1099,7 +1102,7 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsPartialsAutoDiff(
           optimizer_ad_->EvalPlantContext(*state_ad_, t + 1);
       optimizer_ad_->CalcInverseDynamicsSingleTimeStep(context_ad_tp, a_ad[t],
                                                        &workspace_ad, &tau_ad);
-      dtau_dqt[t] = math::ExtractGradient(tau_ad);
+      dtau_dqt[t] = drake::math::ExtractGradient(tau_ad);
     }
 
     // dtau_dqt[t+1].
@@ -1108,7 +1111,7 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsPartialsAutoDiff(
           optimizer_ad_->EvalPlantContext(*state_ad_, t + 2);
       optimizer_ad_->CalcInverseDynamicsSingleTimeStep(
           context_ad_tpp, a_ad[t + 1], &workspace_ad, &tau_ad);
-      dtau_dqm[t + 1] = math::ExtractGradient(tau_ad);
+      dtau_dqm[t + 1] = drake::math::ExtractGradient(tau_ad);
     }
 
     // dtau_dqt[t-1].
@@ -1117,7 +1120,7 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsPartialsAutoDiff(
           optimizer_ad_->EvalPlantContext(*state_ad_, t);
       optimizer_ad_->CalcInverseDynamicsSingleTimeStep(
           context_ad_t, a_ad[t - 1], &workspace_ad, &tau_ad);
-      dtau_dqp[t - 1] = math::ExtractGradient(tau_ad);
+      dtau_dqp[t - 1] = drake::math::ExtractGradient(tau_ad);
     }
 
     // Unset derivatives.
@@ -1140,7 +1143,8 @@ void TrajectoryOptimizer<T>::CalcVelocityPartials(
 
 template <typename T>
 void TrajectoryOptimizer<T>::CalcGradientFiniteDiff(
-    const TrajectoryOptimizerState<T>& state, EigenPtr<VectorX<T>> g) const {
+    const TrajectoryOptimizerState<T>& state,
+    drake::EigenPtr<VectorX<T>> g) const {
   using std::abs;
   using std::max;
 
@@ -1185,7 +1189,8 @@ void TrajectoryOptimizer<T>::CalcGradientFiniteDiff(
 
 template <typename T>
 void TrajectoryOptimizer<T>::CalcGradient(
-    const TrajectoryOptimizerState<T>& state, EigenPtr<VectorX<T>> g) const {
+    const TrajectoryOptimizerState<T>& state,
+    drake::EigenPtr<VectorX<T>> g) const {
   INSTRUMENT_FUNCTION("Assembly of the gradient.");
   const double dt = time_step();
   const int nq = plant().num_positions();
@@ -1663,7 +1668,7 @@ void TrajectoryOptimizer<double>::CalcExactHessian(
   for (int t = 0; t <= num_steps(); ++t) {
     for (int i = 0; i < nq; ++i) {
       q_ad[t].segment<1>(i) =
-          math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
+          drake::math::InitializeAutoDiff(q[t].segment<1>(i), num_vars, ad_idx);
       ++ad_idx;
     }
   }
@@ -1673,7 +1678,7 @@ void TrajectoryOptimizer<double>::CalcExactHessian(
   const VectorX<AutoDiffXd>& g_ad = optimizer_ad_->EvalGradient(*state_ad_);
 
   // Extract the Hessian via autodiff
-  MatrixXd H_dense = math::ExtractGradient(g_ad);
+  MatrixXd H_dense = drake::math::ExtractGradient(g_ad);
   H_dense.leftCols(nq).setZero();
   H_dense.block(0, 0, nq, nq).setIdentity();
 
@@ -1824,7 +1829,7 @@ void TrajectoryOptimizer<T>::CalcNplus(const TrajectoryOptimizerState<T>& state,
     plant().SetPositions(context_, state.q()[t]);
 
     // Compute N+(q_t)
-    plant().CalcNplusMatrix(*context_, &N_plus->at(t));
+    N_plus->at(t) = plant().MakeQDotToVelocityMap(*context_);
   }
 }
 
@@ -2249,7 +2254,7 @@ T TrajectoryOptimizer<T>::SolveDoglegQuadratic(const T& a, const T& b,
 
 template <typename T>
 void TrajectoryOptimizer<T>::SolveLinearSystemInPlace(
-    const PentaDiagonalMatrix<T>&, EigenPtr<VectorX<T>>) const {
+    const PentaDiagonalMatrix<T>&, drake::EigenPtr<VectorX<T>>) const {
   // Only T=double is supported here, since most of our solvers only support
   // double.
   throw std::runtime_error(
@@ -2258,7 +2263,8 @@ void TrajectoryOptimizer<T>::SolveLinearSystemInPlace(
 
 template <>
 void TrajectoryOptimizer<double>::SolveLinearSystemInPlace(
-    const PentaDiagonalMatrix<double>& H, EigenPtr<VectorX<double>> b) const {
+    const PentaDiagonalMatrix<double>& H,
+    drake::EigenPtr<VectorX<double>> b) const {
   switch (params_.linear_solver) {
     case SolverParameters::LinearSolverType::kPentaDiagonalLu: {
       PentaDiagonalFactorization Hlu(H);
@@ -2920,7 +2926,7 @@ void TrajectoryOptimizer<T>::NormalizeQuaternions(
 }
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::traj_opt::TrajectoryOptimizer)
+    class ::idto::traj_opt::TrajectoryOptimizer)

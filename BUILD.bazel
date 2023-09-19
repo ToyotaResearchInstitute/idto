@@ -2,3 +2,5 @@
 
 # This is an empty BUILD file, to ensure that this project's root directory is
 # a Bazel package.
+
+exports_files([".bazelproject"])

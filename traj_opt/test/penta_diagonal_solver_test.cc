@@ -1,15 +1,15 @@
-#include "drake/traj_opt/penta_diagonal_solver.h"
+#include "traj_opt/penta_diagonal_solver.h"
 
 #include <chrono>
 #include <vector>
 
 #include <gtest/gtest.h>
+#include "traj_opt/penta_diagonal_matrix.h"
+#include "traj_opt/penta_diagonal_to_petsc_matrix.h"
 
 #include "drake/common/fmt_eigen.h"
 #include "drake/common/test_utilities/eigen_matrix_compare.h"
 #include "drake/multibody/fem/petsc_symmetric_block_sparse_matrix.h"
-#include "drake/traj_opt/penta_diagonal_matrix.h"
-#include "drake/traj_opt/penta_diagonal_to_petsc_matrix.h"
 
 using drake::multibody::fem::internal::PetscSolverStatus;
 using drake::multibody::fem::internal::PetscSymmetricBlockSparseMatrix;
@@ -18,7 +18,7 @@ using std::chrono::steady_clock;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace internal {
 
@@ -40,8 +40,8 @@ GTEST_TEST(PentaDiagonalMatrixTest, MultiplyBy) {
   const VectorXd prod_expected = H.MakeDense() * v;
 
   const double kTolerance = std::numeric_limits<double>::epsilon() * size;
-  EXPECT_TRUE(CompareMatrices(prod, prod_expected, kTolerance,
-                              MatrixCompareType::relative));
+  EXPECT_TRUE(drake::CompareMatrices(prod, prod_expected, kTolerance,
+                                     drake::MatrixCompareType::relative));
 }
 
 GTEST_TEST(PentaDiagonalMatrixTest, SymmetricMatrixEmpty) {
@@ -154,8 +154,8 @@ GTEST_TEST(PentaDiagonalMatrixTest, SolveBlockDiagonal) {
   const VectorXd x_expected = Hdense.ldlt().solve(b);
 
   const double kTolerance = std::numeric_limits<double>::epsilon() * size;
-  EXPECT_TRUE(
-      CompareMatrices(x, x_expected, kTolerance, MatrixCompareType::relative));
+  EXPECT_TRUE(drake::CompareMatrices(x, x_expected, kTolerance,
+                                     drake::MatrixCompareType::relative));
 }
 
 GTEST_TEST(PentaDiagonalMatrixTest, SolveTriDiagonal) {
@@ -186,8 +186,8 @@ GTEST_TEST(PentaDiagonalMatrixTest, SolveTriDiagonal) {
   const VectorXd x_expected = Hdense.ldlt().solve(b);
 
   const double kTolerance = std::numeric_limits<double>::epsilon() * size;
-  EXPECT_TRUE(
-      CompareMatrices(x, x_expected, kTolerance, MatrixCompareType::relative));
+  EXPECT_TRUE(drake::CompareMatrices(x, x_expected, kTolerance,
+                                     drake::MatrixCompareType::relative));
 }
 
 GTEST_TEST(PentaDiagonalMatrixTest, SolvePentaDiagonal) {
@@ -223,11 +223,12 @@ GTEST_TEST(PentaDiagonalMatrixTest, SolvePentaDiagonal) {
   const auto ldlt = Hdense.ldlt();
   const VectorXd x_ldlt = ldlt.solve(b);
   steady_clock::time_point end = steady_clock::now();
-  std::cout << fmt::format("D(ldlt): {}", fmt_eigen(ldlt.vectorD().transpose()))
+  std::cout << fmt::format("D(ldlt): {}",
+                           drake::fmt_eigen(ldlt.vectorD().transpose()))
             << std::endl;
-  std::cout << fmt::format(
-                   "P(ldlt):\n{}",
-                   fmt_eigen(ldlt.transpositionsP().indices().transpose()))
+  std::cout << fmt::format("P(ldlt):\n{}",
+                           drake::fmt_eigen(
+                               ldlt.transpositionsP().indices().transpose()))
             << std::endl;
   double wall_clock_time = std::chrono::duration<double>(end - start).count();
   fmt::print("LDLT.\n  Wall clock: {:.4g} seconds. error: {}\n",
@@ -272,8 +273,9 @@ GTEST_TEST(PentaDiagonalMatrixTest, SolvePentaDiagonal) {
   const MatrixXd dense_from_pentadiagonal = H.MakeDense();
   const MatrixXd dense_from_petsc = Hpetsc->MakeDenseMatrix();
   const double kTolerance = std::numeric_limits<double>::epsilon() * H.rows();
-  EXPECT_TRUE(CompareMatrices(dense_from_petsc, dense_from_pentadiagonal,
-                              kTolerance, MatrixCompareType::relative));
+  EXPECT_TRUE(drake::CompareMatrices(dense_from_petsc, dense_from_pentadiagonal,
+                                     kTolerance,
+                                     drake::MatrixCompareType::relative));
 
   // Solve with Petsc's direct solver.
   VectorXd x_petsc_chol = b;
@@ -394,8 +396,9 @@ GTEST_TEST(PentaDiagonalMatrixTest, ExtractDiagonal) {
   H.ExtractDiagonal(&sparse_diagonal);
 
   const double kTolerance = std::numeric_limits<double>::epsilon();
-  EXPECT_TRUE(CompareMatrices(dense_diagonal, sparse_diagonal, kTolerance,
-                              MatrixCompareType::relative));
+  EXPECT_TRUE(drake::CompareMatrices(dense_diagonal, sparse_diagonal,
+                                     kTolerance,
+                                     drake::MatrixCompareType::relative));
 }
 
 GTEST_TEST(PentaDiagonalMatrixTest, ScaleByDiagonal) {
@@ -421,10 +424,11 @@ GTEST_TEST(PentaDiagonalMatrixTest, ScaleByDiagonal) {
   const MatrixXd H_scaled_sparse = H.MakeDense();
 
   const double kTolerance = std::numeric_limits<double>::epsilon();
-  EXPECT_TRUE(CompareMatrices(H_scaled_dense, H_scaled_sparse, kTolerance,
-                              MatrixCompareType::relative));
+  EXPECT_TRUE(drake::CompareMatrices(H_scaled_dense, H_scaled_sparse,
+                                     kTolerance,
+                                     drake::MatrixCompareType::relative));
 }
 
 }  // namespace internal
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

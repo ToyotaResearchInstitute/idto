@@ -1,100 +1,84 @@
 # -*- python -*-
-# This file contains rules for Bazel; see drake/doc/bazel.rst.
-
-load(
-    "@drake//tools/skylark:drake_cc.bzl",
-    "drake_cc_binary",
-    "drake_cc_library",
-)
-load("//tools/lint:lint.bzl", "add_lint_tests")
 
 package(default_visibility = ["//visibility:public"])
 
-drake_cc_binary(
+cc_binary(
     name = "acrobot",
     srcs = ["acrobot.cc"],
-    add_test_rule = 1,
     data = [
         ":acrobot.yaml",
-        "//examples/acrobot:models",
+        "@drake//examples/acrobot:models",
     ],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "block_push",
     srcs = ["block_push.cc"],
-    add_test_rule = 1,
     data = [
         ":block_push.yaml",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/plant",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "hopper",
     srcs = ["hopper.cc"],
-    add_test_rule = 1,
     data = [
         ":hopper.yaml",
         ":models",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "mini_cheetah",
     srcs = ["mini_cheetah.cc"],
-    add_test_rule = 1,
     data = [
         ":mini_cheetah.yaml",
         ":models",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+        "@gflags",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "pendulum",
     srcs = ["pendulum.cc"],
-    add_test_rule = 1,
     data = [
         ":pendulum.yaml",
-        "//examples/pendulum:models",
+        "@drake//examples/pendulum:models",
     ],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "punyo_hug",
     srcs = ["punyo_hug.cc"],
-    add_test_rule = 1,
     data = [
         ":models",
         ":punyo_hug.yaml",
@@ -102,227 +86,210 @@ drake_cc_binary(
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "dual_jaco",
     srcs = ["dual_jaco.cc"],
-    add_test_rule = 1,
     data = [
         ":dual_jaco.yaml",
         ":models",
-        "//manipulation/models/jaco_description:models",
+        "@drake//manipulation/models/jaco_description:models",
     ],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "jaco",
     srcs = ["jaco.cc"],
-    add_test_rule = 1,
     data = [
         ":jaco.yaml",
         ":models",
-        "//manipulation/models/jaco_description:models",
+        "@drake//manipulation/models/jaco_description:models",
     ],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "jaco_ball",
     srcs = ["jaco_ball.cc"],
-    add_test_rule = 1,
     data = [
         ":jaco_ball.yaml",
         ":models",
-        "//manipulation/models/jaco_description:models",
+        "@drake//manipulation/models/jaco_description:models",
     ],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "kuka",
     srcs = ["kuka.cc"],
-    add_test_rule = 1,
     data = [
         ":kuka.yaml",
         ":models",
-        "//manipulation/models/iiwa_description:models",
+        "@drake//manipulation/models/iiwa_description:models",
     ],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "allegro_hand",
     srcs = ["allegro_hand.cc"],
-    add_test_rule = 1,
     data = [
         ":allegro_hand.yaml",
         ":allegro_hand_upside_down.yaml",
         ":models",
-        "//manipulation/models/allegro_hand_description:models",
+        "@drake//manipulation/models/allegro_hand_description:models",
     ],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
         "@gflags",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "2dof_spinner",
     srcs = ["2dof_spinner.cc"],
-    add_test_rule = 1,
     data = [
         ":2dof_spinner.yaml",
         ":models",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "floating_box",
     srcs = ["floating_box.cc"],
-    add_test_rule = 1,
     data = [
         ":floating_box.yaml",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/plant",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "wall_ball",
     srcs = ["wall_ball.cc"],
-    add_test_rule = 1,
     data = [
         ":models",
         ":wall_ball.yaml",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "frictionless_spinner",
     srcs = ["frictionless_spinner.cc"],
-    add_test_rule = 1,
     data = [
         ":frictionless_spinner.yaml",
         ":models",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
         "@gflags",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "airhockey",
     srcs = ["airhockey.cc"],
-    add_test_rule = 1,
     data = [
         ":airhockey.yaml",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
         "//common:profiler",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_binary(
+cc_binary(
     name = "spinner",
     srcs = ["spinner.cc"],
-    add_test_rule = 1,
     data = [
         ":models",
         ":spinner.yaml",
     ],
-    test_rule_args = [],
     deps = [
         ":example_base",
         "//common:find_resource",
         "//common:profiler",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "mpc_controller",
     srcs = ["mpc_controller.cc"],
     hdrs = ["mpc_controller.h"],
     deps = [
-        "//common/trajectories:piecewise_polynomial",
-        "//multibody/plant",
-        "//systems/framework:diagram",
-        "//systems/framework:leaf_system",
-        "//systems/framework:vector",
         "//traj_opt:problem_definition",
         "//traj_opt:trajectory_optimizer",
         "//traj_opt:warm_start",
+        "@drake//common/trajectories:piecewise_polynomial",
+        "@drake//multibody/plant",
+        "@drake//systems/framework:diagram",
+        "@drake//systems/framework:leaf_system",
+        "@drake//systems/framework:vector",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "pd_plus_controller",
     srcs = ["pd_plus_controller.cc"],
     hdrs = ["pd_plus_controller.h"],
     deps = [
-        "//systems/framework:leaf_system",
-        "//systems/framework:vector",
+        "@drake//systems/framework:leaf_system",
+        "@drake//systems/framework:vector",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "example_base",
     srcs = ["example_base.cc"],
     hdrs = ["example_base.h"],
@@ -331,26 +298,24 @@ drake_cc_library(
         ":pd_plus_controller",
         ":yaml_config",
         "//common:find_resource",
-        "//multibody/parsing",
-        "//multibody/plant",
-        "//systems/analysis:simulator",
-        "//systems/framework:diagram",
-        "//systems/primitives:constant_vector_source",
-        "//systems/primitives:discrete_time_delay",
         "//traj_opt:problem_definition",
         "//traj_opt:trajectory_optimizer",
-        "//visualization:visualization_config_functions",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+        "@drake//systems/analysis:simulator",
+        "@drake//systems/framework:diagram",
+        "@drake//systems/primitives:constant_vector_source",
+        "@drake//systems/primitives:discrete_time_delay",
+        "@drake//visualization:visualization_config_functions",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "yaml_config",
     srcs = [],
     hdrs = ["yaml_config.h"],
     deps = [
-        "//common:essential",
-        "//common/yaml",
+        "@drake//common:essential",
+        "@drake//common/yaml",
     ],
 )
-
-add_lint_tests()

@@ -1,8 +1,8 @@
-#include "drake/traj_opt/examples/mpc_controller.h"
+#include "traj_opt/examples/mpc_controller.h"
 
 #include <iostream>
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace mpc {
@@ -25,7 +25,8 @@ ModelPredictiveController::ModelPredictiveController(
   // Abstract-valued discrete state stores an optimal trajectory
   StoredTrajectory initial_guess_traj;
   StoreOptimizerSolution(warm_start_solution, 0.0, &initial_guess_traj);
-  stored_trajectory_ = this->DeclareAbstractState(Value(initial_guess_traj));
+  stored_trajectory_ =
+      this->DeclareAbstractState(drake::Value(initial_guess_traj));
   this->DeclarePeriodicUnrestrictedUpdateEvent(
       replan_period, 0, &ModelPredictiveController::UpdateAbstractState);
 
@@ -128,7 +129,8 @@ Interpolator::Interpolator(const int nq, const int nv, const int nu)
     : nq_(nq), nv_(nv), nu_(nu) {
   // Input port recieves a StoredTrajectory
   trajectory_input_port_ =
-      this->DeclareAbstractInputPort("trajectory", Value(StoredTrajectory()))
+      this->DeclareAbstractInputPort("trajectory",
+                                     drake::Value(StoredTrajectory()))
           .get_index();
 
   // First output port sends interpolated state values x(t)
@@ -166,4 +168,4 @@ void Interpolator::SendControl(const Context<double>& context,
 }  // namespace mpc
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

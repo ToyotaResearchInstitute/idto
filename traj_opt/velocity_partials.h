@@ -4,8 +4,10 @@
 
 #include "drake/common/eigen_types.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
+
+using drake::MatrixX;
 
 /**
  * Struct storing gradients of generalized velocities (v) with respect to
@@ -37,4 +39,4 @@ struct VelocityPartials {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

@@ -4,9 +4,10 @@
 
 #include "drake/common/eigen_types.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
+using drake::MatrixX;
 using Eigen::MatrixXd;
 
 /**
@@ -84,4 +85,4 @@ struct InverseDynamicsPartials {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

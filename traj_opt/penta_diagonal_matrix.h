@@ -6,9 +6,12 @@
 #include "drake/common/drake_throw.h"
 #include "drake/common/eigen_types.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace internal {
+
+using drake::MatrixX;
+using drake::VectorX;
 
 /** A sparse representation of a (square) banded penta-diagonal matrix. Denoting
  with A and B the lower sub-diagonals, with C the matrix's main diagonal and
@@ -187,4 +190,4 @@ class PentaDiagonalMatrix {
 
 }  // namespace internal
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

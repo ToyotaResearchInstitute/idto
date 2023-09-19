@@ -1,1 +1,4 @@
+# SPDX-License-Identifier: MIT-0
+
 /bazel-*
+/user.bazelrc

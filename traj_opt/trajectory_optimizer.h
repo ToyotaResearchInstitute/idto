@@ -7,18 +7,19 @@
 #include <utility>
 #include <vector>
 
+#include "traj_opt/inverse_dynamics_partials.h"
+#include "traj_opt/penta_diagonal_matrix.h"
+#include "traj_opt/problem_definition.h"
+#include "traj_opt/solver_parameters.h"
+#include "traj_opt/trajectory_optimizer_solution.h"
+#include "traj_opt/trajectory_optimizer_state.h"
+#include "traj_opt/trajectory_optimizer_workspace.h"
+#include "traj_opt/velocity_partials.h"
+#include "traj_opt/warm_start.h"
+
 #include "drake/common/eigen_types.h"
-#include "drake/common/profiler.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/inverse_dynamics_partials.h"
-#include "drake/traj_opt/penta_diagonal_matrix.h"
-#include "drake/traj_opt/problem_definition.h"
-#include "drake/traj_opt/solver_parameters.h"
-#include "drake/traj_opt/trajectory_optimizer_solution.h"
-#include "drake/traj_opt/trajectory_optimizer_state.h"
-#include "drake/traj_opt/trajectory_optimizer_workspace.h"
-#include "drake/traj_opt/velocity_partials.h"
-#include "drake/traj_opt/warm_start.h"
+#include "common/profiler.h"
 
 namespace drake {
 namespace systems {
@@ -26,13 +27,15 @@ namespace systems {
 template <typename>
 class Diagram;
 }  // namespace systems
+}  // namespace drake
 
+namespace idto {
 namespace traj_opt {
 
+using drake::multibody::MultibodyPlant;
+using drake::systems::Context;
+using drake::systems::Diagram;
 using internal::PentaDiagonalMatrix;
-using multibody::MultibodyPlant;
-using systems::Context;
-using systems::Diagram;
 
 template <typename T>
 class TrajectoryOptimizer {
@@ -123,7 +126,7 @@ class TrajectoryOptimizer {
    *          decision variable (q_t[i]).
    */
   void CalcGradient(const TrajectoryOptimizerState<T>& state,
-                    EigenPtr<VectorX<T>> g) const;
+                    drake::EigenPtr<VectorX<T>> g) const;
 
   /**
    * Compute the Hessian of the unconstrained cost L(q) as a sparse
@@ -434,11 +437,12 @@ class TrajectoryOptimizer {
    *
    * @param state optimizer state
    * @param t time step
-   * @return const std::vector<geometry::SignedDistancePair<T>>& contact
+   * @return const std::vector<drake::geometry::SignedDistancePair<T>>& contact
    * geometry information for each contact pair at time t
    */
-  const std::vector<geometry::SignedDistancePair<T>>& EvalSignedDistancePairs(
-      const TrajectoryOptimizerState<T>& state, int t) const;
+  const std::vector<drake::geometry::SignedDistancePair<T>>&
+  EvalSignedDistancePairs(const TrajectoryOptimizerState<T>& state,
+                          int t) const;
 
   /**
    * Evaluate contact jacobians (includes all contact pairs) at each time step.
@@ -717,8 +721,8 @@ class TrajectoryOptimizer {
    */
   void CalcContactJacobian(
       const Context<T>& context,
-      const std::vector<geometry::SignedDistancePair<T>>& sdf_pairs,
-      MatrixX<T>* J, std::vector<math::RotationMatrix<T>>* R_WC,
+      const std::vector<drake::geometry::SignedDistancePair<T>>& sdf_pairs,
+      MatrixX<T>* J, std::vector<drake::math::RotationMatrix<T>>* R_WC,
       std::vector<std::pair<BodyIndex, BodyIndex>>* body_pairs) const;
 
   /**
@@ -841,7 +845,7 @@ class TrajectoryOptimizer {
    *          decision variable (q_t[i]).
    */
   void CalcGradientFiniteDiff(const TrajectoryOptimizerState<T>& state,
-                              EigenPtr<VectorX<T>> g) const;
+                              drake::EigenPtr<VectorX<T>> g) const;
 
   /**
    * Compute the linesearch parameter alpha given a linesearch direction
@@ -964,7 +968,7 @@ class TrajectoryOptimizer {
    * @param b The vector b. Overwritten with x on output.
    */
   void SolveLinearSystemInPlace(const PentaDiagonalMatrix<T>& H,
-                                EigenPtr<VectorX<T>> b) const;
+                                drake::EigenPtr<VectorX<T>> b) const;
 
   ConvergenceReason VerifyConvergenceCriteria(
       const TrajectoryOptimizerState<T>& state, const T& previous_cost,
@@ -1150,10 +1154,10 @@ class TrajectoryOptimizer {
 
   // Autodiff copies of the system diagram, plant model, optimizer state, and a
   // whole optimizer for computing exact gradients.
-  std::unique_ptr<Diagram<AutoDiffXd>> diagram_ad_;
-  const MultibodyPlant<AutoDiffXd>* plant_ad_;
-  std::unique_ptr<TrajectoryOptimizer<AutoDiffXd>> optimizer_ad_;
-  std::unique_ptr<TrajectoryOptimizerState<AutoDiffXd>> state_ad_;
+  std::unique_ptr<Diagram<drake::AutoDiffXd>> diagram_ad_;
+  const MultibodyPlant<drake::AutoDiffXd>* plant_ad_;
+  std::unique_ptr<TrajectoryOptimizer<drake::AutoDiffXd>> optimizer_ad_;
+  std::unique_ptr<TrajectoryOptimizerState<drake::AutoDiffXd>> state_ad_;
 };
 
 // Declare template specializations
@@ -1173,4 +1177,4 @@ SolverFlag TrajectoryOptimizer<double>::SolveFromWarmStart(
     TrajectoryOptimizerStats<double>*, ConvergenceReason*) const;
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

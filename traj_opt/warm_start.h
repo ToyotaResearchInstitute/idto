@@ -3,12 +3,13 @@
 #include <string>
 #include <vector>
 
+#include "traj_opt/trajectory_optimizer_state.h"
+
 #include "drake/common/eigen_types.h"
 #include "drake/multibody/plant/multibody_plant.h"
 #include "drake/systems/framework/diagram.h"
-#include "drake/traj_opt/trajectory_optimizer_state.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
 using Eigen::VectorXd;
@@ -63,4 +64,4 @@ class WarmStart {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

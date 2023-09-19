@@ -43,7 +43,7 @@ q_guess : [ 1.0, 0.0, 0.0, 0.0,
            0.0,-0.8, 1.6]
 
 # Cost Weights
-Qq : [10, 10, 10, 10,
+Qq : [1, 1, 1, 1,
       10, 10, 10,
       0, 0, 0,
       0, 0, 0,
@@ -123,7 +123,7 @@ dissipation_velocity : 0.1  # Hunt & Crossley-like model parameter, in m/s.
 # randomized smoothing, assuming that signed distances are drawn from a logistic
 # distirbution with the smoothing factor as the scale parameter. Higher values
 # mean more smoothing and more force at a distance. 
-smoothing_factor : 0.02
+smoothing_factor : 0.01
 
 # Friction
 friction_coefficient : 1.0  # Coefficient of friction.

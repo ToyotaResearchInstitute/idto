@@ -5,11 +5,13 @@
 #include "drake/common/eigen_types.h"
 #include "drake/multibody/plant/multibody_plant.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
-using multibody::MultibodyForces;
-using multibody::MultibodyPlant;
+using drake::MatrixX;
+using drake::VectorX;
+using drake::multibody::MultibodyForces;
+using drake::multibody::MultibodyPlant;
 
 /**
  * A container for scratch variables that we use in various intermediate
@@ -155,4 +157,4 @@ struct TrajectoryOptimizerWorkspace {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

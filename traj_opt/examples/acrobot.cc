@@ -1,15 +1,16 @@
+#include "traj_opt/examples/example_base.h"
+
 #include "drake/common/find_resource.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "drake/traj_opt/examples/example_base.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace acrobot {
 
-using multibody::MultibodyPlant;
-using multibody::Parser;
+using drake::multibody::MultibodyPlant;
+using drake::multibody::Parser;
 
 class AcrobotExample : public TrajOptExample {
  public:
@@ -22,7 +23,7 @@ class AcrobotExample : public TrajOptExample {
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
     const std::string urdf_file =
-        FindResourceOrThrow("drake/examples/acrobot/Acrobot_no_collision.urdf");
+        "external/drake/examples/acrobot/Acrobot_no_collision.urdf";
     Parser(plant).AddAllModelsFromFile(urdf_file);
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base_link"));
   }
@@ -31,11 +32,11 @@ class AcrobotExample : public TrajOptExample {
 }  // namespace acrobot
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto
 
 int main() {
-  drake::traj_opt::examples::acrobot::AcrobotExample example;
-  const std::string yaml_file = "drake/traj_opt/examples/acrobot.yaml";
+  idto::traj_opt::examples::acrobot::AcrobotExample example;
+  const std::string yaml_file = "traj_opt/examples/acrobot.yaml";
   example.RunExample(yaml_file);
 
   return 0;

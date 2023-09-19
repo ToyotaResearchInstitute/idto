@@ -4,16 +4,16 @@
 #include "drake/systems/framework/basic_vector.h"
 #include "drake/systems/framework/leaf_system.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 namespace pd_plus {
 
-using systems::BasicVector;
-using systems::Context;
-using systems::InputPort;
-using systems::LeafSystem;
-using systems::OutputPort;
+using drake::systems::BasicVector;
+using drake::systems::Context;
+using drake::systems::InputPort;
+using drake::systems::LeafSystem;
+using drake::systems::OutputPort;
 
 using Eigen::MatrixXd;
 
@@ -83,4 +83,4 @@ class PdPlusController : public LeafSystem<double> {
 }  // namespace pd_plus
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

@@ -1,19 +1,12 @@
 # -*- python -*-
-# This file contains rules for Bazel; see drake/doc/bazel.rst.
 
-load(
-    "@drake//tools/skylark:drake_cc.bzl",
-    "drake_cc_googletest",
-    "drake_cc_library",
-    "drake_cc_package_library",
-)
-load("//tools/lint:lint.bzl", "add_lint_tests")
+package(default_visibility = ["//visibility:public"])
 
-package(
-    default_visibility = ["//visibility:public"],
-)
+load("//tools:test.bzl", "cc_googletest")
 
-drake_cc_package_library(
+exports_files(["cc_py.py", "__init__.py", "test/cc_py_test.py"])
+
+cc_library(
     name = "traj_opt",
     visibility = ["//visibility:public"],
     deps = [
@@ -33,39 +26,39 @@ drake_cc_package_library(
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "penta_diagonal_matrix",
     srcs = ["penta_diagonal_matrix.cc"],
     hdrs = ["penta_diagonal_matrix.h"],
     deps = [
-        "//common:default_scalars",
-        "//common:essential",
+        "@drake//common:default_scalars",
+        "@drake//common:essential",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "penta_diagonal_solver",
     srcs = [],
     hdrs = ["penta_diagonal_solver.h"],
     deps = [
         ":penta_diagonal_matrix",
-        "//common:essential",
         "//common:profiler",
+        "@drake//common:essential",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "penta_diagonal_to_petsc_matrix",
     srcs = ["penta_diagonal_to_petsc_matrix.cc"],
     hdrs = ["penta_diagonal_to_petsc_matrix.h"],
     deps = [
         ":penta_diagonal_matrix",
-        "//common:essential",
-        "//multibody/fem:petsc_symmetric_block_sparse_matrix",
+        "@drake//common:essential",
+        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "trajectory_optimizer",
     srcs = ["trajectory_optimizer.cc"],
     hdrs = [
@@ -83,35 +76,35 @@ drake_cc_library(
         ":trajectory_optimizer_workspace",
         ":velocity_partials",
         ":warm_start",
-        "//common:essential",
         "//common:profiler",
-        "//geometry:scene_graph_inspector",
-        "//multibody/fem:petsc_symmetric_block_sparse_matrix",
-        "//multibody/plant",
+        "@drake//common:essential",
+        "@drake//geometry:scene_graph_inspector",
+        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "problem_definition",
     hdrs = [
         "problem_definition.h",
     ],
     deps = [
-        "//common:essential",
+        "@drake//common:essential",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "convergence_criteria_tolerances",
     hdrs = [
         "convergence_criteria_tolerances.h",
     ],
     deps = [
-        "//common/yaml",
+        "@drake//common/yaml",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "solver_parameters",
     hdrs = [
         "solver_parameters.h",
@@ -119,64 +112,66 @@ drake_cc_library(
     deps = [":convergence_criteria_tolerances"],
 )
 
-drake_cc_library(
+cc_library(
     name = "warm_start",
     hdrs = [
         "warm_start.h",
     ],
     deps = [
         ":trajectory_optimizer_state",
-        "//common:essential",
-        "//multibody/plant",
+        "@drake//common:essential",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "velocity_partials",
     srcs = ["velocity_partials.cc"],
     hdrs = [
         "velocity_partials.h",
     ],
     deps = [
-        "//common:default_scalars",
-        "//common:essential",
+        "@drake//common:default_scalars",
+        "@drake//common:essential",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "inverse_dynamics_partials",
     srcs = ["inverse_dynamics_partials.cc"],
     hdrs = [
         "inverse_dynamics_partials.h",
     ],
     deps = [
-        "//common:default_scalars",
-        "//common:essential",
+        "@drake//common:default_scalars",
+        "@drake//common:essential",
     ],
 )
 
-drake_cc_googletest(
+cc_googletest(
     name = "penta_diagonal_solver_test",
+    srcs = ["test/penta_diagonal_solver_test.cc"],
     deps = [
         ":penta_diagonal_matrix",
         ":penta_diagonal_solver",
         ":penta_diagonal_to_petsc_matrix",
-        "//common/test_utilities:eigen_matrix_compare",
-        "//multibody/fem:petsc_symmetric_block_sparse_matrix",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
     ],
 )
 
-drake_cc_googletest(
+cc_googletest(
     name = "penta_diagonal_to_petsc_matrix_test",
+    srcs = ["test/penta_diagonal_to_petsc_matrix_test.cc"],
     deps = [
         ":penta_diagonal_matrix",
         ":penta_diagonal_to_petsc_matrix",
-        "//common/test_utilities:eigen_matrix_compare",
-        "//multibody/fem:petsc_symmetric_block_sparse_matrix",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "trajectory_optimizer_state",
     srcs = ["trajectory_optimizer_state.cc"],
     hdrs = [
@@ -187,44 +182,45 @@ drake_cc_library(
         ":penta_diagonal_matrix",
         ":trajectory_optimizer_workspace",
         ":velocity_partials",
-        "//common:default_scalars",
-        "//common:essential",
-        "//multibody/plant",
+        "@drake//common:default_scalars",
+        "@drake//common:essential",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "trajectory_optimizer_solution",
     srcs = ["trajectory_optimizer_solution.cc"],
     hdrs = [
         "trajectory_optimizer_solution.h",
     ],
     deps = [
-        "//common:default_scalars",
-        "//common:essential",
+        "@drake//common:default_scalars",
+        "@drake//common:essential",
     ],
 )
 
-drake_cc_library(
+cc_library(
     name = "trajectory_optimizer_workspace",
     srcs = ["trajectory_optimizer_workspace.cc"],
     hdrs = [
         "trajectory_optimizer_workspace.h",
     ],
     deps = [
-        "//common:default_scalars",
-        "//common:essential",
-        "//multibody/plant",
+        "@drake//common:default_scalars",
+        "@drake//common:essential",
+        "@drake//multibody/plant",
     ],
 )
 
-drake_cc_googletest(
+cc_googletest(
     name = "trajectory_optimizer_test",
+    srcs = ["test/trajectory_optimizer_test.cc"],
     data = [
-        "//examples/pendulum:models",
-        "//manipulation/models/iiwa_description:models",
-        "//multibody/benchmarks/acrobot:models",
         "//traj_opt/examples:models",
+        "@drake//examples/pendulum:models",
+        "@drake//manipulation/models/iiwa_description:models",
+        "@drake//multibody/benchmarks/acrobot:models",
     ],
     deps = [
         ":inverse_dynamics_partials",
@@ -233,11 +229,11 @@ drake_cc_googletest(
         ":trajectory_optimizer_workspace",
         ":velocity_partials",
         "//common:find_resource",
-        "//common/test_utilities:eigen_matrix_compare",
-        "//common/test_utilities:limit_malloc",
-        "//multibody/parsing",
-        "//multibody/plant",
+        "@drake//common:find_resource",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@drake//common/test_utilities:limit_malloc",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
     ],
 )
 
-add_lint_tests()

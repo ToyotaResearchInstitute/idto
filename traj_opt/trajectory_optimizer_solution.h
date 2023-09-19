@@ -7,8 +7,10 @@
 #include "drake/common/eigen_types.h"
 #include "drake/common/text_logging.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
+
+using drake::VectorX;
 
 // Status indicator for the overall success of our trajectory optimization.
 enum SolverFlag {
@@ -183,4 +185,4 @@ struct TrajectoryOptimizerStats {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

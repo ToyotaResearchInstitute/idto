@@ -1,11 +1,15 @@
 #pragma once
 
+#include "traj_opt/convergence_criteria_tolerances.h"
+
 #include "drake/common/drake_copyable.h"
 #include "drake/multibody/fem/petsc_symmetric_block_sparse_matrix.h"
-#include "drake/traj_opt/convergence_criteria_tolerances.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
+
+using drake::MatrixX;
+using drake::VectorX;
 
 enum LinesearchMethod {
   // Simple backtracking linesearch with Armijo's condition
@@ -126,7 +130,7 @@ struct SolverParameters {
   // Flag for whether to record linesearch data to a file at each iteration (for
   // later plotting). This saves a file called "linesearch_data_[k].csv" for
   // each iteration, where k is the iteration number. This file can then be
-  // found somewhere in drake/bazel-out/.
+  // found somewhere in anzu/bazel-out/.
   bool linesearch_plot_every_iteration{false};
 
   // Flag for whether to add a proximal operator term,
@@ -190,4 +194,4 @@ struct SolverParameters {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

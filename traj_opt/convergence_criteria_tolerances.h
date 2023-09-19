@@ -2,7 +2,7 @@
 
 #include "drake/common/yaml/yaml_io.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 
 struct ConvergenceCriteriaTolerances {
@@ -39,4 +39,4 @@ struct ConvergenceCriteriaTolerances {
 };
 
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

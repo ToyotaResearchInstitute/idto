@@ -1,35 +1,39 @@
-#include "drake/traj_opt/examples/example_base.h"
+#include "traj_opt/examples/example_base.h"
 
 #include <chrono>
 #include <iostream>
 #include <thread>
 #include <utility>
 
+#include "traj_opt/examples/mpc_controller.h"
+#include "traj_opt/examples/pd_plus_controller.h"
+
 #include "drake/common/fmt_eigen.h"
 #include "drake/geometry/meshcat_visualizer.h"
 #include "drake/systems/primitives/discrete_time_delay.h"
-#include "drake/traj_opt/examples/mpc_controller.h"
-#include "drake/traj_opt/examples/pd_plus_controller.h"
 #include "drake/visualization/visualization_config_functions.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace examples {
 
+using drake::geometry::MeshcatAnimation;
+using drake::geometry::MeshcatVisualizerd;
+using drake::math::RigidTransformd;
+using drake::systems::DiscreteTimeDelay;
 using Eigen::Matrix4d;
-using geometry::MeshcatAnimation;
-using geometry::MeshcatVisualizerd;
-using math::RigidTransformd;
 using mpc::Interpolator;
 using mpc::ModelPredictiveController;
 using pd_plus::PdPlusController;
-using systems::DiscreteTimeDelay;
 
 void TrajOptExample::RunExample(const std::string options_file) const {
   // Load parameters from file
   TrajOptExampleParams default_options;
-  TrajOptExampleParams options = yaml::LoadYamlFile<TrajOptExampleParams>(
-      FindResourceOrThrow(options_file), {}, default_options);
+  TrajOptExampleParams options =
+      drake::yaml::LoadYamlFile<TrajOptExampleParams>(
+          idto::FindIDTOResourceOrThrow(options_file), {}, default_options);
+
+  UpdateCustomMeshcatElements(options);
 
   if (options.mpc) {
     // Run a simulation that uses the optimizer as a model predictive controller
@@ -106,7 +110,7 @@ void TrajOptExample::RunModelPredictiveControl(
                                      &placeholder_trajectory);
 
   auto delay = builder.AddSystem<DiscreteTimeDelay>(
-      replan_period, 1, Value(placeholder_trajectory));
+      replan_period, 1, drake::Value(placeholder_trajectory));
   builder.Connect(controller->get_trajectory_output_port(),
                   delay->get_input_port());
   builder.Connect(delay->get_output_port(),
@@ -116,7 +120,7 @@ void TrajOptExample::RunModelPredictiveControl(
   const MatrixXd B = plant.MakeActuationMatrix();
   auto dummy_context = plant.CreateDefaultContext();
   MatrixXd N(nq, nv);
-  plant.CalcNMatrix(*dummy_context, &N);
+  N = plant.MakeVelocityToQDotMap(*dummy_context);
   MatrixXd Bq = N * B;
 
   const MatrixXd Kp =
@@ -143,15 +147,16 @@ void TrajOptExample::RunModelPredictiveControl(
 
   // Compile the diagram
   auto diagram = builder.Build();
-  std::unique_ptr<systems::Context<double>> diagram_context =
+  std::unique_ptr<drake::systems::Context<double>> diagram_context =
       diagram->CreateDefaultContext();
-  systems::Context<double>& plant_context =
+  drake::systems::Context<double>& plant_context =
       diagram->GetMutableSubsystemContext(plant, diagram_context.get());
 
   // Set up the simulation
   plant.SetPositions(&plant_context, options.q_init);
   plant.SetVelocities(&plant_context, options.v_init);
-  systems::Simulator<double> simulator(*diagram, std::move(diagram_context));
+  drake::systems::Simulator<double> simulator(*diagram,
+                                              std::move(diagram_context));
   simulator.set_target_realtime_rate(options.sim_realtime_rate);
   simulator.Initialize();
 
@@ -249,7 +254,8 @@ TrajectoryOptimizerSolution<double> TrajOptExample::SolveTrajectoryOptimization(
     }
   }
   std::cout << std::endl;
-  std::cout << fmt::format("Max torques: {}", fmt_eigen(tau_max.transpose()))
+  std::cout << fmt::format("Max torques: {}",
+                           drake::fmt_eigen(tau_max.transpose()))
             << std::endl;
 
   // Report maximum actuated and unactuated torques
@@ -276,20 +282,22 @@ TrajectoryOptimizerSolution<double> TrajOptExample::SolveTrajectoryOptimization(
 
   // Report desired and final state
   std::cout << std::endl;
-  std::cout << fmt::format(
-                   "q_nom[T] : {}",
-                   fmt_eigen(opt_prob.q_nom[options.num_steps].transpose()))
+  std::cout << fmt::format("q_nom[T] : {}",
+                           drake::fmt_eigen(
+                               opt_prob.q_nom[options.num_steps].transpose()))
             << std::endl;
-  std::cout << fmt::format("q[T]     : {}",
-                           fmt_eigen(solution.q[options.num_steps].transpose()))
+  std::cout << fmt::format(
+                   "q[T]     : {}",
+                   drake::fmt_eigen(solution.q[options.num_steps].transpose()))
             << std::endl;
   std::cout << std::endl;
-  std::cout << fmt::format(
-                   "v_nom[T] : {}",
-                   fmt_eigen(opt_prob.v_nom[options.num_steps].transpose()))
+  std::cout << fmt::format("v_nom[T] : {}",
+                           drake::fmt_eigen(
+                               opt_prob.v_nom[options.num_steps].transpose()))
             << std::endl;
-  std::cout << fmt::format("v[T]     : {}",
-                           fmt_eigen(solution.v[options.num_steps].transpose()))
+  std::cout << fmt::format(
+                   "v[T]     : {}",
+                   drake::fmt_eigen(solution.v[options.num_steps].transpose()))
             << std::endl;
 
   // Print speed profiling info
@@ -325,9 +333,9 @@ void TrajOptExample::PlayBackTrajectory(const std::vector<VectorXd>& q,
       MeshcatVisualizerd::AddToBuilder(&builder, scene_graph, meshcat_);
 
   auto diagram = builder.Build();
-  std::unique_ptr<systems::Context<double>> diagram_context =
+  std::unique_ptr<drake::systems::Context<double>> diagram_context =
       diagram->CreateDefaultContext();
-  systems::Context<double>& plant_context =
+  drake::systems::Context<double>& plant_context =
       diagram->GetMutableSubsystemContext(plant, diagram_context.get());
 
   const VectorXd u = VectorXd::Zero(plant.num_actuators());
@@ -556,8 +564,9 @@ void TrajOptExample::SetSolverParameters(
 void TrajOptExample::NormalizeQuaternions(const MultibodyPlant<double>& plant,
                                           std::vector<VectorXd>* q) const {
   const int num_steps = q->size() - 1;
-  for (const multibody::BodyIndex& index : plant.GetFloatingBaseBodies()) {
-    const multibody::Body<double>& body = plant.get_body(index);
+  for (const drake::multibody::BodyIndex& index :
+       plant.GetFloatingBaseBodies()) {
+    const drake::multibody::Body<double>& body = plant.get_body(index);
     const int q_start = body.floating_positions_start();
     DRAKE_DEMAND(body.has_quaternion_dofs());
     for (int t = 0; t <= num_steps; ++t) {
@@ -569,4 +578,4 @@ void TrajOptExample::NormalizeQuaternions(const MultibodyPlant<double>& plant,
 
 }  // namespace examples
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

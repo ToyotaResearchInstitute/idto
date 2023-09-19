@@ -2,12 +2,13 @@
 
 #include <vector>
 
+#include "traj_opt/penta_diagonal_matrix.h"
+
 #include "drake/common/drake_copyable.h"
 #include "drake/common/eigen_types.h"
-#include "drake/common/profiler.h"
-#include "drake/traj_opt/penta_diagonal_matrix.h"
+#include "common/profiler.h"
 
-namespace drake {
+namespace idto {
 namespace traj_opt {
 namespace internal {
 
@@ -59,7 +60,7 @@ class PentaDiagonalFactorization {
 
   /// Solves M⋅x = b into b. The factorization of M is reused on multiple calls
   /// to this method.
-  void SolveInPlace(EigenPtr<Eigen::VectorXd> b);
+  void SolveInPlace(drake::EigenPtr<Eigen::VectorXd> b);
 
  private:
   // Struct to store the factorization of matrix M.
@@ -197,7 +198,7 @@ void PentaDiagonalFactorization<kBlockSize>::Factorize(
 
 template <int kBlockSize>
 void PentaDiagonalFactorization<kBlockSize>::SolveInPlace(
-    EigenPtr<Eigen::VectorXd> b) {
+    drake::EigenPtr<Eigen::VectorXd> b) {
   DRAKE_DEMAND(b->size() == size());
   INSTRUMENT_FUNCTION("Backward substitution.");
 
@@ -248,4 +249,4 @@ void PentaDiagonalFactorization<kBlockSize>::SolveInPlace(
 
 }  // namespace internal
 }  // namespace traj_opt
-}  // namespace drake
+}  // namespace idto

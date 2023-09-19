@@ -1,4 +1,4 @@
-#include "drake/common/profiler.h"
+#include "common/profiler.h"
 
 #include <memory>
 #include <ratio>
