@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 
-workspace(name = "idto-standalone")
+workspace(name = "idto")
 
 DRAKE_COMMIT = "0fa91afe3f0d8f9697afbbd3bcf154dc4fded82c"
 DRAKE_CHECKSUM = "0cced19cb36c9bb834250a2245dd176942352104cff694f7527ab6afe8a115bf"
