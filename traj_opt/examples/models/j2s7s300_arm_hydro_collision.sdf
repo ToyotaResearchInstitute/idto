@@ -1,0 +1,724 @@
+<?xml version="1.0"?>
+<sdf version='1.6'>
+<!--
+SDF automatically generated with: gz sdf -p /my_urdf.urdf > /my_sdf.sdf
+
+Later edited by hand to:
+* add collision geometries to end effector link.
+* add velocity and effort limits
+-->
+  <model name='j2s7s300_arm'>
+    <link name='base'>
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.1255 0 -0 0</pose>
+        <mass>0.46784</mass>
+        <inertia>
+          <ixx>0.000951271</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000951271</iyy>
+          <iyz>0</iyz>
+          <izz>0.000374272</izz>
+        </inertia>
+      </inertial>
+      <visual name='base_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/base.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1788232 0.1788232 0.1788232 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='base_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/base.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+    <link name='j2s7s300_link_1'>
+      <pose>0 0 0.15675 3.14159 -0 3.14159</pose>
+      <inertial>
+        <pose>0 -0.002 -0.0605 0 -0 0</pose>
+        <mass>0.7477</mass>
+        <inertia>
+          <ixx>0.00152032</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00152032</iyy>
+          <iyz>0</iyz>
+          <izz>0.00059816</izz>
+        </inertia>
+      </inertial>
+      <visual name='j2s7s300_link_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/shoulder.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1788232 0.1788232 0.1788232 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_1_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/shoulder.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+      <visual name='j2s7s300_link_1_visual2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/ring_big.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.627451 0.627451 0.627451 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_1_collision2'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/ring_big.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+    <joint name='j2s7s300_joint_1' type='revolute'>
+      <child>j2s7s300_link_1</child>
+      <parent>base</parent>
+      <axis>
+        <xyz>-0 0 -1</xyz>
+        <limit>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>40</effort>
+          <velocity>0.63</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='j2s7s300_link_2'>
+      <pose>0 0.0016 0.2755 1.5708 0 -0</pose>
+      <inertial>
+        <pose>0 -0.103563 0 0 -0 0</pose>
+        <mass>0.8447</mass>
+        <inertia>
+          <ixx>0.00247074</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000380115</iyy>
+          <iyz>0</iyz>
+          <izz>0.00247074</izz>
+        </inertia>
+      </inertial>
+      <visual name='j2s7s300_link_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/arm_half_1.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1788232 0.1788232 0.1788232 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_2_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/arm_half_1.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+    <joint name='j2s7s300_joint_2' type='revolute'>
+      <child>j2s7s300_link_2</child>
+      <parent>j2s7s300_link_1</parent>
+      <axis>
+        <xyz>-0 -1 -0</xyz>
+        <limit>
+          <lower>0.820305</lower>
+          <upper>5.46288</upper>
+          <effort>80</effort>
+          <velocity>0.63</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='j2s7s300_link_3'>
+      <pose>-0 0.0016 0.0705 0 0 -0</pose>
+      <inertial>
+        <pose>0 0 -0.102245 0 -0 0</pose>
+        <mass>0.8447</mass>
+        <inertia>
+          <ixx>0.00247074</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00247074</iyy>
+          <iyz>0</iyz>
+          <izz>0.000380115</izz>
+        </inertia>
+      </inertial>
+      <visual name='j2s7s300_link_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/arm_half_2.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1788232 0.1788232 0.1788232 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_3_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/arm_half_2.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+      <visual name='j2s7s300_link_3_visual2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/ring_big.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.627451 0.627451 0.627451 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_3_collision2'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/ring_big.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+    <joint name='j2s7s300_joint_3' type='revolute'>
+      <child>j2s7s300_link_3</child>
+      <parent>j2s7s300_link_2</parent>
+      <axis>
+        <xyz>0 -0 1</xyz>
+        <limit>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>40</effort>
+          <velocity>0.63</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='j2s7s300_link_4'>
+      <pose>-0 0.0016 -0.1345 1.5708 -0 -3.14159</pose>
+      <inertial>
+        <pose>0 0.081 -0.0086 0 -0 0</pose>
+        <mass>0.6763</mass>
+        <inertia>
+          <ixx>1</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1</iyy>
+          <iyz>0</iyz>
+          <izz>1</izz>
+        </inertia>
+      </inertial>
+      <visual name='j2s7s300_link_4_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/forearm.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1788232 0.1788232 0.1788232 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_4_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/forearm.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+      <visual name='j2s7s300_link_4_visual2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/ring_small.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.627451 0.627451 0.627451 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_4_collision2'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/ring_small.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+    <joint name='j2s7s300_joint_4' type='revolute'>
+      <child>j2s7s300_link_4</child>
+      <parent>j2s7s300_link_3</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0.523599</lower>
+          <upper>5.75959</upper>
+          <effort>40</effort>
+          <velocity>0.63</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='j2s7s300_link_5'>
+      <pose>-0 -0.0098 0.0728 -3.14159 0 0</pose>
+      <inertial>
+        <pose>0 0.002885 -0.054193 0 -0 0</pose>
+        <mass>0.463</mass>
+        <inertia>
+          <ixx>0.000432132</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000432132</iyy>
+          <iyz>0</iyz>
+          <izz>9.26e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='j2s7s300_link_5_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/wrist_spherical_1.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1788232 0.1788232 0.1788232 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_5_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/wrist_spherical_1.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+      <visual name='j2s7s300_link_5_visual2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/ring_small.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.627451 0.627451 0.627451 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_5_collision2'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/ring_small.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+    <joint name='j2s7s300_joint_5' type='revolute'>
+      <child>j2s7s300_link_5</child>
+      <parent>j2s7s300_link_4</parent>
+      <axis>
+        <xyz>-0 0 -1</xyz>
+        <limit>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>20</effort>
+          <velocity>0.85</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='j2s7s300_link_6'>
+      <pose>0 -0.0098 0.17655 -1.5708 -0 3.14159</pose>
+      <inertial>
+        <pose>0 0.049721 -0.002856 0 -0 0</pose>
+        <mass>0.463</mass>
+        <inertia>
+          <ixx>0.000432132</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.26e-05</iyy>
+          <iyz>0</iyz>
+          <izz>0.000432132</izz>
+        </inertia>
+      </inertial>
+      <visual name='j2s7s300_link_6_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/wrist_spherical_2.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1788232 0.1788232 0.1788232 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_6_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/wrist_spherical_2.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+      <visual name='j2s7s300_link_6_visual2'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://drake_models/jaco_description/meshes/ring_small.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.627451 0.627451 0.627451 0.8</diffuse>
+        </material>
+      </visual>
+      <collision name='j2s7s300_link_6_collision2'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/ring_small.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+    <joint name='j2s7s300_joint_6' type='revolute'>
+      <child>j2s7s300_link_6</child>
+      <parent>j2s7s300_link_5</parent>
+      <axis>
+        <xyz>-0 -1 -0</xyz>
+        <limit>
+          <lower>1.13446</lower>
+          <upper>5.14872</upper>
+          <effort>20</effort>
+          <velocity>0.85</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='j2s7s300_link_7'>
+      <pose>-0 -0.0098 0.0728 0 0 -0</pose>
+      <inertial>
+        <pose>0 0 -0.06 0 -0 0</pose>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1</iyy>
+          <iyz>0</iyz>
+          <izz>1</izz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name='j2s7s300_joint_7' type='revolute'>
+      <child>j2s7s300_link_7</child>
+      <parent>j2s7s300_link_6</parent>
+      <axis>
+        <xyz>0 -0 1</xyz>
+        <limit>
+          <lower>-6.28</lower>
+          <upper>6.28</upper>
+          <effort>20</effort>
+          <velocity>0.85</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    <link name="nub_link">
+      <pose relative_to="j2s7s300_link_7">0 0 0 0 0 0</pose>
+      <inertial>
+        <!-- Bogus inertial values -->
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.0001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0001</iyy>
+          <iyz>0</iyz>
+          <izz>0.0001</izz>
+        </inertia>
+      </inertial>
+      <visual name="nub_mesh">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_nub.obj</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1 0.1 0.1 0.3</diffuse>
+        </material>
+      </visual>
+      <collision name="nub_mesh_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>meshes/jaco_coarse/jaco_nub.obj</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+          <ode>
+            <mu>0.5</mu>
+            <mu2>0.5</mu2>
+          </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:rigid_hydroelastic/>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+
+    <joint name='nub_joint' type='fixed'>
+      <child>nub_link</child>
+      <parent>j2s7s300_link_7</parent>
+    </joint>
+
+    <!-- Ignore self-collisions -->
+    <drake:collision_filter_group name="all">
+        <drake:member>base</drake:member>
+        <drake:member>j2s7s300_link_1</drake:member>
+        <drake:member>j2s7s300_link_2</drake:member>
+        <drake:member>j2s7s300_link_3</drake:member>
+        <drake:member>j2s7s300_link_4</drake:member>
+        <drake:member>j2s7s300_link_5</drake:member>
+        <drake:member>j2s7s300_link_6</drake:member>
+        <drake:member>j2s7s300_link_7</drake:member>
+        <drake:member>nub_link</drake:member>
+        <drake:ignored_collision_filter_group>all</drake:ignored_collision_filter_group>
+    </drake:collision_filter_group>
+  </model>
+</sdf>
