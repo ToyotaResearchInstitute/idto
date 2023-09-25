@@ -321,3 +321,13 @@ idto_cc_shared_library(
         "@drake//common/yaml",
     ],
 )
+
+idto_cc_shared_library(
+  name = "examples",
+  deps = [
+    ":example_base",
+    ":mpc_controller",
+    ":pd_plus_controller",
+    ":yaml_config",
+  ],
+)
