@@ -2,6 +2,8 @@
 
 package(default_visibility = ["//visibility:public"])
 
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
+
 cc_binary(
     name = "acrobot",
     srcs = ["acrobot.cc"],
@@ -263,7 +265,7 @@ cc_binary(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "mpc_controller",
     srcs = ["mpc_controller.cc"],
     hdrs = ["mpc_controller.h"],
@@ -279,7 +281,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "pd_plus_controller",
     srcs = ["pd_plus_controller.cc"],
     hdrs = ["pd_plus_controller.h"],
@@ -289,7 +291,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "example_base",
     srcs = ["example_base.cc"],
     hdrs = ["example_base.h"],
@@ -310,7 +312,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "yaml_config",
     srcs = [],
     hdrs = ["yaml_config.h"],

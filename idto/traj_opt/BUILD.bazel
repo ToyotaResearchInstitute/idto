@@ -3,10 +3,11 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:test.bzl", "cc_googletest")
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
 
 exports_files(["cc_py.py", "__init__.py", "test/cc_py_test.py"])
 
-cc_library(
+idto_cc_shared_library(
     name = "traj_opt",
     deps = [
         ":convergence_criteria_tolerances",
@@ -25,7 +26,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "penta_diagonal_matrix",
     srcs = ["penta_diagonal_matrix.cc"],
     hdrs = ["penta_diagonal_matrix.h"],
@@ -35,7 +36,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "penta_diagonal_solver",
     srcs = [],
     hdrs = ["penta_diagonal_solver.h"],
@@ -46,7 +47,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "penta_diagonal_to_petsc_matrix",
     srcs = ["penta_diagonal_to_petsc_matrix.cc"],
     hdrs = ["penta_diagonal_to_petsc_matrix.h"],
@@ -57,7 +58,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "trajectory_optimizer",
     srcs = ["trajectory_optimizer.cc"],
     hdrs = [
@@ -83,7 +84,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "problem_definition",
     hdrs = [
         "problem_definition.h",
@@ -93,7 +94,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "convergence_criteria_tolerances",
     hdrs = [
         "convergence_criteria_tolerances.h",
@@ -103,7 +104,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "solver_parameters",
     hdrs = [
         "solver_parameters.h",
@@ -111,7 +112,7 @@ cc_library(
     deps = [":convergence_criteria_tolerances"],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "warm_start",
     hdrs = [
         "warm_start.h",
@@ -123,7 +124,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "velocity_partials",
     srcs = ["velocity_partials.cc"],
     hdrs = [
@@ -135,7 +136,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "inverse_dynamics_partials",
     srcs = ["inverse_dynamics_partials.cc"],
     hdrs = [
@@ -170,7 +171,7 @@ cc_googletest(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "trajectory_optimizer_state",
     srcs = ["trajectory_optimizer_state.cc"],
     hdrs = [
@@ -187,7 +188,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "trajectory_optimizer_solution",
     srcs = ["trajectory_optimizer_solution.cc"],
     hdrs = [
@@ -199,7 +200,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "trajectory_optimizer_workspace",
     srcs = ["trajectory_optimizer_workspace.cc"],
     hdrs = [

@@ -4,6 +4,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:test.bzl", "cc_googletest")
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
 
 cc_library(
     name = "googletest_main",
@@ -16,7 +17,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "profiler",
     srcs = ["profiler.cc"],
     hdrs = ["profiler.h"],
@@ -25,7 +26,7 @@ cc_library(
     ],
 )
 
-cc_library(
+idto_cc_shared_library(
     name = "find_resource",
     srcs = ["find_resource.cc"],
     hdrs = ["find_resource.h"],
