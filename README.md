@@ -9,7 +9,7 @@ from source.
 
 Once you're in the directory where this repository was cloned, just run
 ```
-bazel run //traj_opt/examples:[example_name]
+bazel run //idto/traj_opt/examples:[example_name]
 ```
 
 Example names include:
@@ -33,6 +33,6 @@ A few of the examples take additional gflags parameters. For example, you can
 add two small hills to the Mini Cheetah example with
 
 ```
-bazel run //traj_opt/examples:mini_cheetah -- --hills=2
+bazel run //idto/traj_opt/examples:mini_cheetah -- --hills=2
 ```
 
