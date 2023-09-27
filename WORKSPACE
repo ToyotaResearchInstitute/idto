@@ -2,8 +2,8 @@
 
 workspace(name = "idto")
 
-DRAKE_COMMIT = "0fa91afe3f0d8f9697afbbd3bcf154dc4fded82c"
-DRAKE_CHECKSUM = "0cced19cb36c9bb834250a2245dd176942352104cff694f7527ab6afe8a115bf"
+DRAKE_COMMIT = "251bd6982d48343cbd727d0a46d887461b2d13cc"
+DRAKE_CHECKSUM = "72d106c3a61383170f564916cfbae0c25285cc3cb946fca4785beea8c342b8f6"
 
 # Or choose a specific revision of Drake to use.
 # DRAKE_COMMIT = "be4f658487f739ba04ec079de46f9459b719636d"
