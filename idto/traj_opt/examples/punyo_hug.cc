@@ -47,7 +47,7 @@ class PunyoHugExample : public TrajOptExample {
         idto::FindIDTOResourceOrThrow("idto/traj_opt/examples/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModelFromFile(sdf_file);
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
-    // plant->disable_gravity(humanoid);
+    plant->set_gravity_enabled(humanoid, false);
 
     // Add a free-floating ball to pick up
     ModelInstanceIndex ball_idx = plant->AddModelInstance("ball");
@@ -99,7 +99,7 @@ class PunyoHugExample : public TrajOptExample {
         FindIDTOResourceOrThrow("idto/traj_opt/examples/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModelFromFile(sdf_file);
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
-    // plant->disable_gravity(humanoid);
+    plant->set_gravity_enabled(humanoid, false);
 
     // Add a free-floating ball to pick up
     const double mass = 1.0;

@@ -40,7 +40,7 @@ class JacoExample : public TrajOptExample {
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
                       X_jaco);
-    // plant->disable_gravity(jaco);
+    plant->set_gravity_enabled(jaco, false);
 
     // Add a manipuland with sphere contact
     std::string manipuland_file =
@@ -74,7 +74,7 @@ class JacoExample : public TrajOptExample {
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
                       X_jaco);
-    // plant->disable_gravity(jaco);
+    plant->set_gravity_enabled(jaco, false);
 
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(

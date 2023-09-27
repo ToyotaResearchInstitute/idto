@@ -29,7 +29,7 @@ class KukaExample : public TrajOptExample {
         "iiwa14_spheres_collision.urdf");
     ModelInstanceIndex kuka = Parser(plant).AddModelFromFile(robot_file);
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
-    // plant->disable_gravity(kuka);
+    plant->set_gravity_enabled(kuka, false);
 
     // Add a manipuland
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(

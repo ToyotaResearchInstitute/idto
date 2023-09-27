@@ -48,7 +48,7 @@ class JacoBallExample : public TrajOptExample {
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
                       X_jaco);
-    // plant->disable_gravity(jaco);
+    plant->set_gravity_enabled(jaco, false);
 
     // Add the ball model
     const double mass = 0.3;
@@ -105,7 +105,7 @@ class JacoBallExample : public TrajOptExample {
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
                       X_jaco);
-    // plant->disable_gravity(jaco);
+    plant->set_gravity_enabled(jaco, false);
 
     // Add the ball model
     // N.B. the radius is slightly larger than the model used for optimization,

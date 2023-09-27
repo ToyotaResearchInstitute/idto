@@ -42,7 +42,7 @@ class DualJacoExample : public TrajOptExample {
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
                       plant->GetFrameByName("base", jaco_left), X_left);
-    // plant->disable_gravity(jaco_left);
+    plant->set_gravity_enabled(jaco_left, false);
 
     ModelInstanceIndex jaco_right =
         Parser(plant).AddModelFromFile(robot_file, "jaco_right");
@@ -50,7 +50,7 @@ class DualJacoExample : public TrajOptExample {
                             Vector3d(0, -0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
                       plant->GetFrameByName("base", jaco_right), X_right);
-    // plant->disable_gravity(jaco_right);
+    plant->set_gravity_enabled(jaco_right, false);
 
     // Add a manipuland
     std::string manipuland_file =
@@ -83,7 +83,7 @@ class DualJacoExample : public TrajOptExample {
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
                       plant->GetFrameByName("base", jaco_left), X_left);
-    // plant->disable_gravity(jaco_left);
+    plant->set_gravity_enabled(jaco_left, false);
 
     ModelInstanceIndex jaco_right =
         Parser(plant).AddModelFromFile(robot_file, "jaco_right");
@@ -91,7 +91,7 @@ class DualJacoExample : public TrajOptExample {
                             Vector3d(0, -0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
                       plant->GetFrameByName("base", jaco_right), X_right);
-    // plant->disable_gravity(jaco_right);
+    plant->set_gravity_enabled(jaco_right, false);
 
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(
