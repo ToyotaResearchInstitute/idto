@@ -5,8 +5,6 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:test.bzl", "cc_googletest")
 load("//tools:shared_library.bzl", "idto_cc_shared_library")
 
-exports_files(["cc_py.py", "__init__.py", "test/cc_py_test.py"])
-
 idto_cc_shared_library(
     name = "traj_opt",
     deps = [
