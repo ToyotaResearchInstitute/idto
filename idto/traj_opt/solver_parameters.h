@@ -3,7 +3,6 @@
 #include "idto/traj_opt/convergence_criteria_tolerances.h"
 
 #include "drake/common/drake_copyable.h"
-#include "drake/multibody/fem/petsc_symmetric_block_sparse_matrix.h"
 
 namespace idto {
 namespace traj_opt {
@@ -69,19 +68,6 @@ struct SolverParameters {
     kDenseLdlt,
     // Pentadiagonal LU solver.
     kPentaDiagonalLu,
-    // PETSc solver.
-    kPetsc,
-  };
-
-  struct PetscSolverPatameters {
-    using SolverType = drake::multibody::fem::internal::
-        PetscSymmetricBlockSparseMatrix::SolverType;
-    using PreconditionerType = drake::multibody::fem::internal::
-        PetscSymmetricBlockSparseMatrix::PreconditionerType;
-    double relative_tolerance{1.0e-12};
-    SolverType solver_type{SolverType::kConjugateGradient};
-    PreconditionerType preconditioner_type{
-        PreconditionerType::kIncompleteCholesky};
   };
 
   // Flag for whether we should check for convergence, along with default
@@ -107,9 +93,6 @@ struct SolverParameters {
 
   // Select the linear solver to be used in the Gauss-Newton step computation.
   LinearSolverType linear_solver{LinearSolverType::kPentaDiagonalLu};
-
-  // Parameters for the PETSc solver. Ignored if linear_solver != kPetsc.
-  PetscSolverPatameters petsc_parameters{};
 
   // Enable/disable quaternions' normalization at each iteration.
   bool normalize_quaternions{false};

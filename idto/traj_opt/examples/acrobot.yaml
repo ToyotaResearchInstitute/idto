@@ -56,15 +56,6 @@ gradients_method: "forward_differences"
 
 linear_solver: "pentadiagonal_lu"
 #linear_solver: "dense_ldlt"
-#linear_solver: "petsc"
-
-petsc_rel_tolerance: 1.0e-4
-
-# {cg, direct, minres}
-petsc_solver: cg
-
-# none, chol, ichol
-petsc_preconditioner: chol
 
 # Playback/visualization parameters
 play_target_trajectory : false

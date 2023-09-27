@@ -5,14 +5,10 @@
 
 #include <gtest/gtest.h>
 #include "idto/traj_opt/penta_diagonal_matrix.h"
-#include "idto/traj_opt/penta_diagonal_to_petsc_matrix.h"
 
 #include "drake/common/fmt_eigen.h"
 #include "drake/common/test_utilities/eigen_matrix_compare.h"
-#include "drake/multibody/fem/petsc_symmetric_block_sparse_matrix.h"
 
-using drake::multibody::fem::internal::PetscSolverStatus;
-using drake::multibody::fem::internal::PetscSymmetricBlockSparseMatrix;
 using std::chrono::steady_clock;
 
 using Eigen::MatrixXd;
@@ -258,61 +254,7 @@ GTEST_TEST(PentaDiagonalMatrixTest, SolvePentaDiagonal) {
   wall_clock_time = std::chrono::duration<double>(end - start).count();
   fmt::print(
       "PentaDiagonalFactorization.\n  Wall clock: {:.4g} seconds. error: {}\n",
-      wall_clock_time, (x_sparse - x_gt).norm() / x_gt.norm());
-
-  // Solution with PetsC solver.
-  start = steady_clock::now();
-  auto Hpetsc = PentaDiagonalToPetscMatrix(H);
-  end = steady_clock::now();
-  wall_clock_time = std::chrono::duration<double>(end - start).count();
-  fmt::print("PentaDiagonalToPetscMatrix().\n  Wall clock: {:.4g} seconds.\n",
-             wall_clock_time);
-  Hpetsc->set_relative_tolerance(1.0e-16);
-
-  // Sanity check matrices are equivalent.
-  const MatrixXd dense_from_pentadiagonal = H.MakeDense();
-  const MatrixXd dense_from_petsc = Hpetsc->MakeDenseMatrix();
-  const double kTolerance = std::numeric_limits<double>::epsilon() * H.rows();
-  EXPECT_TRUE(drake::CompareMatrices(dense_from_petsc, dense_from_pentadiagonal,
-                                     kTolerance,
-                                     drake::MatrixCompareType::relative));
-
-  // Solve with Petsc's direct solver.
-  VectorXd x_petsc_chol = b;
-  start = steady_clock::now();
-  PetscSolverStatus status = Hpetsc->Solve(
-      PetscSymmetricBlockSparseMatrix::SolverType::kDirect,
-      PetscSymmetricBlockSparseMatrix::PreconditionerType::kCholesky, b,
-      &x_petsc_chol);
-  end = steady_clock::now();
-  wall_clock_time = std::chrono::duration<double>(end - start).count();
-  fmt::print("Petsc Chol.\n  Wall clock: {:.4g} seconds. error: {}\n",
-             wall_clock_time, (x_petsc_chol - x_gt).norm() / x_gt.norm());
-  EXPECT_EQ(status, PetscSolverStatus::kSuccess);
-
-  VectorXd x_petsc_minres = b;
-  start = steady_clock::now();
-  status = Hpetsc->Solve(
-      PetscSymmetricBlockSparseMatrix::SolverType::kMINRES,
-      PetscSymmetricBlockSparseMatrix::PreconditionerType::kIncompleteCholesky,
-      b, &x_petsc_minres);
-  end = steady_clock::now();
-  wall_clock_time = std::chrono::duration<double>(end - start).count();
-  fmt::print("Petsc MinRes.\n  Wall clock: {:.4g} seconds. error: {}\n",
-             wall_clock_time, (x_petsc_minres - x_gt).norm() / x_gt.norm());
-  EXPECT_EQ(status, PetscSolverStatus::kSuccess);
-
-  VectorXd x_petsc_cg = b;
-  start = steady_clock::now();
-  status = Hpetsc->Solve(
-      PetscSymmetricBlockSparseMatrix::SolverType::kConjugateGradient,
-      PetscSymmetricBlockSparseMatrix::PreconditionerType::kIncompleteCholesky,
-      b, &x_petsc_cg);
-  end = steady_clock::now();
-  wall_clock_time = std::chrono::duration<double>(end - start).count();
-  fmt::print("Petsc CG.\n  Wall clock: {:.4g} seconds. error: {}\n",
-             wall_clock_time, (x_petsc_cg - x_gt).norm() / x_gt.norm());
-  EXPECT_EQ(status, PetscSolverStatus::kSuccess);
+      wall_clock_time, (x_sparse - x_gt).norm() / x_gt.norm());  
 }
 
 // Solve H*x = b, where H has a high condition number

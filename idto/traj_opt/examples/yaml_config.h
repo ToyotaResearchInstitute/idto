@@ -66,9 +66,6 @@ struct TrajOptExampleParams {
     a->Visit(DRAKE_NVP(normalize_quaternions));
     a->Visit(DRAKE_NVP(verbose));
     a->Visit(DRAKE_NVP(linear_solver));
-    a->Visit(DRAKE_NVP(petsc_rel_tolerance));
-    a->Visit(DRAKE_NVP(petsc_solver));
-    a->Visit(DRAKE_NVP(petsc_preconditioner));
     a->Visit(DRAKE_NVP(exact_hessian));
     a->Visit(DRAKE_NVP(scaling));
     a->Visit(DRAKE_NVP(mpc));
@@ -132,18 +129,8 @@ struct TrajOptExampleParams {
   // "central_differences", "central_differences4" or "autodiff"
   std::string gradients_method{"forward_differences"};
 
-  // Linear solve type: dense_ldlt, pentadiagonal_lu, petsc.
-  std::string linear_solver{"pentadiagonal_lu"};
-
-  double petsc_rel_tolerance{1.0e-12};
-
-  // PETSc solver type: cg, direct, minres.
-  // Note. "direct" only works with petsc_preconditioner = chol.
-  std::string petsc_solver{"cg"};
-
-  // PETSc preconditioner type: none, chol, ichol.
-  // Note. "chol" only works with petsc_solver = direct.
-  std::string petsc_preconditioner{"ichol"};
+  // Linear solve type: dense_ldlt, pentadiagonal_lu.
+  std::string linear_solver{"pentadiagonal_lu"};  
 
   // Whether to add a proximal operator term to the cost (essentially adds to
   // the diagonal of the Hessian)

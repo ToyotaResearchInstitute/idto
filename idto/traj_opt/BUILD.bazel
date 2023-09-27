@@ -14,7 +14,6 @@ idto_cc_shared_library(
         ":inverse_dynamics_partials",
         ":penta_diagonal_matrix",
         ":penta_diagonal_solver",
-        ":penta_diagonal_to_petsc_matrix",
         ":problem_definition",
         ":solver_parameters",
         ":trajectory_optimizer",
@@ -48,17 +47,6 @@ idto_cc_shared_library(
 )
 
 idto_cc_shared_library(
-    name = "penta_diagonal_to_petsc_matrix",
-    srcs = ["penta_diagonal_to_petsc_matrix.cc"],
-    hdrs = ["penta_diagonal_to_petsc_matrix.h"],
-    deps = [
-        ":penta_diagonal_matrix",
-        "@drake//common:essential",
-        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
-    ],
-)
-
-idto_cc_shared_library(
     name = "trajectory_optimizer",
     srcs = ["trajectory_optimizer.cc"],
     hdrs = [
@@ -68,7 +56,6 @@ idto_cc_shared_library(
         ":inverse_dynamics_partials",
         ":penta_diagonal_matrix",
         ":penta_diagonal_solver",
-        ":penta_diagonal_to_petsc_matrix",
         ":problem_definition",
         ":solver_parameters",
         ":trajectory_optimizer_solution",
@@ -79,7 +66,6 @@ idto_cc_shared_library(
         "//idto/common:profiler",
         "@drake//common:essential",
         "@drake//geometry:scene_graph_inspector",
-        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
         "@drake//multibody/plant",
     ],
 )
@@ -154,20 +140,7 @@ cc_googletest(
     deps = [
         ":penta_diagonal_matrix",
         ":penta_diagonal_solver",
-        ":penta_diagonal_to_petsc_matrix",
         "@drake//common/test_utilities:eigen_matrix_compare",
-        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
-    ],
-)
-
-cc_googletest(
-    name = "penta_diagonal_to_petsc_matrix_test",
-    srcs = ["test/penta_diagonal_to_petsc_matrix_test.cc"],
-    deps = [
-        ":penta_diagonal_matrix",
-        ":penta_diagonal_to_petsc_matrix",
-        "@drake//common/test_utilities:eigen_matrix_compare",
-        "@drake//multibody/fem:petsc_symmetric_block_sparse_matrix",
     ],
 )
 

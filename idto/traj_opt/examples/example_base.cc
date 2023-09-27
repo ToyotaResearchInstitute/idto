@@ -446,45 +446,10 @@ void TrajOptExample::SetSolverParameters(
   } else if (options.linear_solver == "dense_ldlt") {
     solver_params->linear_solver =
         SolverParameters::LinearSolverType::kDenseLdlt;
-  } else if (options.linear_solver == "petsc") {
-    solver_params->linear_solver = SolverParameters::LinearSolverType::kPetsc;
   } else {
     throw std::runtime_error(
         fmt::format("Unknown linear solver '{}'", options.linear_solver));
-  }
-
-  solver_params->petsc_parameters.relative_tolerance =
-      options.petsc_rel_tolerance;
-
-  // PETSc solver type.
-  if (options.petsc_solver == "cg") {
-    solver_params->petsc_parameters.solver_type =
-        SolverParameters::PetscSolverPatameters::SolverType::kConjugateGradient;
-  } else if (options.petsc_solver == "direct") {
-    solver_params->petsc_parameters.solver_type =
-        SolverParameters::PetscSolverPatameters::SolverType::kDirect;
-  } else if (options.petsc_solver == "minres") {
-    solver_params->petsc_parameters.solver_type =
-        SolverParameters::PetscSolverPatameters::SolverType::kMINRES;
-  } else {
-    throw std::runtime_error(
-        fmt::format("Unknown PETSc solver '{}'", options.petsc_solver));
-  }
-
-  // PETSc preconditioner.
-  if (options.petsc_preconditioner == "none") {
-    solver_params->petsc_parameters.preconditioner_type =
-        SolverParameters::PetscSolverPatameters::PreconditionerType::kNone;
-  } else if (options.petsc_preconditioner == "chol") {
-    solver_params->petsc_parameters.preconditioner_type =
-        SolverParameters::PetscSolverPatameters::PreconditionerType::kCholesky;
-  } else if (options.petsc_preconditioner == "ichol") {
-    solver_params->petsc_parameters.preconditioner_type = SolverParameters::
-        PetscSolverPatameters::PreconditionerType::kIncompleteCholesky;
-  } else {
-    throw std::runtime_error(fmt::format("Unknown PETSc preconditioner '{}'",
-                                         options.petsc_preconditioner));
-  }
+  }  
 
   solver_params->max_iterations = options.max_iters;
   solver_params->max_linesearch_iterations = 60;

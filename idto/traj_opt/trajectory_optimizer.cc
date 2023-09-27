@@ -12,15 +12,11 @@
 #endif
 
 #include "idto/traj_opt/penta_diagonal_solver.h"
-#include "idto/traj_opt/penta_diagonal_to_petsc_matrix.h"
 
 #include "drake/geometry/scene_graph_inspector.h"
 #include "drake/multibody/math/spatial_algebra.h"
 #include "drake/systems/framework/diagram.h"
 #include "idto/common/profiler.h"
-
-using drake::multibody::fem::internal::PetscSolverStatus;
-using drake::multibody::fem::internal::PetscSymmetricBlockSparseMatrix;
 
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;
@@ -2278,17 +2274,7 @@ void TrajectoryOptimizer<double>::SolveLinearSystemInPlace(
       *b = Hldlt.solve(*b);
       DRAKE_DEMAND(Hldlt.info() == Eigen::Success);
       break;
-    }
-    case SolverParameters::LinearSolverType::kPetsc: {
-      auto Hpetsc = internal::PentaDiagonalToPetscMatrix(H);
-      Hpetsc->set_relative_tolerance(
-          params_.petsc_parameters.relative_tolerance);
-      PetscSolverStatus status =
-          Hpetsc->SolveInPlace(params_.petsc_parameters.solver_type,
-                               params_.petsc_parameters.preconditioner_type, b);
-      DRAKE_DEMAND(status == PetscSolverStatus::kSuccess);
-      break;
-    }
+    }    
   }
 }
 
