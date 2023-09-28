@@ -102,6 +102,6 @@ class AirHockeyExample : public TrajOptExample {
 
 int main() {
   idto::examples::airhockey::AirHockeyExample example;
-  example.RunExample("examples/airhockey/airhockey.yaml");
+  example.RunExample("idto/examples/airhockey/airhockey.yaml");
   return 0;
 }

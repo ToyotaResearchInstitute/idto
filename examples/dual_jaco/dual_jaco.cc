@@ -33,7 +33,7 @@ class DualJacoExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
     // Add jaco arms
     std::string robot_file = idto::FindIdtoResourceOrThrow(
-        "examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
+        "idto/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
 
     ModelInstanceIndex jaco_left =
         Parser(plant).AddModels(robot_file)[0];
@@ -55,7 +55,7 @@ class DualJacoExample : public TrajOptExample {
 
     // Add a manipuland
     std::string manipuland_file =
-        idto::FindIdtoResourceOrThrow("examples/models/box_15cm.sdf");
+        idto::FindIdtoResourceOrThrow("idto/examples/models/box_15cm.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
@@ -76,7 +76,7 @@ class DualJacoExample : public TrajOptExample {
       MultibodyPlant<double>* plant) const final {
     // Add jaco arms, including gravity
     std::string robot_file = idto::FindIdtoResourceOrThrow(
-        "examples/models/j2s7s300_arm_hydro_collision.sdf");
+        "idto/examples/models/j2s7s300_arm_hydro_collision.sdf");
 
     ModelInstanceIndex jaco_left =
         Parser(plant).AddModels(robot_file)[0];
@@ -98,7 +98,7 @@ class DualJacoExample : public TrajOptExample {
 
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIdtoResourceOrThrow(
-        "examples/models/box_15cm_hydro.sdf");
+        "idto/examples/models/box_15cm_hydro.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
@@ -127,6 +127,6 @@ class DualJacoExample : public TrajOptExample {
 
 int main() {
   idto::examples::dual_jaco::DualJacoExample example;
-  example.RunExample("examples/dual_jaco/dual_jaco.yaml");
+  example.RunExample("idto/examples/dual_jaco/dual_jaco.yaml");
   return 0;
 }

@@ -32,7 +32,7 @@ class KukaExample : public TrajOptExample {
 
     // Add a manipuland
     std::string manipuland_file = FindIdtoResourceOrThrow(
-        "examples/models/box_intel_nuc.sdf");
+        "idto/examples/models/box_intel_nuc.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
@@ -51,6 +51,6 @@ class KukaExample : public TrajOptExample {
 
 int main() {
   idto::examples::kuka::KukaExample example;
-  example.RunExample("examples/kuka/kuka.yaml");
+  example.RunExample("idto/examples/kuka/kuka.yaml");
   return 0;
 }

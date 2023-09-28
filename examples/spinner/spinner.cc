@@ -27,7 +27,7 @@ class SpinnerExample : public TrajOptExample {
     // that we can use the same yaml format for all of the examples, without
     // cluttering it with spinner-specific options.
     std::string urdf_file = idto::FindIdtoResourceOrThrow(
-        "examples/models/spinner_friction.urdf");
+        "idto/examples/models/spinner_friction.urdf");
     Parser(plant).AddModels(urdf_file);
   }
 };
@@ -38,6 +38,6 @@ class SpinnerExample : public TrajOptExample {
 
 int main() {
   idto::examples::spinner::SpinnerExample spinner_example;
-  spinner_example.RunExample("examples/spinner/spinner.yaml");
+  spinner_example.RunExample("idto/examples/spinner/spinner.yaml");
   return 0;
 }

@@ -82,7 +82,7 @@ class AllegroHandExample : public TrajOptExample {
 
     // Add a model of the hand
     std::string sdf_file = idto::FindIdtoResourceOrThrow(
-        "examples/models/allegro_hand.sdf");
+        "idto/examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),
@@ -131,7 +131,7 @@ class AllegroHandExample : public TrajOptExample {
 
     // Add a model of the hand
     std::string sdf_file = idto::FindIdtoResourceOrThrow(
-        "examples/models/allegro_hand.sdf");
+        "idto/examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),
@@ -208,9 +208,9 @@ int main(int argc, char* argv[]) {
   idto::examples::allegro_hand::AllegroHandExample example;
   std::string yaml_file;
   if (FLAGS_upside_down) {
-    yaml_file = "examples/allegro_hand/allegro_hand_upside_down.yaml";
+    yaml_file = "idto/examples/allegro_hand/allegro_hand_upside_down.yaml";
   } else {
-    yaml_file = "examples/allegro_hand/allegro_hand.yaml";
+    yaml_file = "idto/examples/allegro_hand/allegro_hand.yaml";
   }
   example.RunExample(yaml_file);
 

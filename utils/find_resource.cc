@@ -20,12 +20,12 @@ FindIdtoResource(const std::string& idto_resource_path) {
   if (idto_resource_path.empty()) {
     throw std::runtime_error("Resource path must not be empty");
   }
-  if (idto_resource_path[0] == '/') {
+  if (idto_resource_path.substr(0, 5) != "idto/") {
     throw std::runtime_error(fmt::format(
-        "Resource path '{}' must not be an absolute path", idto_resource_path));
+        "Resource path '{}' must start with 'idto/' ", idto_resource_path));
   }
   // Workspace name, and subdir name.
-  const std::string resource_path = "idto/" + idto_resource_path;
+  const std::string resource_path = idto_resource_path;
 
   // Use Drake's Rlocation helper.
   return FindRunfile(resource_path);
