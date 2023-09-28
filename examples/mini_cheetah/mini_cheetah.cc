@@ -38,7 +38,7 @@ class MiniCheetahExample : public TrajOptExample {
     const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
 
     // Add the robot
-    std::string urdf_file = idto::FindIDTOResourceOrThrow(
+    std::string urdf_file = idto::FindIdtoResourceOrThrow(
         "examples/models/mini_cheetah_mesh.urdf");
     Parser(plant).AddModels(urdf_file);
 

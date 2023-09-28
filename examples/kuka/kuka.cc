@@ -31,7 +31,7 @@ class KukaExample : public TrajOptExample {
     plant->set_gravity_enabled(kuka, false);
 
     // Add a manipuland
-    std::string manipuland_file = FindIDTOResourceOrThrow(
+    std::string manipuland_file = FindIdtoResourceOrThrow(
         "examples/models/box_intel_nuc.sdf");
     Parser(plant).AddModels(manipuland_file);
 

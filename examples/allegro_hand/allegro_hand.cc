@@ -81,7 +81,7 @@ class AllegroHandExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a model of the hand
-    std::string sdf_file = idto::FindIDTOResourceOrThrow(
+    std::string sdf_file = idto::FindIdtoResourceOrThrow(
         "examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
@@ -130,7 +130,7 @@ class AllegroHandExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a model of the hand
-    std::string sdf_file = idto::FindIDTOResourceOrThrow(
+    std::string sdf_file = idto::FindIdtoResourceOrThrow(
         "examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));

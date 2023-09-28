@@ -40,7 +40,7 @@ class JacoBallExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 0.5);
 
     // Add a jaco arm without gravity
-    std::string robot_file = idto::FindIDTOResourceOrThrow(
+    std::string robot_file = idto::FindIdtoResourceOrThrow(
         "examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYawd(0, 0, M_PI_2),
@@ -97,7 +97,7 @@ class JacoBallExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 0.5);
 
     // Add a jaco arm without gravity
-    std::string robot_file = idto::FindIDTOResourceOrThrow(
+    std::string robot_file = idto::FindIdtoResourceOrThrow(
         "examples/models/j2s7s300_arm_hydro_collision.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYawd(0, 0, M_PI_2),

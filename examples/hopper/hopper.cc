@@ -32,7 +32,7 @@ class HopperExample : public TrajOptExample {
 
     // Add a hopper
     std::string urdf_file =
-        idto::FindIDTOResourceOrThrow("examples/models/hopper.urdf");
+        idto::FindIdtoResourceOrThrow("examples/models/hopper.urdf");
     Parser(plant).AddModels(urdf_file);
 
     // Add collision with the ground
