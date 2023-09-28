@@ -9,12 +9,12 @@ load("//tools:shared_library.bzl", "idto_cc_shared_library")
 
 idto_cc_shared_library(
     name = "idto_shared_library",
-    deps = ["//utils", "//idto/traj_opt"],
+    deps = ["//utils", "//optimizer"],
     visibility = ["//visibility:public"],
 )
 
 idto_cc_shared_library(
     name = "idto_shared_library_examples",
-    deps = [":idto_shared_library", "//idto/traj_opt/examples"],
+    deps = [":idto_shared_library", "//examples"],
     visibility = ["//visibility:public"],
 )

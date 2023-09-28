@@ -5,7 +5,6 @@
 #include "drake/multibody/plant/multibody_plant.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace acrobot {
 
@@ -31,11 +30,10 @@ class AcrobotExample : public TrajOptExample {
 
 }  // namespace acrobot
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::acrobot::AcrobotExample example;
+  idto::examples::acrobot::AcrobotExample example;
   const std::string yaml_file = "examples/acrobot.yaml";
   example.RunExample(yaml_file);
 

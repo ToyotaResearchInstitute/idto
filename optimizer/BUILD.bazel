@@ -188,7 +188,7 @@ cc_googletest(
     name = "trajectory_optimizer_test",
     srcs = ["test/trajectory_optimizer_test.cc"],
     data = [
-        "//optimizer/examples:models",
+        "//examples:models",
         "@drake//examples/pendulum:models",
         "@drake//manipulation/models/iiwa_description:models",
         "@drake//multibody/benchmarks/acrobot:models",
