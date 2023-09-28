@@ -35,7 +35,7 @@ class JacoExample : public TrajOptExample {
     // Add a jaco arm without gravity
     std::string robot_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
-    ModelInstanceIndex jaco = Parser(plant).AddModelFromFile(robot_file);
+    ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
@@ -45,7 +45,7 @@ class JacoExample : public TrajOptExample {
     // Add a manipuland with sphere contact
     std::string manipuland_file =
         idto::FindIDTOResourceOrThrow("idto/traj_opt/examples/models/box_15cm.sdf");
-    Parser(plant).AddAllModelsFromFile(manipuland_file);
+    Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
     const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
@@ -69,7 +69,7 @@ class JacoExample : public TrajOptExample {
     // Add a jaco arm, including gravity, with rigid hydroelastic contact
     std::string robot_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/j2s7s300_arm_hydro_collision.sdf");
-    ModelInstanceIndex jaco = Parser(plant).AddModelFromFile(robot_file);
+    ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
@@ -79,7 +79,7 @@ class JacoExample : public TrajOptExample {
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/box_15cm_hydro.sdf");
-    Parser(plant).AddAllModelsFromFile(manipuland_file);
+    Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
     const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);

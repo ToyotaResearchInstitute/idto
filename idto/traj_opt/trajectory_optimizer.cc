@@ -296,10 +296,8 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
 
     const Body<T>& bodyA =
         *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryA_id)));
-    const BodyIndex bodyA_index = bodyA.index();
     const Body<T>& bodyB =
         *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryB_id)));
-    const BodyIndex bodyB_index = bodyB.index();
 
     // Body poses in world.
     const drake::math::RigidTransform<T>& X_WA =

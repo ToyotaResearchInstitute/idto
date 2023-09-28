@@ -39,7 +39,7 @@ class FrictionlessSpinnerExample : public TrajOptExample {
       throw std::runtime_error(
           fmt::format("Unknown spinner geometry '{}'.", FLAGS_geometry));
     }
-    Parser(plant).AddAllModelsFromFile(urdf_file);
+    Parser(plant).AddModels(urdf_file);
   }
 };
 

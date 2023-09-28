@@ -37,7 +37,8 @@ class DualJacoExample : public TrajOptExample {
         "idto/traj_opt/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
 
     ModelInstanceIndex jaco_left =
-        Parser(plant).AddModelFromFile(robot_file, "jaco_left");
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_left, "jaco_left");
     RigidTransformd X_left(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
@@ -45,7 +46,8 @@ class DualJacoExample : public TrajOptExample {
     plant->set_gravity_enabled(jaco_left, false);
 
     ModelInstanceIndex jaco_right =
-        Parser(plant).AddModelFromFile(robot_file, "jaco_right");
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_right, "jaco_right");
     RigidTransformd X_right(RollPitchYaw<double>(0, 0, M_PI_2),
                             Vector3d(0, -0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
@@ -55,7 +57,7 @@ class DualJacoExample : public TrajOptExample {
     // Add a manipuland
     std::string manipuland_file =
         idto::FindIDTOResourceOrThrow("idto/traj_opt/examples/models/box_15cm.sdf");
-    Parser(plant).AddAllModelsFromFile(manipuland_file);
+    Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
     const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
@@ -78,7 +80,8 @@ class DualJacoExample : public TrajOptExample {
         "idto/traj_opt/examples/models/j2s7s300_arm_hydro_collision.sdf");
 
     ModelInstanceIndex jaco_left =
-        Parser(plant).AddModelFromFile(robot_file, "jaco_left");
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_left, "jaco_left");
     RigidTransformd X_left(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
@@ -86,7 +89,8 @@ class DualJacoExample : public TrajOptExample {
     plant->set_gravity_enabled(jaco_left, false);
 
     ModelInstanceIndex jaco_right =
-        Parser(plant).AddModelFromFile(robot_file, "jaco_right");
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_right, "jaco_right");
     RigidTransformd X_right(RollPitchYaw<double>(0, 0, M_PI_2),
                             Vector3d(0, -0.27, 0.11));
     plant->WeldFrames(plant->world_frame(),
@@ -96,7 +100,7 @@ class DualJacoExample : public TrajOptExample {
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/box_15cm_hydro.sdf");
-    Parser(plant).AddAllModelsFromFile(manipuland_file);
+    Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
     const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);

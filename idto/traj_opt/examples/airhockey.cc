@@ -50,7 +50,7 @@ class AirHockeyExample : public TrajOptExample {
 
     const SpatialInertia<double> I(
         mass, Vector3d::Zero(),
-        UnitInertia<double>::SolidCylinder(radius, height));
+        UnitInertia<double>::SolidCylinder(radius, height, Vector3d::UnitZ()));
 
     // Create the pusher
     const RigidBody<double>& pusher = plant->AddRigidBody("pusher", I);
