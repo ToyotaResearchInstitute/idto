@@ -21,8 +21,8 @@ build --host_cxxopt=-std=c++17
 # https://github.com/bazelbuild/bazel/issues/1164
 build --action_env=CCACHE_DISABLE=1
 
-# TODO(jwnimmer-tri) We should see if we can reuse more of Drake's
-# customizations somehow.
+# Escalate warnings to errors
+build --copt=-Werror
 
 # Try to import user-specific configuration local to workspace.
 try-import %workspace%/user.bazelrc
