@@ -39,7 +39,7 @@ class MiniCheetahExample : public TrajOptExample {
 
     // Add the robot
     std::string urdf_file = idto::FindIDTOResourceOrThrow(
-        "idto/traj_opt/examples/models/mini_cheetah_mesh.urdf");
+        "examples/models/mini_cheetah_mesh.urdf");
     Parser(plant).AddModels(urdf_file);
 
     // Add collision with the ground

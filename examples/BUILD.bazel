@@ -176,65 +176,6 @@ cc_binary(
 )
 
 cc_binary(
-    name = "2dof_spinner",
-    srcs = ["2dof_spinner.cc"],
-    data = [
-        ":2dof_spinner.yaml",
-        ":models",
-    ],
-    deps = [
-        ":example_base",
-        "//utils:find_resource",
-        "@drake//multibody/parsing",
-        "@drake//multibody/plant",
-    ],
-)
-
-cc_binary(
-    name = "floating_box",
-    srcs = ["floating_box.cc"],
-    data = [
-        ":floating_box.yaml",
-    ],
-    deps = [
-        ":example_base",
-        "//utils:find_resource",
-        "@drake//multibody/plant",
-    ],
-)
-
-cc_binary(
-    name = "wall_ball",
-    srcs = ["wall_ball.cc"],
-    data = [
-        ":models",
-        ":wall_ball.yaml",
-    ],
-    deps = [
-        ":example_base",
-        "//utils:find_resource",
-        "@drake//multibody/parsing",
-        "@drake//multibody/plant",
-    ],
-)
-
-cc_binary(
-    name = "frictionless_spinner",
-    srcs = ["frictionless_spinner.cc"],
-    data = [
-        ":frictionless_spinner.yaml",
-        ":models",
-    ],
-    deps = [
-        ":example_base",
-        "//utils:find_resource",
-        "@drake//multibody/parsing",
-        "@drake//multibody/plant",
-        "@gflags",
-    ],
-)
-
-cc_binary(
     name = "airhockey",
     srcs = ["airhockey.cc"],
     data = [
