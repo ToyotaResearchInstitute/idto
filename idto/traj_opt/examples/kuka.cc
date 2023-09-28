@@ -27,7 +27,7 @@ class KukaExample : public TrajOptExample {
     std::string robot_file = drake::FindResourceOrThrow(
         "drake/manipulation/models/iiwa_description/urdf/"
         "iiwa14_spheres_collision.urdf");
-    ModelInstanceIndex kuka = Parser(plant).AddModelFromFile(robot_file);
+    ModelInstanceIndex kuka = Parser(plant).AddModels(robot_file)[0];
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
     plant->set_gravity_enabled(kuka, false);
 
