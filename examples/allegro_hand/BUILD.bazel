@@ -3,6 +3,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:shared_library.bzl", "idto_cc_shared_library")
+load("//tools/lint:lint.bzl", "add_lint_tests")
 
 cc_binary(
     name = "allegro_hand",
@@ -21,3 +22,5 @@ cc_binary(
         "@gflags",
     ],
 )
+
+add_lint_tests()

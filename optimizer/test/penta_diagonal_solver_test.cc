@@ -3,11 +3,10 @@
 #include <chrono>
 #include <vector>
 
-#include <gtest/gtest.h>
 #include "optimizer/penta_diagonal_matrix.h"
-
 #include <drake/common/fmt_eigen.h>
 #include <drake/common/test_utilities/eigen_matrix_compare.h>
+#include <gtest/gtest.h>
 
 using std::chrono::steady_clock;
 
@@ -254,7 +253,7 @@ GTEST_TEST(PentaDiagonalMatrixTest, SolvePentaDiagonal) {
   wall_clock_time = std::chrono::duration<double>(end - start).count();
   fmt::print(
       "PentaDiagonalFactorization.\n  Wall clock: {:.4g} seconds. error: {}\n",
-      wall_clock_time, (x_sparse - x_gt).norm() / x_gt.norm());  
+      wall_clock_time, (x_sparse - x_gt).norm() / x_gt.norm());
 }
 
 // Solve H*x = b, where H has a high condition number

@@ -3,6 +3,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:shared_library.bzl", "idto_cc_shared_library")
+load("//tools/lint:lint.bzl", "add_lint_tests")
 
 idto_cc_shared_library(
     name = "mpc_controller",
@@ -77,3 +78,5 @@ filegroup(
         "models/**",
     ]),
 )
+
+add_lint_tests()

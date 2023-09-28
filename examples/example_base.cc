@@ -7,7 +7,6 @@
 
 #include "examples/mpc_controller.h"
 #include "examples/pd_plus_controller.h"
-
 #include <drake/common/fmt_eigen.h>
 #include <drake/geometry/meshcat_visualizer.h>
 #include <drake/systems/primitives/discrete_time_delay.h>
@@ -448,7 +447,7 @@ void TrajOptExample::SetSolverParameters(
   } else {
     throw std::runtime_error(
         fmt::format("Unknown linear solver '{}'", options.linear_solver));
-  }  
+  }
 
   solver_params->max_iterations = options.max_iters;
   solver_params->max_linesearch_iterations = 60;
