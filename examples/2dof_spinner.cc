@@ -1,11 +1,10 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "idto/common/find_resource.h"
+#include "utils/find_resource.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace two_dof_spinner {
 
@@ -22,11 +21,10 @@ class TwoDofSpinnerExample : public TrajOptExample {
 
 }  // namespace two_dof_spinner
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::two_dof_spinner::TwoDofSpinnerExample
+  idto::examples::two_dof_spinner::TwoDofSpinnerExample
       spinner_example;
   spinner_example.RunExample("idto/traj_opt/examples/2dof_spinner.yaml");
   return 0;

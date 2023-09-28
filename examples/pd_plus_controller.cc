@@ -1,9 +1,8 @@
-#include "idto/traj_opt/examples/pd_plus_controller.h"
+#include "examples/pd_plus_controller.h"
 
 #include "drake/common/eigen_types.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace pd_plus {
 
@@ -64,5 +63,4 @@ void PdPlusController::CalcOutput(const Context<double>& context,
 
 }  // namespace pd_plus
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto

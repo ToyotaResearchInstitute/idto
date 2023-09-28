@@ -1,12 +1,11 @@
 #include <gflags/gflags.h>
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace frictionless_spinner {
 
@@ -25,16 +24,16 @@ class FrictionlessSpinnerExample : public TrajOptExample {
     std::string urdf_file;
     if (FLAGS_geometry == "rectangle") {
       urdf_file = idto::FindIDTOResourceOrThrow(
-          "idto/traj_opt/examples/models/spinner_rectangle.urdf");
+          "examples/models/spinner_rectangle.urdf");
     } else if (FLAGS_geometry == "capsule") {
       urdf_file = idto::FindIDTOResourceOrThrow(
-          "idto/traj_opt/examples/models/spinner_capsule.urdf");
+          "examples/models/spinner_capsule.urdf");
     } else if (FLAGS_geometry == "square") {
       urdf_file = idto::FindIDTOResourceOrThrow(
-          "idto/traj_opt/examples/models/spinner_square.urdf");
+          "examples/models/spinner_square.urdf");
     } else if (FLAGS_geometry == "sphere") {
       urdf_file = idto::FindIDTOResourceOrThrow(
-          "idto/traj_opt/examples/models/spinner_sphere.urdf");
+          "examples/models/spinner_sphere.urdf");
     } else {
       throw std::runtime_error(
           fmt::format("Unknown spinner geometry '{}'.", FLAGS_geometry));
@@ -45,14 +44,13 @@ class FrictionlessSpinnerExample : public TrajOptExample {
 
 }  // namespace frictionless_spinner
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  idto::traj_opt::examples::frictionless_spinner::FrictionlessSpinnerExample
+  idto::examples::frictionless_spinner::FrictionlessSpinnerExample
       example;
-  example.RunExample("idto/traj_opt/examples/frictionless_spinner.yaml");
+  example.RunExample("examples/frictionless_spinner.yaml");
   return 0;
 }

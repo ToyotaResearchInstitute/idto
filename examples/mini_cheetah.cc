@@ -1,8 +1,8 @@
 #include <gflags/gflags.h>
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/multibody/plant/multibody_plant.h"
-#include "idto/common/find_resource.h"
+#include "utils/find_resource.h"
 
 DEFINE_int32(hills, 0, "number of simulated hills to walk over");
 DEFINE_double(hill_height, 0.05, "height of each simulated hill, in meters");
@@ -10,7 +10,6 @@ DEFINE_double(hill_spacing, 1.0,
               "distance between each simulated hill, in meters");
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace mini_cheetah {
 
@@ -68,12 +67,11 @@ class MiniCheetahExample : public TrajOptExample {
 
 }  // namespace mini_cheetah
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-  idto::traj_opt::examples::mini_cheetah::MiniCheetahExample example;
-  example.RunExample("idto/traj_opt/examples/mini_cheetah.yaml");
+  idto::examples::mini_cheetah::MiniCheetahExample example;
+  example.RunExample("examples/mini_cheetah.yaml");
   return 0;
 }

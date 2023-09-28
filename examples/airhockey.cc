@@ -1,15 +1,13 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
 #include "drake/multibody/tree/planar_joint.h"
 #include "drake/multibody/tree/prismatic_joint.h"
 #include "drake/multibody/tree/revolute_joint.h"
-#include "idto/common/find_resource.h"
-#include "idto/common/profiler.h"
+#include "utils/find_resource.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace airhockey {
 
@@ -100,11 +98,10 @@ class AirHockeyExample : public TrajOptExample {
 
 }  // namespace airhockey
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::airhockey::AirHockeyExample example;
-  example.RunExample("idto/traj_opt/examples/airhockey.yaml");
+  idto::examples::airhockey::AirHockeyExample example;
+  example.RunExample("examples/airhockey.yaml");
   return 0;
 }

@@ -1,11 +1,10 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "idto/common/find_resource.h"
+#include "utils/find_resource.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace kuka {
 
@@ -48,11 +47,10 @@ class KukaExample : public TrajOptExample {
 
 }  // namespace kuka
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::kuka::KukaExample example;
-  example.RunExample("idto/traj_opt/examples/kuka.yaml");
+  idto::examples::kuka::KukaExample example;
+  example.RunExample("examples/kuka.yaml");
   return 0;
 }

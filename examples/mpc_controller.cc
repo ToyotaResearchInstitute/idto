@@ -1,9 +1,8 @@
-#include "idto/traj_opt/examples/mpc_controller.h"
+#include "examples/mpc_controller.h"
 
 #include <iostream>
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace mpc {
 
@@ -167,5 +166,4 @@ void Interpolator::SendControl(const Context<double>& context,
 
 }  // namespace mpc
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto

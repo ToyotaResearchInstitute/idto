@@ -1,5 +1,5 @@
 #include <gflags/gflags.h>
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/geometry/proximity_properties.h"
@@ -10,7 +10,6 @@ DEFINE_bool(upside_down, false,
             "whether to treat the hand as upside down (by reversing gravity)");
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace allegro_hand {
 
@@ -83,7 +82,7 @@ class AllegroHandExample : public TrajOptExample {
 
     // Add a model of the hand
     std::string sdf_file = idto::FindIDTOResourceOrThrow(
-        "idto/traj_opt/examples/models/allegro_hand.sdf");
+        "examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),
@@ -132,7 +131,7 @@ class AllegroHandExample : public TrajOptExample {
 
     // Add a model of the hand
     std::string sdf_file = idto::FindIDTOResourceOrThrow(
-        "idto/traj_opt/examples/models/allegro_hand.sdf");
+        "examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),
@@ -201,18 +200,17 @@ class AllegroHandExample : public TrajOptExample {
 
 }  // namespace allegro_hand
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  idto::traj_opt::examples::allegro_hand::AllegroHandExample example;
+  idto::examples::allegro_hand::AllegroHandExample example;
   std::string yaml_file;
   if (FLAGS_upside_down) {
-    yaml_file = "idto/traj_opt/examples/allegro_hand_upside_down.yaml";
+    yaml_file = "examples/allegro_hand_upside_down.yaml";
   } else {
-    yaml_file = "idto/traj_opt/examples/allegro_hand.yaml";
+    yaml_file = "examples/allegro_hand.yaml";
   }
   example.RunExample(yaml_file);
 

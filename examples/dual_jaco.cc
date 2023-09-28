@@ -1,12 +1,11 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/geometry/proximity_properties.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "idto/common/find_resource.h"
+#include "utils/find_resource.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace dual_jaco {
 
@@ -34,7 +33,7 @@ class DualJacoExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
     // Add jaco arms
     std::string robot_file = idto::FindIDTOResourceOrThrow(
-        "idto/traj_opt/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
+        "examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
 
     ModelInstanceIndex jaco_left =
         Parser(plant).AddModels(robot_file)[0];
@@ -56,7 +55,7 @@ class DualJacoExample : public TrajOptExample {
 
     // Add a manipuland
     std::string manipuland_file =
-        idto::FindIDTOResourceOrThrow("idto/traj_opt/examples/models/box_15cm.sdf");
+        idto::FindIDTOResourceOrThrow("examples/models/box_15cm.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
@@ -77,7 +76,7 @@ class DualJacoExample : public TrajOptExample {
       MultibodyPlant<double>* plant) const final {
     // Add jaco arms, including gravity
     std::string robot_file = idto::FindIDTOResourceOrThrow(
-        "idto/traj_opt/examples/models/j2s7s300_arm_hydro_collision.sdf");
+        "examples/models/j2s7s300_arm_hydro_collision.sdf");
 
     ModelInstanceIndex jaco_left =
         Parser(plant).AddModels(robot_file)[0];
@@ -99,7 +98,7 @@ class DualJacoExample : public TrajOptExample {
 
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(
-        "idto/traj_opt/examples/models/box_15cm_hydro.sdf");
+        "examples/models/box_15cm_hydro.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
@@ -124,11 +123,10 @@ class DualJacoExample : public TrajOptExample {
 
 }  // namespace dual_jaco
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::dual_jaco::DualJacoExample example;
-  example.RunExample("idto/traj_opt/examples/dual_jaco.yaml");
+  idto::examples::dual_jaco::DualJacoExample example;
+  example.RunExample("examples/dual_jaco.yaml");
   return 0;
 }

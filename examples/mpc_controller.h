@@ -4,17 +4,17 @@
 #include <vector>
 
 #include <drake/common/trajectories/piecewise_polynomial.h>
-#include "idto/traj_opt/problem_definition.h"
-#include "idto/traj_opt/solver_parameters.h"
-#include "idto/traj_opt/trajectory_optimizer.h"
-#include "idto/traj_opt/warm_start.h"
+#include "optimizer/problem_definition.h"
+#include "optimizer/solver_parameters.h"
+#include "optimizer/trajectory_optimizer.h"
+#include "optimizer/warm_start.h"
 
 #include "drake/multibody/plant/multibody_plant.h"
 #include "drake/systems/framework/basic_vector.h"
 #include "drake/systems/framework/leaf_system.h"
+#include "drake/common/eigen_types.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace mpc {
 
@@ -27,6 +27,17 @@ using drake::systems::LeafSystem;
 using drake::systems::OutputPort;
 using drake::systems::State;
 using drake::trajectories::PiecewisePolynomial;
+using drake::multibody::MultibodyPlant;
+
+using optimizer::ProblemDefinition;
+using optimizer::SolverParameters;
+using optimizer::TrajectoryOptimizer;
+using optimizer::TrajectoryOptimizerSolution;
+using optimizer::TrajectoryOptimizerStats;
+using optimizer::WarmStart;
+
+using Eigen::VectorXd;
+using Eigen::MatrixXd;
 
 /// A little struct for holding an optimal trajectory so that we can track it
 /// between MPC solves.
@@ -190,5 +201,4 @@ class Interpolator : public LeafSystem<double> {
 
 }  // namespace mpc
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto

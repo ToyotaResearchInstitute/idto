@@ -1,12 +1,12 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include <chrono>
 #include <iostream>
 #include <thread>
 #include <utility>
 
-#include "idto/traj_opt/examples/mpc_controller.h"
-#include "idto/traj_opt/examples/pd_plus_controller.h"
+#include "examples/mpc_controller.h"
+#include "examples/pd_plus_controller.h"
 
 #include "drake/common/fmt_eigen.h"
 #include "drake/geometry/meshcat_visualizer.h"
@@ -14,7 +14,6 @@
 #include "drake/visualization/visualization_config_functions.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 
 using drake::geometry::MeshcatAnimation;
@@ -542,5 +541,4 @@ void TrajOptExample::NormalizeQuaternions(const MultibodyPlant<double>& plant,
 }
 
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto

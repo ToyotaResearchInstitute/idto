@@ -1,15 +1,15 @@
-#include "idto/traj_opt/trajectory_optimizer.h"
+#include "optimizer/trajectory_optimizer.h"
 
 #include <algorithm>
 
 #include <gtest/gtest.h>
-#include "idto/traj_opt/inverse_dynamics_partials.h"
-#include "idto/traj_opt/penta_diagonal_matrix.h"
-#include "idto/traj_opt/penta_diagonal_solver.h"
-#include "idto/traj_opt/problem_definition.h"
-#include "idto/traj_opt/trajectory_optimizer_state.h"
-#include "idto/traj_opt/trajectory_optimizer_workspace.h"
-#include "idto/traj_opt/velocity_partials.h"
+#include "optimizer/inverse_dynamics_partials.h"
+#include "optimizer/penta_diagonal_matrix.h"
+#include "optimizer/penta_diagonal_solver.h"
+#include "optimizer/problem_definition.h"
+#include "optimizer/trajectory_optimizer_state.h"
+#include "optimizer/trajectory_optimizer_workspace.h"
+#include "optimizer/velocity_partials.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/common/test_utilities/eigen_matrix_compare.h"
@@ -19,13 +19,13 @@
 #include "drake/multibody/plant/multibody_plant_config_functions.h"
 #include "drake/multibody/tree/planar_joint.h"
 #include "drake/systems/framework/diagram_builder.h"
-#include "idto/common/find_resource.h"
+#include "utils/find_resource.h"
 
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 class TrajectoryOptimizerTester {
  public:
@@ -1843,5 +1843,5 @@ GTEST_TEST(TrajectoryOptimizerTest, EqualityConstraintsAndScaling) {
 }
 
 }  // namespace internal
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

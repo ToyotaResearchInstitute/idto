@@ -1,10 +1,10 @@
-#include "idto/traj_opt/penta_diagonal_solver.h"
+#include "optimizer/penta_diagonal_solver.h"
 
 #include <chrono>
 #include <vector>
 
 #include <gtest/gtest.h>
-#include "idto/traj_opt/penta_diagonal_matrix.h"
+#include "optimizer/penta_diagonal_matrix.h"
 
 #include "drake/common/fmt_eigen.h"
 #include "drake/common/test_utilities/eigen_matrix_compare.h"
@@ -15,7 +15,7 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 namespace internal {
 
 GTEST_TEST(PentaDiagonalMatrixTest, MultiplyBy) {
@@ -372,5 +372,5 @@ GTEST_TEST(PentaDiagonalMatrixTest, ScaleByDiagonal) {
 }
 
 }  // namespace internal
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

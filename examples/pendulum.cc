@@ -1,11 +1,10 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace pendulum {
 
@@ -22,11 +21,10 @@ class PendulumExample : public TrajOptExample {
 
 }  // namespace pendulum
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::pendulum::PendulumExample pendulum_example;
-  pendulum_example.RunExample("idto/traj_opt/examples/pendulum.yaml");
+  idto::examples::pendulum::PendulumExample pendulum_example;
+  pendulum_example.RunExample("examples/pendulum.yaml");
   return 0;
 }

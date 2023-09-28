@@ -1,10 +1,9 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/multibody/plant/multibody_plant.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace floating_box {
 
@@ -29,11 +28,10 @@ class FloatingBoxExample : public TrajOptExample {
 
 }  // namespace floating_box
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::floating_box::FloatingBoxExample example;
-  example.RunExample("idto/traj_opt/examples/floating_box.yaml");
+  idto::examples::floating_box::FloatingBoxExample example;
+  example.RunExample("examples/floating_box.yaml");
   return 0;
 }

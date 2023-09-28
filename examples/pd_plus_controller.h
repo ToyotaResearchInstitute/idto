@@ -5,7 +5,6 @@
 #include "drake/systems/framework/leaf_system.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace pd_plus {
 
@@ -82,5 +81,4 @@ class PdPlusController : public LeafSystem<double> {
 
 }  // namespace pd_plus
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto

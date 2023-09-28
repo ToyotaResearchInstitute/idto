@@ -6,9 +6,9 @@
 #include <thread>
 #include <vector>
 
-#include "idto/traj_opt/examples/yaml_config.h"
-#include "idto/traj_opt/problem_definition.h"
-#include "idto/traj_opt/trajectory_optimizer.h"
+#include "examples/yaml_config.h"
+#include "optimizer/problem_definition.h"
+#include "optimizer/trajectory_optimizer.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/geometry/meshcat.h"
@@ -18,18 +18,35 @@
 #include "drake/multibody/plant/multibody_plant_config_functions.h"
 #include "drake/systems/analysis/simulator.h"
 #include "drake/systems/framework/diagram_builder.h"
-#include "idto/common/find_resource.h"
+#include "utils/find_resource.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 
 using drake::geometry::Meshcat;
 using drake::geometry::SceneGraph;
 using drake::multibody::AddMultibodyPlant;
+using drake::multibody::MultibodyPlant;
 using drake::multibody::MultibodyPlantConfig;
 using drake::multibody::Parser;
 using drake::systems::DiagramBuilder;
+
+using optimizer::TrajectoryOptimizer;
+using optimizer::TrajectoryOptimizerSolution;
+using optimizer::TrajectoryOptimizerStats;
+using optimizer::ProblemDefinition;
+using optimizer::SolverParameters;
+using optimizer::ScalingMethod;
+using optimizer::SolverMethod;
+using optimizer::GradientsMethod;
+using optimizer::LinesearchMethod;
+using optimizer::DecodeConvergenceReasons;
+using optimizer::ConvergenceReason;
+using optimizer::SolverFlag;
+
+using Eigen::VectorXd;
+using Eigen::MatrixXd;
+
 
 /**
  * Abstract base class for trajectory optimization examples.
@@ -170,5 +187,4 @@ class TrajOptExample {
 };
 
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto

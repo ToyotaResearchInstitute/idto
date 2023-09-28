@@ -1,4 +1,4 @@
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/multibody/parsing/parser.h"
@@ -36,7 +36,7 @@ class AcrobotExample : public TrajOptExample {
 
 int main() {
   idto::traj_opt::examples::acrobot::AcrobotExample example;
-  const std::string yaml_file = "idto/traj_opt/examples/acrobot.yaml";
+  const std::string yaml_file = "examples/acrobot.yaml";
   example.RunExample(yaml_file);
 
   return 0;

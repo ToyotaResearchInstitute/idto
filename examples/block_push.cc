@@ -1,11 +1,10 @@
 #include <drake/multibody/tree/prismatic_joint.h>
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/multibody/plant/multibody_plant.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace block_push {
 
@@ -124,11 +123,10 @@ class BlockPushExample : public TrajOptExample {
 
 }  // namespace block_push
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::block_push::BlockPushExample example;
-  example.RunExample("idto/traj_opt/examples/block_push.yaml");
+  idto::examples::block_push::BlockPushExample example;
+  example.RunExample("examples/block_push.yaml");
   return 0;
 }

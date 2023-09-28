@@ -2,13 +2,12 @@
 
 #include <string>
 
-#include "idto/traj_opt/convergence_criteria_tolerances.h"
+#include "optimizer/convergence_criteria_tolerances.h"
 
 #include "drake/common/eigen_types.h"
 #include "drake/common/yaml/yaml_io.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 
 using drake::VectorX;
@@ -117,7 +116,7 @@ struct TrajOptExampleParams {
   int max_iters;
 
   // Convergence tolerances
-  ConvergenceCriteriaTolerances tolerances;
+  optimizer::ConvergenceCriteriaTolerances tolerances;
 
   // Linesearch method, "backtracking" or "armijo"
   std::string linesearch{"armijo"};
@@ -227,5 +226,4 @@ struct TrajOptExampleParams {
 };
 
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto

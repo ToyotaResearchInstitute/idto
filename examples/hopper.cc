@@ -1,11 +1,10 @@
 #include <drake/multibody/tree/prismatic_joint.h>
-#include "idto/traj_opt/examples/example_base.h"
+#include "examples/example_base.h"
 
 #include "drake/common/find_resource.h"
 #include "drake/multibody/plant/multibody_plant.h"
 
 namespace idto {
-namespace traj_opt {
 namespace examples {
 namespace hopper {
 
@@ -33,7 +32,7 @@ class HopperExample : public TrajOptExample {
 
     // Add a hopper
     std::string urdf_file =
-        idto::FindIDTOResourceOrThrow("idto/traj_opt/examples/models/hopper.urdf");
+        idto::FindIDTOResourceOrThrow("examples/models/hopper.urdf");
     Parser(plant).AddModels(urdf_file);
 
     // Add collision with the ground
@@ -48,11 +47,10 @@ class HopperExample : public TrajOptExample {
 
 }  // namespace hopper
 }  // namespace examples
-}  // namespace traj_opt
 }  // namespace idto
 
 int main() {
-  idto::traj_opt::examples::hopper::HopperExample example;
-  example.RunExample("idto/traj_opt/examples/hopper.yaml");
+  idto::examples::hopper::HopperExample example;
+  example.RunExample("examples/hopper.yaml");
   return 0;
 }

@@ -13,7 +13,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -27,7 +27,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/plant",
     ],
 )
@@ -41,7 +41,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -56,7 +56,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
         "@gflags",
@@ -72,7 +72,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -87,7 +87,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -103,7 +103,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -119,7 +119,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -135,7 +135,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -151,7 +151,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -168,7 +168,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
         "@gflags",
@@ -184,7 +184,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -198,7 +198,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/plant",
     ],
 )
@@ -212,7 +212,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -227,7 +227,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
         "@gflags",
@@ -242,8 +242,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
-        "//idto/common:profiler",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -258,8 +257,7 @@ cc_binary(
     ],
     deps = [
         ":example_base",
-        "//idto/common:find_resource",
-        "//idto/common:profiler",
+        "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
     ],
@@ -270,9 +268,9 @@ idto_cc_shared_library(
     srcs = ["mpc_controller.cc"],
     hdrs = ["mpc_controller.h"],
     deps = [
-        "//idto/traj_opt:problem_definition",
-        "//idto/traj_opt:trajectory_optimizer",
-        "//idto/traj_opt:warm_start",
+        "//optimizer:problem_definition",
+        "//optimizer:trajectory_optimizer",
+        "//optimizer:warm_start",
         "@drake//common/trajectories:piecewise_polynomial",
         "@drake//multibody/plant",
         "@drake//systems/framework:diagram",
@@ -299,9 +297,9 @@ idto_cc_shared_library(
         ":mpc_controller",
         ":pd_plus_controller",
         ":yaml_config",
-        "//idto/common:find_resource",
-        "//idto/traj_opt:problem_definition",
-        "//idto/traj_opt:trajectory_optimizer",
+        "//utils:find_resource",
+        "//optimizer:problem_definition",
+        "//optimizer:trajectory_optimizer",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
         "@drake//systems/analysis:simulator",
