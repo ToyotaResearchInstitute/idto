@@ -3,7 +3,10 @@
 # This is an empty BUILD file, to ensure that this project's root directory is
 # a Bazel package.
 
-exports_files([".bazelproject"])
+exports_files([
+    ".bazelproject",
+    "CPPLINT.cfg"
+])
 
 load("//tools:shared_library.bzl", "idto_cc_shared_library")
 
