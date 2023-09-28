@@ -38,6 +38,6 @@ class SpinnerExample : public TrajOptExample {
 
 int main() {
   idto::examples::spinner::SpinnerExample spinner_example;
-  spinner_example.RunExample("examples/spinner.yaml");
+  spinner_example.RunExample("examples/spinner/spinner.yaml");
   return 0;
 }

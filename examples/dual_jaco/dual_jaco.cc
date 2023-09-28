@@ -7,7 +7,7 @@
 
 namespace idto {
 namespace examples {
-namespace jaco {
+namespace dual_jaco {
 
 using drake::geometry::AddCompliantHydroelasticProperties;
 using drake::geometry::AddContactMaterial;
@@ -21,9 +21,9 @@ using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Vector3d;
 
-class JacoExample : public TrajOptExample {
+class DualJacoExample : public TrajOptExample {
  public:
-  JacoExample() {
+  DualJacoExample() {
     // Set the camera viewpoint
     std::vector<double> p = {1.5, 0.5, 0.0};
     meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
@@ -31,17 +31,29 @@ class JacoExample : public TrajOptExample {
 
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
-    // Add a jaco arm without gravity
+    // Add jaco arms
     std::string robot_file = idto::FindIDTOResourceOrThrow(
         "examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
-    ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
-    RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
-                           Vector3d(0, 0.27, 0.11));
-    plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
-                      X_jaco);
-    plant->set_gravity_enabled(jaco, false);
 
-    // Add a manipuland with sphere contact
+    ModelInstanceIndex jaco_left =
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_left, "jaco_left");
+    RigidTransformd X_left(RollPitchYaw<double>(0, 0, M_PI_2),
+                           Vector3d(0, 0.27, 0.11));
+    plant->WeldFrames(plant->world_frame(),
+                      plant->GetFrameByName("base", jaco_left), X_left);
+    plant->set_gravity_enabled(jaco_left, false);
+
+    ModelInstanceIndex jaco_right =
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_right, "jaco_right");
+    RigidTransformd X_right(RollPitchYaw<double>(0, 0, M_PI_2),
+                            Vector3d(0, -0.27, 0.11));
+    plant->WeldFrames(plant->world_frame(),
+                      plant->GetFrameByName("base", jaco_right), X_right);
+    plant->set_gravity_enabled(jaco_right, false);
+
+    // Add a manipuland
     std::string manipuland_file =
         idto::FindIDTOResourceOrThrow("examples/models/box_15cm.sdf");
     Parser(plant).AddModels(manipuland_file);
@@ -62,18 +74,27 @@ class JacoExample : public TrajOptExample {
 
   void CreatePlantModelForSimulation(
       MultibodyPlant<double>* plant) const final {
-    // Use hydroelastic contact, and throw instead of point contact fallback
-    plant->set_contact_model(drake::multibody::ContactModel::kHydroelastic);
-
-    // Add a jaco arm, including gravity, with rigid hydroelastic contact
+    // Add jaco arms, including gravity
     std::string robot_file = idto::FindIDTOResourceOrThrow(
         "examples/models/j2s7s300_arm_hydro_collision.sdf");
-    ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
-    RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
+
+    ModelInstanceIndex jaco_left =
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_left, "jaco_left");
+    RigidTransformd X_left(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
-    plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"),
-                      X_jaco);
-    plant->set_gravity_enabled(jaco, false);
+    plant->WeldFrames(plant->world_frame(),
+                      plant->GetFrameByName("base", jaco_left), X_left);
+    plant->set_gravity_enabled(jaco_left, false);
+
+    ModelInstanceIndex jaco_right =
+        Parser(plant).AddModels(robot_file)[0];
+    plant->RenameModelInstance(jaco_right, "jaco_right");
+    RigidTransformd X_right(RollPitchYaw<double>(0, 0, M_PI_2),
+                            Vector3d(0, -0.27, 0.11));
+    plant->WeldFrames(plant->world_frame(),
+                      plant->GetFrameByName("base", jaco_right), X_right);
+    plant->set_gravity_enabled(jaco_right, false);
 
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(
@@ -91,21 +112,21 @@ class JacoExample : public TrajOptExample {
                                   Box(1.5, 1.5, 1), "table", tan);
 
     ProximityProperties ground_proximity;
-    AddContactMaterial(3.0, {}, CoulombFriction<double>(0.5, 0.5),
+    AddContactMaterial({}, {}, CoulombFriction<double>(0.5, 0.5),
                        &ground_proximity);
-    AddCompliantHydroelasticProperties(0.1, 5e6, &ground_proximity);
+    AddCompliantHydroelasticProperties(0.1, 5e7, &ground_proximity);
     plant->RegisterCollisionGeometry(plant->world_body(), X_ground,
                                      Box(25, 25, 1), "ground",
                                      ground_proximity);
   }
 };
 
-}  // namespace jaco
+}  // namespace dual_jaco
 }  // namespace examples
 }  // namespace idto
 
 int main() {
-  idto::examples::jaco::JacoExample example;
-  example.RunExample("examples/jaco.yaml");
+  idto::examples::dual_jaco::DualJacoExample example;
+  example.RunExample("examples/dual_jaco/dual_jaco.yaml");
   return 0;
 }

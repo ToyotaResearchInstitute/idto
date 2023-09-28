@@ -72,6 +72,6 @@ class MiniCheetahExample : public TrajOptExample {
 int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   idto::examples::mini_cheetah::MiniCheetahExample example;
-  example.RunExample("examples/mini_cheetah.yaml");
+  example.RunExample("examples/mini_cheetah/mini_cheetah.yaml");
   return 0;
 }

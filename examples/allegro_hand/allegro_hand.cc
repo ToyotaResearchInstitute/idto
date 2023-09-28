@@ -208,9 +208,9 @@ int main(int argc, char* argv[]) {
   idto::examples::allegro_hand::AllegroHandExample example;
   std::string yaml_file;
   if (FLAGS_upside_down) {
-    yaml_file = "examples/allegro_hand_upside_down.yaml";
+    yaml_file = "examples/allegro_hand/allegro_hand_upside_down.yaml";
   } else {
-    yaml_file = "examples/allegro_hand.yaml";
+    yaml_file = "examples/allegro_hand/allegro_hand.yaml";
   }
   example.RunExample(yaml_file);
 

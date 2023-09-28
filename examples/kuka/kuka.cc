@@ -51,6 +51,6 @@ class KukaExample : public TrajOptExample {
 
 int main() {
   idto::examples::kuka::KukaExample example;
-  example.RunExample("examples/kuka.yaml");
+  example.RunExample("examples/kuka/kuka.yaml");
   return 0;
 }

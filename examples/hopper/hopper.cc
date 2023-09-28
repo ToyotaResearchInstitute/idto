@@ -51,6 +51,6 @@ class HopperExample : public TrajOptExample {
 
 int main() {
   idto::examples::hopper::HopperExample example;
-  example.RunExample("examples/hopper.yaml");
+  example.RunExample("examples/hopper/hopper.yaml");
   return 0;
 }

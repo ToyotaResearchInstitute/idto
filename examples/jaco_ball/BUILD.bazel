@@ -1,0 +1,23 @@
+# -*- python -*-
+
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
+
+cc_binary(
+    name = "jaco_ball",
+    srcs = ["jaco_ball.cc"],
+    data = [
+        ":jaco_ball.yaml",
+        "//examples:models",
+        "@drake//manipulation/models/jaco_description:models",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+    ],
+)
+
+
