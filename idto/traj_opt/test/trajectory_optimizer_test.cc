@@ -187,7 +187,7 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactGradientMethods) {
   config.time_step = 1.0;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  Parser(&plant).AddAllModelsFromFile(idto::FindIDTOResourceOrThrow(
+  Parser(&plant).AddModels(idto::FindIDTOResourceOrThrow(
       "idto/traj_opt/examples/models/spinner_sphere.urdf"));
   plant.Finalize();
   auto diagram = builder.Build();
@@ -310,7 +310,7 @@ GTEST_TEST(TrajectoryOptimizerTest, DoglegPoint) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -394,7 +394,7 @@ GTEST_TEST(TrajectoryOptimizerTest, TrustRatio) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
   auto diagram = builder.Build();
@@ -459,7 +459,7 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumSwingup) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -522,7 +522,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianAcrobot) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file = drake::FindResourceOrThrow(
       "drake/multibody/benchmarks/acrobot/acrobot.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -667,7 +667,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianPendulum) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
   auto diagram = builder.Build();
@@ -728,7 +728,7 @@ GTEST_TEST(TrajectoryOptimizerTest, AutodiffGradient) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -787,7 +787,7 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientKuka) {
   const std::string urdf_file = drake::FindResourceOrThrow(
       "drake/manipulation/models/iiwa_description/urdf/"
       "iiwa14_no_collision.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.WeldFrames(plant.world_frame(), plant.GetFrameByName("base"));
   plant.Finalize();
   auto diagram = builder.Build();
@@ -858,7 +858,7 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientPendulumNoGravity) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1025,7 +1025,7 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientPendulum) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1068,7 +1068,7 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumDtauDq) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1165,7 +1165,7 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcCostFromState) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.mutable_gravity_field().set_gravity_vector(VectorXd::Zero(3));
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1321,7 +1321,7 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumCalcInverseDynamics) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1567,7 +1567,7 @@ GTEST_TEST(TrajectoryOptimizerTest, SpinnerEqualityConstraints) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
       FindIDTOResourceOrThrow("idto/traj_opt/examples/models/spinner_friction.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1662,7 +1662,7 @@ GTEST_TEST(TrajectoryOptimizerTest, HopperEqualityConstraints) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file = idto::FindIDTOResourceOrThrow(
       "idto/traj_opt/examples/models/hopper.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1759,7 +1759,7 @@ GTEST_TEST(TrajectoryOptimizerTest, EqualityConstraintsAndScaling) {
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file = idto::FindIDTOResourceOrThrow(
       "idto/traj_opt/examples/models/hopper.urdf");
-  Parser(&plant).AddAllModelsFromFile(urdf_file);
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 

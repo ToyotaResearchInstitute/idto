@@ -30,7 +30,7 @@ class SpinnerExample : public TrajOptExample {
     // cluttering it with spinner-specific options.
     std::string urdf_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/spinner_friction.urdf");
-    Parser(plant).AddAllModelsFromFile(urdf_file);
+    Parser(plant).AddModels(urdf_file);
   }
 };
 

@@ -20,7 +20,7 @@ class WallBallExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
     const std::string urdf_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/wall_ball.urdf");
-    Parser(plant).AddAllModelsFromFile(urdf_file);
+    Parser(plant).AddModels(urdf_file);
   }
 };
 

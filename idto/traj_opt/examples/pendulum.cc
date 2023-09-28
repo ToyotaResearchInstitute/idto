@@ -16,7 +16,7 @@ class PendulumExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
     const std::string urdf_file =
         drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
-    Parser(plant).AddAllModelsFromFile(urdf_file);
+    Parser(plant).AddModels(urdf_file);
   }
 };
 

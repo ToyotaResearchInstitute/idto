@@ -16,7 +16,7 @@ class TwoDofSpinnerExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
     const std::string urdf_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/2dof_spinner.urdf");
-    Parser(plant).AddAllModelsFromFile(urdf_file);
+    Parser(plant).AddModels(urdf_file);
   }
 };
 

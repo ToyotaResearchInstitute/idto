@@ -45,7 +45,7 @@ class JacoExample : public TrajOptExample {
     // Add a manipuland with sphere contact
     std::string manipuland_file =
         idto::FindIDTOResourceOrThrow("idto/traj_opt/examples/models/box_15cm.sdf");
-    Parser(plant).AddAllModelsFromFile(manipuland_file);
+    Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
     const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
@@ -79,7 +79,7 @@ class JacoExample : public TrajOptExample {
     // Add a manipuland with compliant hydroelastic contact
     std::string manipuland_file = idto::FindIDTOResourceOrThrow(
         "idto/traj_opt/examples/models/box_15cm_hydro.sdf");
-    Parser(plant).AddAllModelsFromFile(manipuland_file);
+    Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
     const drake::Vector4<double> tan(0.87, 0.7, 0.5, 1.0);
