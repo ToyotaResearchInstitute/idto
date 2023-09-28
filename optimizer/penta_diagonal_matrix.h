@@ -7,7 +7,7 @@
 #include "drake/common/eigen_types.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 namespace internal {
 
 using drake::MatrixX;
@@ -189,5 +189,5 @@ class PentaDiagonalMatrix {
 };
 
 }  // namespace internal
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

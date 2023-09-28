@@ -5,7 +5,7 @@
 #include "drake/common/eigen_types.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::MatrixX;
 using Eigen::MatrixXd;
@@ -84,5 +84,5 @@ struct InverseDynamicsPartials {
   std::vector<MatrixX<T>> dtau_dqp;
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

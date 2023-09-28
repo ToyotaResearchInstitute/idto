@@ -5,7 +5,7 @@
 #include "drake/common/eigen_types.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -58,5 +58,5 @@ struct ProblemDefinition {
   std::vector<VectorXd> v_nom;
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

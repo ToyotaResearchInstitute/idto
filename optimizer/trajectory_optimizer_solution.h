@@ -8,7 +8,7 @@
 #include "drake/common/text_logging.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::VectorX;
 
@@ -184,5 +184,5 @@ struct TrajectoryOptimizerStats {
   }
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

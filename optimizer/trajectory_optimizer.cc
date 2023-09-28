@@ -1,4 +1,4 @@
-#include "idto/traj_opt/trajectory_optimizer.h"
+#include "optimizer/trajectory_optimizer.h"
 
 #include <algorithm>
 #include <chrono>
@@ -11,18 +11,18 @@
 #include <omp.h>
 #endif
 
-#include "idto/traj_opt/penta_diagonal_solver.h"
+#include "optimizer/penta_diagonal_solver.h"
+#include "utils/profiler.h"
 
 #include "drake/geometry/scene_graph_inspector.h"
 #include "drake/multibody/math/spatial_algebra.h"
 #include "drake/systems/framework/diagram.h"
-#include "idto/common/profiler.h"
 
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::AutoDiffXd;
 using drake::geometry::GeometryId;
@@ -2909,8 +2909,8 @@ void TrajectoryOptimizer<T>::NormalizeQuaternions(
   }
 }
 
-}  // namespace traj_opt
+}  // namespace optimize
 }  // namespace idto
 
 DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::idto::traj_opt::TrajectoryOptimizer)
+    class ::idto::optimizer::TrajectoryOptimizer)

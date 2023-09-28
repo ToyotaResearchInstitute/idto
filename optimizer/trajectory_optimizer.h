@@ -7,19 +7,19 @@
 #include <utility>
 #include <vector>
 
-#include "idto/traj_opt/inverse_dynamics_partials.h"
-#include "idto/traj_opt/penta_diagonal_matrix.h"
-#include "idto/traj_opt/problem_definition.h"
-#include "idto/traj_opt/solver_parameters.h"
-#include "idto/traj_opt/trajectory_optimizer_solution.h"
-#include "idto/traj_opt/trajectory_optimizer_state.h"
-#include "idto/traj_opt/trajectory_optimizer_workspace.h"
-#include "idto/traj_opt/velocity_partials.h"
-#include "idto/traj_opt/warm_start.h"
+#include "optimizer/inverse_dynamics_partials.h"
+#include "optimizer/penta_diagonal_matrix.h"
+#include "optimizer/problem_definition.h"
+#include "optimizer/solver_parameters.h"
+#include "optimizer/trajectory_optimizer_solution.h"
+#include "optimizer/trajectory_optimizer_state.h"
+#include "optimizer/trajectory_optimizer_workspace.h"
+#include "optimizer/velocity_partials.h"
+#include "optimizer/warm_start.h"
 
 #include "drake/common/eigen_types.h"
 #include "drake/multibody/plant/multibody_plant.h"
-#include "idto/common/profiler.h"
+#include "utils/profiler.h"
 
 namespace drake {
 namespace systems {
@@ -30,7 +30,7 @@ class Diagram;
 }  // namespace drake
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::multibody::MultibodyPlant;
 using drake::systems::Context;
@@ -1176,5 +1176,5 @@ SolverFlag TrajectoryOptimizer<double>::SolveFromWarmStart(
     WarmStart*, TrajectoryOptimizerSolution<double>*,
     TrajectoryOptimizerStats<double>*, ConvergenceReason*) const;
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

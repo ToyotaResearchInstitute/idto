@@ -1,4 +1,4 @@
-#include "idto/traj_opt/penta_diagonal_matrix.h"
+#include "optimizer/penta_diagonal_matrix.h"
 
 #include <utility>
 
@@ -6,7 +6,7 @@
 #include "drake/common/drake_assert.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 namespace internal {
 
 template <typename T>
@@ -257,8 +257,8 @@ void PentaDiagonalMatrix<T>::ScaleByDiagonal(const VectorX<T>& scale_factor) {
 }
 
 }  // namespace internal
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto
 
 DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::idto::traj_opt::internal::PentaDiagonalMatrix)
+    class ::idto::optimizer::internal::PentaDiagonalMatrix)

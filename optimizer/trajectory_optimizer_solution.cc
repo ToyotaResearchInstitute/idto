@@ -1,9 +1,9 @@
-#include "idto/traj_opt/trajectory_optimizer_solution.h"
+#include "optimizer/trajectory_optimizer_solution.h"
 
 #include "drake/common/default_scalars.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 std::string DecodeConvergenceReasons(ConvergenceReason reason) {
   if (reason == ConvergenceReason::kNoConvergenceCriteriaSatisfied) {
@@ -23,11 +23,11 @@ std::string DecodeConvergenceReasons(ConvergenceReason reason) {
   return reasons;
 }
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto
 
 DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    struct ::idto::traj_opt::TrajectoryOptimizerSolution)
+    struct ::idto::optimizer::TrajectoryOptimizerSolution)
 
 DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    struct ::idto::traj_opt::TrajectoryOptimizerStats)
+    struct ::idto::optimizer::TrajectoryOptimizerStats)

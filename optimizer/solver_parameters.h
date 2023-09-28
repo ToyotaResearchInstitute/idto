@@ -1,11 +1,11 @@
 #pragma once
 
-#include "idto/traj_opt/convergence_criteria_tolerances.h"
+#include "optimizer/convergence_criteria_tolerances.h"
 
 #include "drake/common/drake_copyable.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::MatrixX;
 using drake::VectorX;
@@ -176,5 +176,5 @@ struct SolverParameters {
   VectorX<bool> q_nom_relative_to_q_init;
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

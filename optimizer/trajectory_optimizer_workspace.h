@@ -6,7 +6,7 @@
 #include "drake/multibody/plant/multibody_plant.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::MatrixX;
 using drake::VectorX;
@@ -156,5 +156,5 @@ struct TrajectoryOptimizerWorkspace {
   MatrixX<T> mass_matrix_size_tmp;
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

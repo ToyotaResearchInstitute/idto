@@ -3,7 +3,7 @@
 #include "drake/common/yaml/yaml_io.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 struct ConvergenceCriteriaTolerances {
   template <typename Archive>
@@ -38,5 +38,5 @@ struct ConvergenceCriteriaTolerances {
   double abs_state_change{0.0};
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

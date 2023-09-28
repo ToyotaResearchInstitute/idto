@@ -6,7 +6,7 @@ load("//tools:test.bzl", "cc_googletest")
 load("//tools:shared_library.bzl", "idto_cc_shared_library")
 
 idto_cc_shared_library(
-    name = "traj_opt",
+    name = "optimizer",
     deps = [
         ":convergence_criteria_tolerances",
         ":inverse_dynamics_partials",
@@ -39,7 +39,7 @@ idto_cc_shared_library(
     hdrs = ["penta_diagonal_solver.h"],
     deps = [
         ":penta_diagonal_matrix",
-        "//idto/common:profiler",
+        "//utils:profiler",
         "@drake//common:essential",
     ],
 )
@@ -61,7 +61,7 @@ idto_cc_shared_library(
         ":trajectory_optimizer_workspace",
         ":velocity_partials",
         ":warm_start",
-        "//idto/common:profiler",
+        "//utils:profiler",
         "@drake//common:essential",
         "@drake//geometry:scene_graph_inspector",
         "@drake//multibody/plant",
@@ -188,7 +188,7 @@ cc_googletest(
     name = "trajectory_optimizer_test",
     srcs = ["test/trajectory_optimizer_test.cc"],
     data = [
-        "//idto/traj_opt/examples:models",
+        "//optimizer/examples:models",
         "@drake//examples/pendulum:models",
         "@drake//manipulation/models/iiwa_description:models",
         "@drake//multibody/benchmarks/acrobot:models",
@@ -199,7 +199,7 @@ cc_googletest(
         ":trajectory_optimizer",
         ":trajectory_optimizer_workspace",
         ":velocity_partials",
-        "//idto/common:find_resource",
+        "//utils:find_resource",
         "@drake//common:find_resource",
         "@drake//common/test_utilities:eigen_matrix_compare",
         "@drake//common/test_utilities:limit_malloc",

@@ -2,14 +2,14 @@
 
 #include <vector>
 
-#include "idto/traj_opt/penta_diagonal_matrix.h"
+#include "optimizer/penta_diagonal_matrix.h"
 
 #include "drake/common/drake_copyable.h"
 #include "drake/common/eigen_types.h"
-#include "idto/common/profiler.h"
+#include "utils/profiler.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 namespace internal {
 
 /// Status reported by PentaDiagonalFactorization::status().
@@ -248,5 +248,5 @@ void PentaDiagonalFactorization<kBlockSize>::SolveInPlace(
 }
 
 }  // namespace internal
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

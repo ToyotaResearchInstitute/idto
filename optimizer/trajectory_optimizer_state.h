@@ -4,10 +4,10 @@
 #include <utility>
 #include <vector>
 
-#include "idto/traj_opt/inverse_dynamics_partials.h"
-#include "idto/traj_opt/penta_diagonal_matrix.h"
-#include "idto/traj_opt/trajectory_optimizer_workspace.h"
-#include "idto/traj_opt/velocity_partials.h"
+#include "optimizer/inverse_dynamics_partials.h"
+#include "optimizer/penta_diagonal_matrix.h"
+#include "optimizer/trajectory_optimizer_workspace.h"
+#include "optimizer/velocity_partials.h"
 
 #include "drake/common/drake_copyable.h"
 #include "drake/common/eigen_types.h"
@@ -16,7 +16,7 @@
 #include "drake/systems/framework/diagram.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::multibody::BodyIndex;
 using drake::multibody::MultibodyPlant;
@@ -430,5 +430,5 @@ class TrajectoryOptimizerState {
   }
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto

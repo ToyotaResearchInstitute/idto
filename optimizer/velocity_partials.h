@@ -5,7 +5,7 @@
 #include "drake/common/eigen_types.h"
 
 namespace idto {
-namespace traj_opt {
+namespace optimizer {
 
 using drake::MatrixX;
 
@@ -38,5 +38,5 @@ struct VelocityPartials {
   std::vector<MatrixX<T>> dvt_dqm;
 };
 
-}  // namespace traj_opt
+}  // namespace optimizer
 }  // namespace idto
