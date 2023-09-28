@@ -1,8 +1,7 @@
 ##
 #
-# This file contains parameters defining the punyo hug optimization problem,
-# where a squishy humanoid robot is tasked with picking up a large object by
-# hugging it.
+# This file contains parameters defining the punyo optimization problem,
+# where a squishy humanoid robot is tasked with picking up a large ball.
 #
 ##
 

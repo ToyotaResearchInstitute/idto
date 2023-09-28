@@ -8,7 +8,7 @@
 
 namespace idto {
 namespace examples {
-namespace punyo_hug {
+namespace punyo {
 
 using drake::geometry::AddCompliantHydroelasticProperties;
 using drake::geometry::AddContactMaterial;
@@ -27,9 +27,9 @@ using drake::multibody::SpatialInertia;
 using drake::multibody::UnitInertia;
 using Eigen::Vector3d;
 
-class PunyoHugExample : public TrajOptExample {
+class PunyoExample : public TrajOptExample {
  public:
-  PunyoHugExample() {
+  PunyoExample() {
     // Set the camera viewpoint
     std::vector<double> p = {0.0, 1.0, -3.0};
     meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
@@ -143,12 +143,12 @@ class PunyoHugExample : public TrajOptExample {
   }
 };
 
-}  // namespace punyo_hug
+}  // namespace punyo
 }  // namespace examples
 }  // namespace idto
 
 int main() {
-  idto::examples::punyo_hug::PunyoHugExample example;
-  example.RunExample("examples/punyo_hug.yaml");
+  idto::examples::punyo::PunyoExample example;
+  example.RunExample("examples/punyo.yaml");
   return 0;
 }

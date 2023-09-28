@@ -79,11 +79,11 @@ cc_binary(
 )
 
 cc_binary(
-    name = "punyo_hug",
-    srcs = ["punyo_hug.cc"],
+    name = "punyo",
+    srcs = ["punyo.cc"],
     data = [
         ":models",
-        ":punyo_hug.yaml",
+        ":punyo.yaml",
     ],
     deps = [
         ":example_base",
