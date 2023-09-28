@@ -3,14 +3,14 @@
 /* Using INSTRUMENT_FUNCTION:
 
 In the source.cc you want to profile:
-  1. #include "common/profiler.h"
+  1. #include "utils/profiler.h"
   2. At the top of your function, insert INSTRUMENT_FUNCTION("Description");
-  3. Add "//common:profiler", in the BAZEL.build deps = [].
+  3. Add "//utils:profiler", in the BAZEL.build deps = [].
 
 In the main application:
-  1. Include #include "common/profiler.h"
+  1. Include #include "utils/profiler.h"
   2. Print with: std::cout << TableOfAverages() << "\n";
-  3. Add "//common:profiler", to the depencies.
+  3. Add "//utils:profiler", to the depencies.
   4. Add copts = ["-DENABLE_TIMERS"],
 
 Building:

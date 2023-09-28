@@ -42,7 +42,7 @@ idto_cc_shared_library(
 )
 
 cc_library(
-    name = "common",
+    name = "utils",
     deps = [
         ":find_resource",
         ":profiler",

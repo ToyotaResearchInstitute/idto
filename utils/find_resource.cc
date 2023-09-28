@@ -1,4 +1,4 @@
-#include "idto/common/find_resource.h"
+#include "utils/find_resource.h"
 
 #include <sys/stat.h>
 #include <unistd.h>
