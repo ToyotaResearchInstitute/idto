@@ -9,10 +9,10 @@
 #include "optimizer/trajectory_optimizer.h"
 #include "optimizer/warm_start.h"
 
-#include "drake/multibody/plant/multibody_plant.h"
-#include "drake/systems/framework/basic_vector.h"
-#include "drake/systems/framework/leaf_system.h"
-#include "drake/common/eigen_types.h"
+#include <drake/multibody/plant/multibody_plant.h>
+#include <drake/systems/framework/basic_vector.h>
+#include <drake/systems/framework/leaf_system.h>
+#include <drake/common/eigen_types.h>
 
 namespace idto {
 namespace examples {

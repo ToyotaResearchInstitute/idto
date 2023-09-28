@@ -2,7 +2,7 @@
 
 #include "optimizer/convergence_criteria_tolerances.h"
 
-#include "drake/common/drake_copyable.h"
+#include <drake/common/drake_copyable.h>
 
 namespace idto {
 namespace optimizer {

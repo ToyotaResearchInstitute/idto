@@ -6,8 +6,8 @@
 #include <gtest/gtest.h>
 #include "optimizer/penta_diagonal_matrix.h"
 
-#include "drake/common/fmt_eigen.h"
-#include "drake/common/test_utilities/eigen_matrix_compare.h"
+#include <drake/common/fmt_eigen.h>
+#include <drake/common/test_utilities/eigen_matrix_compare.h>
 
 using std::chrono::steady_clock;
 

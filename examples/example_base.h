@@ -10,14 +10,14 @@
 #include "optimizer/problem_definition.h"
 #include "optimizer/trajectory_optimizer.h"
 
-#include "drake/common/find_resource.h"
-#include "drake/geometry/meshcat.h"
-#include "drake/geometry/scene_graph.h"
-#include "drake/multibody/parsing/parser.h"
-#include "drake/multibody/plant/multibody_plant.h"
-#include "drake/multibody/plant/multibody_plant_config_functions.h"
-#include "drake/systems/analysis/simulator.h"
-#include "drake/systems/framework/diagram_builder.h"
+#include <drake/common/find_resource.h>
+#include <drake/geometry/meshcat.h>
+#include <drake/geometry/scene_graph.h>
+#include <drake/multibody/parsing/parser.h>
+#include <drake/multibody/plant/multibody_plant.h>
+#include <drake/multibody/plant/multibody_plant_config_functions.h>
+#include <drake/systems/analysis/simulator.h>
+#include <drake/systems/framework/diagram_builder.h>
 #include "utils/find_resource.h"
 
 namespace idto {

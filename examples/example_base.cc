@@ -8,10 +8,10 @@
 #include "examples/mpc_controller.h"
 #include "examples/pd_plus_controller.h"
 
-#include "drake/common/fmt_eigen.h"
-#include "drake/geometry/meshcat_visualizer.h"
-#include "drake/systems/primitives/discrete_time_delay.h"
-#include "drake/visualization/visualization_config_functions.h"
+#include <drake/common/fmt_eigen.h>
+#include <drake/geometry/meshcat_visualizer.h>
+#include <drake/systems/primitives/discrete_time_delay.h>
+#include <drake/visualization/visualization_config_functions.h>
 
 namespace idto {
 namespace examples {

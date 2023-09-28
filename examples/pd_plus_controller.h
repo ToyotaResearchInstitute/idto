@@ -1,8 +1,8 @@
 #pragma once
 
-#include "drake/common/eigen_types.h"
-#include "drake/systems/framework/basic_vector.h"
-#include "drake/systems/framework/leaf_system.h"
+#include <drake/common/eigen_types.h>
+#include <drake/systems/framework/basic_vector.h>
+#include <drake/systems/framework/leaf_system.h>
 
 namespace idto {
 namespace examples {

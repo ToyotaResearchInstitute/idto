@@ -1,6 +1,6 @@
 #include "optimizer/trajectory_optimizer_solution.h"
 
-#include "drake/common/default_scalars.h"
+#include <drake/common/default_scalars.h>
 
 namespace idto {
 namespace optimizer {

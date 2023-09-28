@@ -14,9 +14,9 @@
 #include "optimizer/penta_diagonal_solver.h"
 #include "utils/profiler.h"
 
-#include "drake/geometry/scene_graph_inspector.h"
-#include "drake/multibody/math/spatial_algebra.h"
-#include "drake/systems/framework/diagram.h"
+#include <drake/geometry/scene_graph_inspector.h>
+#include <drake/multibody/math/spatial_algebra.h>
+#include <drake/systems/framework/diagram.h>
 
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;

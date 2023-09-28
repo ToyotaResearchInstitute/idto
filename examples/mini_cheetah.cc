@@ -1,7 +1,7 @@
 #include <gflags/gflags.h>
 #include "examples/example_base.h"
 
-#include "drake/multibody/plant/multibody_plant.h"
+#include <drake/multibody/plant/multibody_plant.h>
 #include "utils/find_resource.h"
 
 DEFINE_int32(hills, 0, "number of simulated hills to walk over");

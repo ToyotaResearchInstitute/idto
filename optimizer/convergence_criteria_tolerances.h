@@ -1,6 +1,6 @@
 #pragma once
 
-#include "drake/common/yaml/yaml_io.h"
+#include <drake/common/yaml/yaml_io.h>
 
 namespace idto {
 namespace optimizer {

@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "drake/common/eigen_types.h"
-#include "drake/common/text_logging.h"
+#include <drake/common/eigen_types.h>
+#include <drake/common/text_logging.h>
 
 namespace idto {
 namespace optimizer {

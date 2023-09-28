@@ -4,8 +4,8 @@
 
 #include "optimizer/penta_diagonal_matrix.h"
 
-#include "drake/common/drake_copyable.h"
-#include "drake/common/eigen_types.h"
+#include <drake/common/drake_copyable.h>
+#include <drake/common/eigen_types.h>
 #include "utils/profiler.h"
 
 namespace idto {

@@ -1,8 +1,8 @@
 #include <drake/multibody/tree/prismatic_joint.h>
 #include "examples/example_base.h"
 
-#include "drake/common/find_resource.h"
-#include "drake/multibody/plant/multibody_plant.h"
+#include <drake/common/find_resource.h>
+#include <drake/multibody/plant/multibody_plant.h>
 
 namespace idto {
 namespace examples {

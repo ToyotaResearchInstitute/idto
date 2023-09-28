@@ -37,8 +37,8 @@ total execution time of the function or code block we are interested in.
 #include <string>
 #include <utility>
 
-#include "drake/common/scope_exit.h"
-#include "drake/common/type_safe_index.h"
+#include <drake/common/scope_exit.h>
+#include <drake/common/type_safe_index.h>
 
 namespace drake {
 namespace common {

@@ -5,9 +5,9 @@
 
 #include "optimizer/trajectory_optimizer_state.h"
 
-#include "drake/common/eigen_types.h"
-#include "drake/multibody/plant/multibody_plant.h"
-#include "drake/systems/framework/diagram.h"
+#include <drake/common/eigen_types.h>
+#include <drake/multibody/plant/multibody_plant.h>
+#include <drake/systems/framework/diagram.h>
 
 namespace idto {
 namespace optimizer {

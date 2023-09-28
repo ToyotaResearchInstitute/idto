@@ -1,10 +1,10 @@
 #include "examples/example_base.h"
 
-#include "drake/multibody/parsing/parser.h"
-#include "drake/multibody/plant/multibody_plant.h"
-#include "drake/multibody/tree/planar_joint.h"
-#include "drake/multibody/tree/prismatic_joint.h"
-#include "drake/multibody/tree/revolute_joint.h"
+#include <drake/multibody/parsing/parser.h>
+#include <drake/multibody/plant/multibody_plant.h>
+#include <drake/multibody/tree/planar_joint.h>
+#include <drake/multibody/tree/prismatic_joint.h>
+#include <drake/multibody/tree/revolute_joint.h>
 #include "utils/find_resource.h"
 
 namespace idto {

@@ -1,9 +1,9 @@
 #include <gflags/gflags.h>
 #include "examples/example_base.h"
 
-#include "drake/common/find_resource.h"
-#include "drake/multibody/parsing/parser.h"
-#include "drake/multibody/plant/multibody_plant.h"
+#include <drake/common/find_resource.h>
+#include <drake/multibody/parsing/parser.h>
+#include <drake/multibody/plant/multibody_plant.h>
 
 namespace idto {
 namespace examples {

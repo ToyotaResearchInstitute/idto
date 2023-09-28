@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "drake/common/find_runfiles.h"
+#include <drake/common/find_runfiles.h>
 
 namespace idto {
 

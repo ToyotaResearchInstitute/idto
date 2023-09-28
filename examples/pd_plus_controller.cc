@@ -1,6 +1,6 @@
 #include "examples/pd_plus_controller.h"
 
-#include "drake/common/eigen_types.h"
+#include <drake/common/eigen_types.h>
 
 namespace idto {
 namespace examples {

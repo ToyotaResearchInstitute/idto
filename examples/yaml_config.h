@@ -4,8 +4,8 @@
 
 #include "optimizer/convergence_criteria_tolerances.h"
 
-#include "drake/common/eigen_types.h"
-#include "drake/common/yaml/yaml_io.h"
+#include <drake/common/eigen_types.h>
+#include <drake/common/yaml/yaml_io.h>
 
 namespace idto {
 namespace examples {

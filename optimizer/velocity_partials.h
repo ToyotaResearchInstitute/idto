@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "drake/common/eigen_types.h"
+#include <drake/common/eigen_types.h>
 
 namespace idto {
 namespace optimizer {

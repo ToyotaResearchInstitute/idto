@@ -17,8 +17,8 @@
 #include "optimizer/velocity_partials.h"
 #include "optimizer/warm_start.h"
 
-#include "drake/common/eigen_types.h"
-#include "drake/multibody/plant/multibody_plant.h"
+#include <drake/common/eigen_types.h>
+#include <drake/multibody/plant/multibody_plant.h>
 #include "utils/profiler.h"
 
 namespace drake {

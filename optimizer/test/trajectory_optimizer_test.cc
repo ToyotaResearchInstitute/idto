@@ -11,14 +11,14 @@
 #include "optimizer/trajectory_optimizer_workspace.h"
 #include "optimizer/velocity_partials.h"
 
-#include "drake/common/find_resource.h"
-#include "drake/common/test_utilities/eigen_matrix_compare.h"
-#include "drake/common/test_utilities/limit_malloc.h"
-#include "drake/multibody/parsing/parser.h"
-#include "drake/multibody/plant/multibody_plant.h"
-#include "drake/multibody/plant/multibody_plant_config_functions.h"
-#include "drake/multibody/tree/planar_joint.h"
-#include "drake/systems/framework/diagram_builder.h"
+#include <drake/common/find_resource.h>
+#include <drake/common/test_utilities/eigen_matrix_compare.h>
+#include <drake/common/test_utilities/limit_malloc.h>
+#include <drake/multibody/parsing/parser.h>
+#include <drake/multibody/plant/multibody_plant.h>
+#include <drake/multibody/plant/multibody_plant_config_functions.h>
+#include <drake/multibody/tree/planar_joint.h>
+#include <drake/systems/framework/diagram_builder.h>
 #include "utils/find_resource.h"
 
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
