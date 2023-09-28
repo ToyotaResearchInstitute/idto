@@ -2,11 +2,26 @@
 
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:shared_library.bzl", "idto_cc_shared_library")
 load("//tools/lint:lint.bzl", "add_lint_tests")
 
 cc_binary(
     name = "kuka",
+    srcs = ["kuka.cc"],
+    data = [
+        ":kuka.yaml",
+        "//examples:models",
+        "@drake//manipulation/models/iiwa_description:models",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+    ],
+)
+
+cc_test(
+    name = "kuka_test",
     srcs = ["kuka.cc"],
     data = [
         ":kuka.yaml",
