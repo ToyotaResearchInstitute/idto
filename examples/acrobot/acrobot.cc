@@ -34,7 +34,7 @@ class AcrobotExample : public TrajOptExample {
 
 int main() {
   idto::examples::acrobot::AcrobotExample example;
-  const std::string yaml_file = "examples/acrobot.yaml";
+  const std::string yaml_file = "examples/acrobot/acrobot.yaml";
   example.RunExample(yaml_file);
 
   return 0;

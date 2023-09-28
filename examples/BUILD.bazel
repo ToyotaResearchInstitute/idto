@@ -20,19 +20,6 @@ cc_binary(
 )
 
 cc_binary(
-    name = "block_push",
-    srcs = ["block_push.cc"],
-    data = [
-        ":block_push.yaml",
-    ],
-    deps = [
-        ":example_base",
-        "//utils:find_resource",
-        "@drake//multibody/plant",
-    ],
-)
-
-cc_binary(
     name = "hopper",
     srcs = ["hopper.cc"],
     data = [
