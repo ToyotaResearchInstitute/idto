@@ -52,7 +52,7 @@ max_iters : 10              # maximum Gauss-Newton iterations
 method : "trust_region"     # solver method, {linesearch, trust_region}
 scaling : false
 equality_constraints : true
-num_threads : 4
+num_threads : 1
 
 # Method used to compute gradients of inverse dynamics, one of
 # {forward_differences, central_differences, central_differences4, autodiff}

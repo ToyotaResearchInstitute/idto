@@ -17,14 +17,16 @@ cc_binary(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 
 cc_test(
     name = "kuka_test",
     srcs = ["kuka.cc"],
+    args = ["--test"],
     data = [
-        ":kuka.yaml",
+        ":test.yaml",
         "//examples:models",
         "@drake//manipulation/models/iiwa_description:models",
     ],
@@ -33,6 +35,7 @@ cc_test(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 
