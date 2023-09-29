@@ -24,12 +24,14 @@
       </geometry>
       <material name="yellow"/>
     </visual>
+    <!--
     <collision>
       <origin xyz="0 0 0" rpy="0 1.570796326790 0"/>
       <geometry>
         <capsule length="0.4" radius=".05"/>
       </geometry>
     </collision>
+    -->
   </link>
   <joint name="base_joint" type="planar">
     <parent link="world"/>
