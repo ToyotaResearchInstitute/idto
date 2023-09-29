@@ -1,6 +1,6 @@
 ##
 #
-# This file contains parameters for the acrobot swingup problem.
+# A minimal acrobot swingup problem, for testing purposes only
 #
 ##
 
@@ -30,32 +30,15 @@ time_step : 0.05   # Discretization timestep (seconds)
 num_steps : 40     # number of timesteps
 
 # Solver parameters
-max_iters : 100             # maximum Gauss-Newton iterations
+max_iters : 10              # maximum Gauss-Newton iterations
 method : "trust_region"     # solver method, {linesearch, trust_region}
-linesearch : "backtracking" # linesearch strategy, {armino, backtracking}
-proximal_operator : false   # whether to add a proximal operator cost term
-rho_proximal : 1e-8         # the proximal cost multiplier
-exact_hessian : false
-scaling : false
-equality_constraints : true
-Delta0 : 1e3
-num_threads : 4
-
-# Convergence thresholds
-tolerances:
-  rel_cost_reduction: 0
-  abs_cost_reduction: 0
-  rel_gradient_along_dq: 0
-  abs_gradient_along_dq: 0
-  rel_state_change: 0
-  abs_state_change: 0
+num_threads : 1
 
 # Method used to compute gradients of inverse dynamics, one of
 # {forward_differences, central_differences, central_differences4, autodiff}
 gradients_method: "forward_differences"
 
 linear_solver: "pentadiagonal_lu"
-#linear_solver: "dense_ldlt"
 
 # Playback/visualization parameters
 play_target_trajectory : false
@@ -63,18 +46,10 @@ play_initial_guess : false
 play_optimal_trajectory : false
 
 # Debugging parameters
-verbose : true
+verbose : false
 linesearch_plot_every_iteration : false
 print_debug_data : false
-save_solver_stats_csv : true
+save_solver_stats_csv : false
 
 # MPC parameters
-mpc : true
-mpc_iters : 1
-controller_frequency : 300
-sim_time : 5
-sim_time_step : 5e-3
-sim_realtime_rate : 0.0
-feed_forward : true
-Kp : [0.0, 100.0]
-Kd : [0.0, 10.0]
+mpc : false
