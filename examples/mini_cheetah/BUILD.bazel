@@ -23,8 +23,9 @@ cc_binary(
 cc_test(
     name = "mini_cheetah_test",
     srcs = ["mini_cheetah.cc"],
+    args = ["--test"],
     data = [
-        ":mini_cheetah.yaml",
+        ":test.yaml",
         "//examples:models",
     ],
     deps = [

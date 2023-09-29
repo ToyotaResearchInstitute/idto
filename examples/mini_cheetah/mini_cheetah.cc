@@ -1,13 +1,15 @@
-#include <gflags/gflags.h>
 #include "examples/example_base.h"
-
-#include <drake/multibody/plant/multibody_plant.h>
 #include "utils/find_resource.h"
+#include <drake/multibody/plant/multibody_plant.h>
+#include <gflags/gflags.h>
 
 DEFINE_int32(hills, 0, "number of simulated hills to walk over");
 DEFINE_double(hill_height, 0.05, "height of each simulated hill, in meters");
 DEFINE_double(hill_spacing, 1.0,
               "distance between each simulated hill, in meters");
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -71,7 +73,12 @@ class MiniCheetahExample : public TrajOptExample {
 
 int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   idto::examples::mini_cheetah::MiniCheetahExample example;
-  example.RunExample("idto/examples/mini_cheetah/mini_cheetah.yaml");
+  if (FLAGS_test) {
+    example.RunExample("idto/examples/mini_cheetah/test.yaml");
+  } else {
+    example.RunExample("idto/examples/mini_cheetah/mini_cheetah.yaml");
+  }
   return 0;
 }

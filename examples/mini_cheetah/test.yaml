@@ -1,6 +1,6 @@
 ##
 #
-# Defines a locomotion problem for the mini cheetah qudruped
+# Minimal problem definition for the mini cheetah, for testing only
 #
 ##
 
@@ -89,22 +89,13 @@ time_step : 0.05   # Discretization timestep (seconds)
 num_steps : 20     # number of timesteps
 
 # Solver parameters
-max_iters : 50             # maximum Gauss-Newton iterations
+max_iters : 10             # maximum Gauss-Newton iterations
 method : "trust_region"    # solver method, {linesearch, trust_region}
 scaling : true
 equality_constraints : false
 normalize_quaternions : false
 linear_solver : pentadiagonal_lu
-num_threads : 4
-
-# Convergence thresholds
-tolerances:
-  rel_cost_reduction: 0
-  abs_cost_reduction: 0
-  rel_gradient_along_dq: 0
-  abs_gradient_along_dq: 0
-  rel_state_change: 0
-  abs_state_change: 0
+num_threads : 1
 
 # Method used to compute gradients of inverse dynamics, one of
 # {forward_differences, central_differences, central_differences4, autodiff}
@@ -118,7 +109,7 @@ play_optimal_trajectory : false
 # Debugging parameters
 linesearch_plot_every_iteration : false
 print_debug_data : false
-save_solver_stats_csv : true
+save_solver_stats_csv : false
 
 # Contact model parameters. 
 contact_stiffness : 2000    # normal force stiffness, in N/m
@@ -136,10 +127,10 @@ friction_coefficient : 1.0  # Coefficient of friction.
 stiction_velocity: 0.5     # Regularization velocity, in m/s.
 
 # MPC parameters
-mpc : true
+mpc : false
 mpc_iters : 1
 controller_frequency : 60
-sim_time : 10
+sim_time : 20
 sim_time_step : 1e-3
 sim_realtime_rate : 0.0
 feed_forward : true
