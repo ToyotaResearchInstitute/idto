@@ -29,7 +29,7 @@ void TrajOptExample::RunExample(const std::string options_file) const {
   TrajOptExampleParams default_options;
   TrajOptExampleParams options =
       drake::yaml::LoadYamlFile<TrajOptExampleParams>(
-          idto::FindIDTOResourceOrThrow(options_file), {}, default_options);
+          idto::FindIdtoResourceOrThrow(options_file), {}, default_options);
 
   UpdateCustomMeshcatElements(options);
 

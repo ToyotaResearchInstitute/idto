@@ -43,7 +43,7 @@ class PunyoExample : public TrajOptExample {
 
     // Add a humanoid model
     std::string sdf_file =
-        idto::FindIDTOResourceOrThrow("examples/models/punyoid.sdf");
+        idto::FindIdtoResourceOrThrow("idto/examples/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModels(sdf_file)[0];
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
     plant->set_gravity_enabled(humanoid, false);
@@ -95,7 +95,7 @@ class PunyoExample : public TrajOptExample {
 
     // Add a humanoid model
     std::string sdf_file =
-        FindIDTOResourceOrThrow("examples/models/punyoid.sdf");
+        FindIdtoResourceOrThrow("idto/examples/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModels(sdf_file)[0];
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
     plant->set_gravity_enabled(humanoid, false);
@@ -149,6 +149,6 @@ class PunyoExample : public TrajOptExample {
 
 int main() {
   idto::examples::punyo::PunyoExample example;
-  example.RunExample("examples/punyo/punyo.yaml");
+  example.RunExample("idto/examples/punyo/punyo.yaml");
   return 0;
 }
