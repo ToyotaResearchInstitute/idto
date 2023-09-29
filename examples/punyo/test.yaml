@@ -1,7 +1,6 @@
 ##
 #
-# This file contains parameters defining the punyo optimization problem,
-# where a squishy humanoid robot is tasked with picking up a large ball.
+# Minimal parameters for the punyo problem, for testing only
 #
 ##
 
@@ -77,22 +76,14 @@ Qfv : [0.01,
 
 # Problem definition parameters
 time_step : 0.05    # Discretization timestep (seconds)
-num_steps : 40      # number of timesteps
+num_steps : 10      # number of timesteps
 
 # Solver parameters
-max_iters : 50              # maximum Gauss-Newton iterations
+max_iters : 5               # maximum Gauss-Newton iterations
 method : "trust_region"     # solver method, {linesearch, trust_region}
 scaling : true
 equality_constraints : true
-num_threads : 4
-
-tolerances:
-  rel_cost_reduction: 0
-  abs_cost_reduction: 0
-  rel_gradient_along_dq: 0
-  abs_gradient_along_dq: 0
-  rel_state_change: 0
-  abs_state_change: 0
+num_threads : 1
 
 # Method used to compute gradients of inverse dynamics, one of
 # {forward_differences, central_differences, central_differences4, autodiff}
@@ -106,7 +97,7 @@ play_optimal_trajectory : false
 # Debugging parameters
 linesearch_plot_every_iteration : false
 print_debug_data : false
-save_solver_stats_csv : true
+save_solver_stats_csv : false
 
 # Contact model parameters. 
 contact_stiffness : 500     # normal force stiffness, in N/m
@@ -124,22 +115,4 @@ friction_coefficient : 0.5  # Coefficient of friction.
 stiction_velocity: 0.05     # Regularization velocity, in m/s.
 
 # MPC parameters
-mpc : true
-mpc_iters : 1
-controller_frequency : 15
-sim_time : 10
-sim_time_step : 1e-2
-sim_realtime_rate : 1.0
-feed_forward : true
-Kp : [900,                      # height
-      700, 700, 700,            # torso
-      500, 200, 200, 200, 200,  # right arm
-      500, 200, 200, 200, 200,  # left arm
-      0.0, 0.0, 0.0, 0.0,       # ball orientation
-      0.0, 0.0, 0.0]            # ball position
-Kd : [100,
-      70, 70, 70,
-      80, 50, 50, 50, 50,
-      80, 50, 50, 50, 50,
-      0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0]
+mpc : false

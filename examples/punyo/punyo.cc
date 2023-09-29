@@ -1,10 +1,14 @@
 #include "examples/example_base.h"
-
+#include "utils/find_resource.h"
 #include <drake/common/find_resource.h>
 #include <drake/geometry/proximity_properties.h>
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
-#include "utils/find_resource.h"
+#include <gflags/gflags.h>
+
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -147,8 +151,14 @@ class PunyoExample : public TrajOptExample {
 }  // namespace examples
 }  // namespace idto
 
-int main() {
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   idto::examples::punyo::PunyoExample example;
-  example.RunExample("idto/examples/punyo/punyo.yaml");
+  if (FLAGS_test) {
+    example.RunExample("idto/examples/punyo/test.yaml");
+  } else {
+    example.RunExample("idto/examples/punyo/punyo.yaml");
+  }
   return 0;
 }
