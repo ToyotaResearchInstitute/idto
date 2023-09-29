@@ -59,7 +59,7 @@ time_step : 0.05    # Discretization timestep (seconds)
 num_steps : 20      # number of timesteps
 
 # Solver parameters
-max_iters : 50             # maximum Gauss-Newton iterations
+max_iters : 50              # maximum Gauss-Newton iterations
 method : "trust_region"     # solver method, {linesearch, trust_region}
 scaling : true
 equality_constraints : false
@@ -80,7 +80,7 @@ gradients_method: "forward_differences"
 # Playback/visualization parameters
 play_target_trajectory : false
 play_initial_guess : false
-play_optimal_trajectory : true
+play_optimal_trajectory : false
 
 # Debugging parameters
 linesearch_plot_every_iteration : false
@@ -103,10 +103,10 @@ friction_coefficient : 0.2  # Coefficient of friction.
 stiction_velocity: 0.05      # Regularization velocity, in m/s.
 
 # MPC parameters
-mpc : false
-mpc_iters : 5
+mpc : true
+mpc_iters : 2
 controller_frequency : 20
-sim_time : 10
+sim_time : 5
 sim_time_step : 5e-3
 sim_realtime_rate : 1.0
 feed_forward : false
