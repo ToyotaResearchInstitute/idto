@@ -1,8 +1,13 @@
-#include <drake/multibody/tree/prismatic_joint.h>
 #include "examples/example_base.h"
 
 #include <drake/common/find_resource.h>
 #include <drake/multibody/plant/multibody_plant.h>
+#include <drake/multibody/tree/prismatic_joint.h>
+#include <gflags/gflags.h>
+
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -49,8 +54,14 @@ class HopperExample : public TrajOptExample {
 }  // namespace examples
 }  // namespace idto
 
-int main() {
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   idto::examples::hopper::HopperExample example;
-  example.RunExample("idto/examples/hopper/hopper.yaml");
+  if (FLAGS_test) {
+    example.RunExample("idto/examples/hopper/test.yaml");
+  } else {
+    example.RunExample("idto/examples/hopper/hopper.yaml");
+  }
   return 0;
 }

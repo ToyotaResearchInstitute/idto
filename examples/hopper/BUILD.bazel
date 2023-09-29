@@ -16,14 +16,16 @@ cc_binary(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 
 cc_test(
     name = "hopper_test",
     srcs = ["hopper.cc"],
+    args = ["--test"],
     data = [
-        ":hopper.yaml",
+        ":test.yaml",
         "//examples:models",
     ],
     deps = [
@@ -31,6 +33,7 @@ cc_test(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 

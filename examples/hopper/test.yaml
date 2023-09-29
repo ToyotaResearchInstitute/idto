@@ -1,6 +1,6 @@
 ##
 #
-# Simple example of a hopper that hops one step forward
+# Minimal hopper example, for testing only
 #
 ##
 
@@ -31,23 +31,14 @@ time_step : 0.05   # Discretization timestep (seconds)
 num_steps : 40    # number of timesteps
 
 # Solver parameters
-max_iters : 200               # maximum Gauss-Newton iterations
+max_iters : 10                # maximum Gauss-Newton iterations
 method : "trust_region"       # solver method, {linesearch, trust_region}
 scaling : true
 scaling_method : "double_sqrt"
 equality_constraints : true
 linear_solver : "pentadiagonal_lu"
 Delta0 : 1e-3
-num_threads : 4 
-
-# Convergence thresholds
-tolerances:
-  rel_cost_reduction: 0
-  abs_cost_reduction: 0
-  rel_gradient_along_dq: 0
-  abs_gradient_along_dq: 0
-  rel_state_change: 0
-  abs_state_change: 0
+num_threads : 1 
 
 # Method used to compute gradients of inverse dynamics, one of
 # {forward_differences, central_differences, central_differences4, autodiff}
@@ -59,10 +50,10 @@ play_initial_guess : false
 play_optimal_trajectory : false
 
 # Debugging parameters
-verbose : true
+verbose : false
 linesearch_plot_every_iteration : false
 print_debug_data : false
-save_solver_stats_csv : true
+save_solver_stats_csv : false
 
 # Contact model parameters. 
 contact_stiffness : 800     # normal force stiffness, in N/m
@@ -80,11 +71,4 @@ friction_coefficient : 1.0  # Coefficient of friction.
 stiction_velocity: 0.05     # Regularization velocity, in m/s.
 
 # MPC parameters
-mpc : true
-mpc_iters : 1 
-controller_frequency : 100
-sim_time : 5
-sim_time_step : 1e-3
-sim_realtime_rate : 0.0
-Kp : [0, 0, 0, 100.0, 100.0]
-Kd : [0, 0, 0, 5.0, 5.0]
+mpc : false
