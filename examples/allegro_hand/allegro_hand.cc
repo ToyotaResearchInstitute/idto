@@ -8,6 +8,9 @@
 
 DEFINE_bool(upside_down, false,
             "whether to treat the hand as upside down (by reversing gravity)");
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -207,10 +210,14 @@ int main(int argc, char* argv[]) {
 
   idto::examples::allegro_hand::AllegroHandExample example;
   std::string yaml_file;
-  if (FLAGS_upside_down) {
-    yaml_file = "idto/examples/allegro_hand/allegro_hand_upside_down.yaml";
+  if (FLAGS_test) {
+    yaml_file = "idto/examples/allegro_hand/test.yaml";
   } else {
-    yaml_file = "idto/examples/allegro_hand/allegro_hand.yaml";
+    if (FLAGS_upside_down) {
+      yaml_file = "idto/examples/allegro_hand/allegro_hand_upside_down.yaml";
+    } else {
+      yaml_file = "idto/examples/allegro_hand/allegro_hand.yaml";
+    }
   }
   example.RunExample(yaml_file);
 
