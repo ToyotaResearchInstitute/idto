@@ -125,6 +125,24 @@ class AllegroHandExample : public TrajOptExample {
     plant->RegisterVisualGeometry(ball, X_m3,
                                   Cylinder(0.1 * radius, 2 * radius),
                                   "ball_marker_three", black);
+    
+    // Add some markers to show the ball's orientation with the same colors as
+    // the target frame
+    const RigidTransformd Xx(RollPitchYawd(0, M_PI_2, 0),
+                             Vector3d(radius / 2, 0, 0));
+    const RigidTransformd Xy(RollPitchYawd(M_PI_2, 0, 0),
+                             Vector3d(0, radius / 2, 0));
+    const RigidTransformd Xz(Vector3d(0, 0, radius / 2));
+    plant->RegisterVisualGeometry(
+        ball, Xx, Cylinder(0.1 * radius, radius * 1.01), "ball_axis_x",
+        drake::Vector4<double>(1.0, 0.0, 0.0, 1.0));
+    plant->RegisterVisualGeometry(
+        ball, Xy, Cylinder(0.1 * radius, radius * 1.01), "ball_axis_y",
+        drake::Vector4<double>(0.0, 1.0, 0.0, 1.0));
+    plant->RegisterVisualGeometry(
+        ball, Xz, Cylinder(0.1 * radius, radius * 1.01), "ball_axis_z",
+        drake::Vector4<double>(0.0, 0.0, 1.0, 1.0));
+
   }
 
   void CreatePlantModelForSimulation(
