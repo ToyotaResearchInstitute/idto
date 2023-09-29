@@ -1,11 +1,16 @@
 #include "examples/example_base.h"
+#include "utils/find_resource.h"
 
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
 #include <drake/multibody/tree/planar_joint.h>
 #include <drake/multibody/tree/prismatic_joint.h>
 #include <drake/multibody/tree/revolute_joint.h>
-#include "utils/find_resource.h"
+#include <gflags/gflags.h>
+
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -100,8 +105,14 @@ class AirHockeyExample : public TrajOptExample {
 }  // namespace examples
 }  // namespace idto
 
-int main() {
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   idto::examples::airhockey::AirHockeyExample example;
-  example.RunExample("idto/examples/airhockey/airhockey.yaml");
+  if (FLAGS_test) {
+    example.RunExample("idto/examples/airhockey/test.yaml");
+  } else {
+    example.RunExample("idto/examples/airhockey/airhockey.yaml");
+  }
   return 0;
 }
