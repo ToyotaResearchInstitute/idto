@@ -31,22 +31,11 @@ time_step : 0.05    # Discretization timestep (seconds)
 num_steps : 40      # number of timesteps
 
 # Solver parameters
-max_iters : 200             # maximum Gauss-Newton iterations
+max_iters : 10             # maximum Gauss-Newton iterations
 method : "trust_region"     # solver method, {linesearch, trust_region}
-linesearch : "backtracking" # linesearch strategy, {armino, backtracking}
 scaling : true
 equality_constraints : true
-num_threads : 4
-
-tolerances:
-  rel_cost_reduction: 0
-  abs_cost_reduction: 0
-  rel_gradient_along_dq: 0
-  abs_gradient_along_dq: 0
-  rel_state_change: 0
-  abs_state_change: 0
-
-linear_solver : "pentadiagonal_lu"
+num_threads : 1
 
 Delta0 : 1e1      # initial trust region radius
 Delta_max : 1e5    # maximum trust region radius
@@ -63,7 +52,7 @@ play_optimal_trajectory : false
 # Debugging parameters
 linesearch_plot_every_iteration : false
 print_debug_data : false
-save_solver_stats_csv : true
+save_solver_stats_csv : false
 
 # Contact model parameters. 
 contact_stiffness : 200     # normal force stiffness, in N/m
@@ -81,12 +70,4 @@ friction_coefficient : 0.5  # Coefficient of friction.
 stiction_velocity: 0.05     # Regularization velocity, in m/s.
 
 # MPC parameters
-mpc : true
-mpc_iters : 1
-controller_frequency : 200.0
-sim_time : 5
-sim_time_step : 1e-3
-sim_realtime_rate : 0.0
-feed_forward : true
-Kp : [10,10,0]
-Kd : [1,1,0]
+mpc : false

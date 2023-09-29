@@ -3,6 +3,11 @@
 
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
+#include <gflags/gflags.h>
+
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -36,8 +41,14 @@ class SpinnerExample : public TrajOptExample {
 }  // namespace examples
 }  // namespace idto
 
-int main() {
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   idto::examples::spinner::SpinnerExample spinner_example;
-  spinner_example.RunExample("idto/examples/spinner/spinner.yaml");
+
+  if (FLAGS_test) {
+    spinner_example.RunExample("idto/examples/spinner/test.yaml");
+  } else {
+    spinner_example.RunExample("idto/examples/spinner/spinner.yaml");
+  }
   return 0;
 }
