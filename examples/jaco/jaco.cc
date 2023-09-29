@@ -32,8 +32,8 @@ class JacoExample : public TrajOptExample {
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
     // Add a jaco arm without gravity
-    std::string robot_file = idto::FindIDTOResourceOrThrow(
-        "examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
+    std::string robot_file = idto::FindIdtoResourceOrThrow(
+        "idto/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
@@ -43,7 +43,7 @@ class JacoExample : public TrajOptExample {
 
     // Add a manipuland with sphere contact
     std::string manipuland_file =
-        idto::FindIDTOResourceOrThrow("examples/models/box_15cm.sdf");
+        idto::FindIdtoResourceOrThrow("idto/examples/models/box_15cm.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
@@ -66,8 +66,8 @@ class JacoExample : public TrajOptExample {
     plant->set_contact_model(drake::multibody::ContactModel::kHydroelastic);
 
     // Add a jaco arm, including gravity, with rigid hydroelastic contact
-    std::string robot_file = idto::FindIDTOResourceOrThrow(
-        "examples/models/j2s7s300_arm_hydro_collision.sdf");
+    std::string robot_file = idto::FindIdtoResourceOrThrow(
+        "idto/examples/models/j2s7s300_arm_hydro_collision.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
@@ -76,8 +76,8 @@ class JacoExample : public TrajOptExample {
     plant->set_gravity_enabled(jaco, false);
 
     // Add a manipuland with compliant hydroelastic contact
-    std::string manipuland_file = idto::FindIDTOResourceOrThrow(
-        "examples/models/box_15cm_hydro.sdf");
+    std::string manipuland_file = idto::FindIdtoResourceOrThrow(
+        "idto/examples/models/box_15cm_hydro.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
@@ -106,6 +106,6 @@ class JacoExample : public TrajOptExample {
 
 int main() {
   idto::examples::jaco::JacoExample example;
-  example.RunExample("examples/jaco/jaco.yaml");
+  example.RunExample("idto/examples/jaco/jaco.yaml");
   return 0;
 }

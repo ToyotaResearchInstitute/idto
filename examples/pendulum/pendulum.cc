@@ -25,6 +25,6 @@ class PendulumExample : public TrajOptExample {
 
 int main() {
   idto::examples::pendulum::PendulumExample pendulum_example;
-  pendulum_example.RunExample("examples/pendulum/pendulum.yaml");
+  pendulum_example.RunExample("idto/examples/pendulum/pendulum.yaml");
   return 0;
 }

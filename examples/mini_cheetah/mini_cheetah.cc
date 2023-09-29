@@ -38,8 +38,8 @@ class MiniCheetahExample : public TrajOptExample {
     const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
 
     // Add the robot
-    std::string urdf_file = idto::FindIDTOResourceOrThrow(
-        "examples/models/mini_cheetah_mesh.urdf");
+    std::string urdf_file = idto::FindIdtoResourceOrThrow(
+        "idto/examples/models/mini_cheetah_mesh.urdf");
     Parser(plant).AddModels(urdf_file);
 
     // Add collision with the ground
@@ -72,6 +72,6 @@ class MiniCheetahExample : public TrajOptExample {
 int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   idto::examples::mini_cheetah::MiniCheetahExample example;
-  example.RunExample("examples/mini_cheetah/mini_cheetah.yaml");
+  example.RunExample("idto/examples/mini_cheetah/mini_cheetah.yaml");
   return 0;
 }

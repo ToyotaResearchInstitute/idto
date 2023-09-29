@@ -187,8 +187,8 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactGradientMethods) {
   config.time_step = 1.0;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  Parser(&plant).AddModels(idto::FindIDTOResourceOrThrow(
-      "examples/models/spinner_sphere.urdf"));
+  Parser(&plant).AddModels(idto::FindIdtoResourceOrThrow(
+      "idto/examples/models/spinner_sphere.urdf"));
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1566,7 +1566,7 @@ GTEST_TEST(TrajectoryOptimizerTest, SpinnerEqualityConstraints) {
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindIDTOResourceOrThrow("examples/models/spinner_friction.urdf");
+      FindIdtoResourceOrThrow("idto/examples/models/spinner_friction.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1660,8 +1660,8 @@ GTEST_TEST(TrajectoryOptimizerTest, HopperEqualityConstraints) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = idto::FindIDTOResourceOrThrow(
-      "examples/models/hopper.urdf");
+  const std::string urdf_file = idto::FindIdtoResourceOrThrow(
+      "idto/examples/models/hopper.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1757,8 +1757,8 @@ GTEST_TEST(TrajectoryOptimizerTest, EqualityConstraintsAndScaling) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = idto::FindIDTOResourceOrThrow(
-      "examples/models/hopper.urdf");
+  const std::string urdf_file = idto::FindIdtoResourceOrThrow(
+      "idto/examples/models/hopper.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();

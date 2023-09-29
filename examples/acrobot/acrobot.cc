@@ -42,9 +42,9 @@ int main(int argc, char* argv[]) {
 
   idto::examples::acrobot::AcrobotExample example;
   if (FLAGS_test) {
-      example.RunExample("examples/acrobot/test.yaml");
+      example.RunExample("idto/examples/acrobot/test.yaml");
   } else {
-      example.RunExample("examples/acrobot/acrobot.yaml");
+      example.RunExample("idto/examples/acrobot/acrobot.yaml");
   }
 
   return 0;
