@@ -17,14 +17,16 @@ cc_binary(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 
 cc_test(
     name = "jaco_test",
     srcs = ["jaco.cc"],
+    args = ["--test"],
     data = [
-        ":jaco.yaml",
+        ":test.yaml",
         "//examples:models",
         "@drake//manipulation/models/jaco_description:models",
     ],
@@ -33,6 +35,7 @@ cc_test(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 
