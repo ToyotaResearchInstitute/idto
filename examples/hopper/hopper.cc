@@ -27,8 +27,9 @@ class HopperExample : public TrajOptExample {
  public:
   HopperExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {1.0, 0.5, 1.5};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(0.5,-2.0, 0.5);
+    const Vector3d target_pose(0.0, 0.0, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:
