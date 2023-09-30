@@ -5,7 +5,7 @@
 # Quick script to compare basic convergence data from several csv log files.
 # These log files should be manually copied from solver_stats.csv first. 
 #
-# This script must be run from the "drake/" directory. 
+# This script must be run from the "idto/" directory. 
 #
 ##
 
@@ -17,15 +17,19 @@ import os
 
 # Basic parameters: set these to define the location and name of the log files
 # that we'll compare, as well as corresponding legend labels
-example_name = "allegro_hand"
-csv_names = ["solver_stats_normalize.csv",
-             "solver_stats_no_normalize.csv"]
-labels = ["normalized reference",
-          "non-normalized reference"]
+example_name = "acrobot"
+csv_names = ["solver_stats_linesearch.csv",
+             "solver_stats_trust_region.csv"]
+labels = ["linesearch",
+          "trust region"]
 
 # Get file locations
-drake_root = os.getcwd()
-data_root = drake_root + f"/bazel-out/k8-opt/bin/traj_opt/examples/{example_name}.runfiles/drake/"
+idto_root = os.getcwd()
+if idto_root[-5:] != "/idto":
+    print("This script must be run from the 'idto/' directory")
+    sys.exit(1)
+
+data_root = idto_root + f"/bazel-out/k8-opt/bin/examples/{example_name}/{example_name}.runfiles/idto/"
 
 # Make plots
 fig, ax = plt.subplots(3,1,sharex=True,figsize=(8,6))
@@ -66,3 +70,4 @@ ax[2].set_xlabel("Iteration k")
 ax[2].xaxis.set_major_locator(MaxNLocator(integer=True))
 
 plt.show()
+
