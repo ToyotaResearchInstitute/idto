@@ -1,6 +1,5 @@
 #include "examples/example_base.h"
 #include "utils/find_resource.h"
-
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
 #include <drake/multibody/tree/planar_joint.h>
@@ -34,8 +33,9 @@ class AirHockeyExample : public TrajOptExample {
  public:
   AirHockeyExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {0.0, 2.0, 0.5};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(0.0, -0.5, 2.0);
+    const Vector3d target_pose(0.0, 0.0, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:

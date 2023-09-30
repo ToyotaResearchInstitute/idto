@@ -1,5 +1,4 @@
 #include "examples/example_base.h"
-
 #include <drake/common/find_resource.h>
 #include <drake/multibody/plant/multibody_plant.h>
 #include <drake/multibody/tree/prismatic_joint.h>
@@ -27,7 +26,7 @@ class HopperExample : public TrajOptExample {
  public:
   HopperExample() {
     // Set the camera viewpoint
-    const Vector3d camera_pose(0.5,-2.0, 0.5);
+    const Vector3d camera_pose(0.5, -2.0, 0.5);
     const Vector3d target_pose(0.0, 0.0, 0.0);
     meshcat_->SetCameraPose(camera_pose, target_pose);
   }

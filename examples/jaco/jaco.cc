@@ -1,6 +1,5 @@
 #include "examples/example_base.h"
 #include "utils/find_resource.h"
-
 #include <drake/geometry/proximity_properties.h>
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
@@ -30,8 +29,9 @@ class JacoExample : public TrajOptExample {
  public:
   JacoExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {1.5, 0.5, 0.0};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(1.5, 0.0, 0.5);
+    const Vector3d target_pose(0.0, 0.0, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:

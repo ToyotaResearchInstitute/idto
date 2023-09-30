@@ -1,5 +1,4 @@
 #include "examples/example_base.h"
-
 #include <drake/common/find_resource.h>
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
@@ -15,13 +14,15 @@ namespace acrobot {
 
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
+using Eigen::Vector3d;
 
 class AcrobotExample : public TrajOptExample {
  public:
   AcrobotExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {0.0, 1.0, -5.0};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(0.0, 5.0, 1.0);
+    const Vector3d target_pose(0.0, 0.0, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:
@@ -42,9 +43,9 @@ int main(int argc, char* argv[]) {
 
   idto::examples::acrobot::AcrobotExample example;
   if (FLAGS_test) {
-      example.RunExample("idto/examples/acrobot/test.yaml");
+    example.RunExample("idto/examples/acrobot/test.yaml");
   } else {
-      example.RunExample("idto/examples/acrobot/acrobot.yaml");
+    example.RunExample("idto/examples/acrobot/acrobot.yaml");
   }
 
   return 0;
