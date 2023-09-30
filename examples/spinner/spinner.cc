@@ -17,13 +17,15 @@ using drake::math::RigidTransformd;
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Matrix4d;
+using Eigen::Vector3d;
 
 class SpinnerExample : public TrajOptExample {
  public:
   SpinnerExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {3.0, 1.0, 1.0};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(1.0,-0.5, 2.0);
+    const Vector3d target_pose(0.8,-0.5, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:
