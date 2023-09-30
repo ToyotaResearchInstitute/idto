@@ -35,8 +35,9 @@ class PunyoExample : public TrajOptExample {
  public:
   PunyoExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {0.0, 1.0, -3.0};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(0.0, 2.0, 1.0);
+    const Vector3d target_pose(0.0, 0.0, 0.5);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:
