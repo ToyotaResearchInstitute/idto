@@ -69,7 +69,7 @@ enable OpenMP by default.
 
 By default, Bazel pulls in a copy of Drake as an external and compiles it. If you have an existing local checkout at `/home/user/stuff/drake` that you would like to use instead, set the environment variable
 ```
-export EXAMPLES_LOCAL_DRAKE_PATH=/home/user/stuff/drake
+export IDTO_LOCAL_DRAKE_PATH=/home/user/stuff/drake
 ```
 before building.
 
