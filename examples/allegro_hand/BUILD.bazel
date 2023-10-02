@@ -1,0 +1,23 @@
+# -*- python -*-
+
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
+
+cc_binary(
+    name = "allegro_hand",
+    srcs = ["allegro_hand.cc"],
+    data = [
+        ":allegro_hand.yaml",
+        ":allegro_hand_upside_down.yaml",
+        "//examples:models",
+        "@drake//manipulation/models/allegro_hand_description:models",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+        "@gflags",
+    ],
+)

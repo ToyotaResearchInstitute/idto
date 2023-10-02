@@ -1,0 +1,19 @@
+# -*- python -*-
+
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
+
+cc_binary(
+    name = "airhockey",
+    srcs = ["airhockey.cc"],
+    data = [
+        ":airhockey.yaml",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+    ],
+)

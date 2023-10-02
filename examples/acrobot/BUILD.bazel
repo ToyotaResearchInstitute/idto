@@ -1,0 +1,20 @@
+# -*- python -*-
+
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
+
+cc_binary(
+    name = "acrobot",
+    srcs = ["acrobot.cc"],
+    data = [
+        ":acrobot.yaml",
+        "@drake//examples/acrobot:models",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+    ],
+)
