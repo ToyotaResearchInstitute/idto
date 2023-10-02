@@ -38,6 +38,16 @@ using optimizer::WarmStart;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+using optimizer::ProblemDefinition;
+using optimizer::SolverParameters;
+using optimizer::TrajectoryOptimizer;
+using optimizer::TrajectoryOptimizerSolution;
+using optimizer::TrajectoryOptimizerStats;
+using optimizer::WarmStart;
+
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
+
 /// A little struct for holding an optimal trajectory so that we can track it
 /// between MPC solves.
 struct StoredTrajectory {
