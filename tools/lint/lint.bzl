@@ -1,5 +1,8 @@
 load("//tools/lint:cpplint.bzl", "cpplint")
 
+# This is a pared-down version of Drake's linter, see
+# https://github.com/RobotLocomotion/drake/blob/master/tools/lint/
+
 def add_lint_tests(
         cpplint_data = None,
         cpplint_extra_srcs = None,

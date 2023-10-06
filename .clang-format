@@ -3,6 +3,10 @@
 # This file determines clang-format's style settings; for details, refer to
 # http://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
+# This file is based on
+# https://github.com/RobotLocomotion/drake/blob/master/.clang-format. The only
+# difference is the name of the project (drake vs idto)
+
 BasedOnStyle:  Google
 
 Language: Cpp

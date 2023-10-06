@@ -1,5 +1,8 @@
 load("@drake//tools/skylark:drake_py.bzl", "py_test_isolated")
 
+# This confguration file was copied from Drake:
+# https://github.com/RobotLocomotion/drake/blob/master/tools/lint/cpplint.bzl
+
 # From https://bazel.build/versions/master/docs/be/c-cpp.html#cc_library.srcs
 _SOURCE_EXTENSIONS = [source_ext for source_ext in """
 .c
