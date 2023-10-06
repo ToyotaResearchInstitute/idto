@@ -5,7 +5,7 @@
 # A quick script to make a plot of solution data from a trajectory optimization
 # example (see example_base.h).
 #
-# This script must be run from the "drake/" directory. 
+# This script must be run from the "idto/" directory. 
 #
 ##
 
@@ -16,19 +16,22 @@ import numpy as np
 import os
 import sys
 
-# Command-line flags determine which example (pendulum, acrobot, spinner) we're
+# Command-line flags determine which example (e.g., pendulum, acrobot, spinner) we're
 # dealing with. 
 if (len(sys.argv) != 2):
-    print(f"Usage: {sys.argv[0]} {possible_example_names}")
-    print("\nThe corresponding example must be run first (e.g. 'bazel run traj_opt/examples:pendulum`), with 'save_solver_stats_csv=true'")
+    print(f"Usage: {sys.argv[0]} [example_name]")
+    print("\nThe corresponding example must be run first (e.g. 'bazel run //examples/acrobot:acrobot`), with 'save_solver_stats_csv=true'")
     sys.exit(1)
 example_name = sys.argv[1]
 
-# drake/ directory, contains drake/bazel-out symlink
-drake_root = os.getcwd()
+# idto/ directory, contains bazel-out symlink
+idto_root = os.getcwd()
+if idto_root[-5:] != "/idto":
+    print("This script must be run from the 'idto/' directory")
+    sys.exit(1)
 
 # Bazel stores files in strange places
-data_file = drake_root + f"/bazel-out/k8-opt/bin/traj_opt/examples/{example_name}.runfiles/drake/solver_stats.csv"
+data_file = idto_root + f"/bazel-out/k8-opt/bin/examples/{example_name}/{example_name}.runfiles/idto/solver_stats.csv"
 
 # Read data from the file and format nicely
 data = np.genfromtxt(data_file, delimiter=',', names=True)
@@ -38,15 +41,6 @@ iters = data["iter"]
 fig, ax = plt.subplots(5,2,sharex=True,figsize=(16,11))
 
 fig.suptitle(f"{example_name} convergence data")
-
-#iters_tr_accepted = []
-#tr_accepted = []
-#eta = 0.0
-#for i in range(len(iters)):
-#    if data["trust_ratio"][i] > eta:
-#        tr_accepted.append(data["trust_ratio"][i])
-#        iters_tr_accepted.append(iters[i])
-#ax[1,1].plot(iters_tr_accepted, tr_accepted)
 
 ax[0,0].plot(iters, data["trust_ratio"])
 ax[0,0].set_ylabel("trust ratio")
