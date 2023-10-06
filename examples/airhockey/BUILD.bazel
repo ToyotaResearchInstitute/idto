@@ -2,7 +2,7 @@
 
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:shared_library.bzl", "idto_cc_shared_library")
+load("//tools/lint:lint.bzl", "add_lint_tests")
 
 cc_binary(
     name = "airhockey",
@@ -17,3 +17,19 @@ cc_binary(
         "@drake//multibody/plant",
     ],
 )
+
+cc_test(
+    name = "airhockey_test",
+    srcs = ["airhockey.cc"],
+    data = [
+        ":airhockey.yaml",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+    ],
+)
+
+add_lint_tests()

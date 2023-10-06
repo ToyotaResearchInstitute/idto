@@ -3,7 +3,6 @@
 #include <string>
 
 #include "optimizer/convergence_criteria_tolerances.h"
-
 #include <drake/common/eigen_types.h>
 #include <drake/common/yaml/yaml_io.h>
 
@@ -129,7 +128,7 @@ struct TrajOptExampleParams {
   std::string gradients_method{"forward_differences"};
 
   // Linear solve type: dense_ldlt, pentadiagonal_lu.
-  std::string linear_solver{"pentadiagonal_lu"};  
+  std::string linear_solver{"pentadiagonal_lu"};
 
   // Whether to add a proximal operator term to the cost (essentially adds to
   // the diagonal of the Hessian)

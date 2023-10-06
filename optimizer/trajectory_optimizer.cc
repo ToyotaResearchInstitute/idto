@@ -13,7 +13,6 @@
 
 #include "optimizer/penta_diagonal_solver.h"
 #include "utils/profiler.h"
-
 #include <drake/geometry/scene_graph_inspector.h>
 #include <drake/multibody/math/spatial_algebra.h>
 #include <drake/systems/framework/diagram.h>
@@ -1470,7 +1469,7 @@ void TrajectoryOptimizer<T>::CalcEqualityConstraintViolations(
 
   for (int t = 0; t < num_steps(); ++t) {
     for (int j = 0; j < num_unactuated_dofs; ++j) {
-      (*violations)(t * num_unactuated_dofs + j) = tau[t][unactuated_dofs()[j]];
+      (*violations)(t* num_unactuated_dofs + j) = tau[t][unactuated_dofs()[j]];
     }
   }
 }
@@ -2272,7 +2271,7 @@ void TrajectoryOptimizer<double>::SolveLinearSystemInPlace(
       *b = Hldlt.solve(*b);
       DRAKE_DEMAND(Hldlt.info() == Eigen::Success);
       break;
-    }    
+    }
   }
 }
 
@@ -2909,7 +2908,7 @@ void TrajectoryOptimizer<T>::NormalizeQuaternions(
   }
 }
 
-}  // namespace optimize
+}  // namespace optimizer
 }  // namespace idto
 
 DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(

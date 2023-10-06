@@ -2,7 +2,7 @@
 
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:shared_library.bzl", "idto_cc_shared_library")
+load("//tools/lint:lint.bzl", "add_lint_tests")
 
 cc_binary(
     name = "jaco_ball",
@@ -20,4 +20,20 @@ cc_binary(
     ],
 )
 
+cc_test(
+    name = "jaco_ball_test",
+    srcs = ["jaco_ball.cc"],
+    data = [
+        ":jaco_ball.yaml",
+        "//examples:models",
+        "@drake//manipulation/models/jaco_description:models",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+    ],
+)
 
+add_lint_tests()
