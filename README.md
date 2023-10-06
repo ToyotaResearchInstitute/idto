@@ -16,17 +16,25 @@ includes Bazel and a C++17 compiler.
 
 The easiest way to install these dependencies is with Drake's
 [`install_prereqs.sh`](https://drake.mit.edu/from_source.html#mandatory-platform-specific-instructions)
-script.
+script:
+
+```
+git clone https://github.com/RobotLocomotion/drake.git
+cd drake
+sudo ./setup/ubuntu/install_prereqs.sh
+```
+
+For Mac OS, replace the last line with `./setup/mac/install_prereqs.sh`.
 
 ## Installation
+
+Install the dependencies (see above).
 
 Clone this repository:
 ```
 git clone https://github.com/ToyotaResearchInstitute/idto
 cd idto
 ```
-
-Install the dependencies (see above).
 
 Compile the package:
 ```
@@ -48,7 +56,26 @@ model predictive control. Some others (e.g., `kuka`) perform a single open-loop
 trajectory optimization.
 
 Problem definitions, solver parameters, whether to run MPC, etc. are set in YAML
-config files, e.g., `spinner.yaml`.
+config files, e.g., `spinner.yaml`. Here are some common options:
+
+- `mpc : {true, false}` choose whether or not to run MPC. If this is set to
+  true, Meshcat will show and record a simulation where IDTO is used as an MPC
+  controller. 
+- `num_threads : N` sets the number of threads used for parallel derivative
+  computations.
+- `play_target_trajectory : {true, false}` whether to play an animation of the
+  target trajectory over Meshcat. 
+- `play_initial_guess : {true, false}` whether to play an animation of the
+  initial guess over Meshcat.
+- `play_optimal_trajectory : {true, false}` whether to play an animation of the
+  optimal trajectory over Meshcat. This is not a simulation: the generated
+  trajectory may or may not be dynamically feasible. 
+
+**NOTE** If Meshcat plays multiple things, only the last one will be recorded for
+playback via the dropdown menu. For example, if `play_target_trajectory`,
+`play_optimal_trajectory`, and `mpc` are all set to `true`, Meshcat will first
+play the target trajectory, followed by the open-loop solution, followed by a
+simulation with MPC. Only the simulation will be saved for playback.
 
 ## Other Tips and Tricks
 
@@ -67,7 +94,9 @@ enable OpenMP by default.
 
 ### Use an existing Drake installation
 
-By default, Bazel pulls in a copy of Drake as an external and compiles it. If you have an existing local checkout at `/home/user/stuff/drake` that you would like to use instead, set the environment variable
+By default, Bazel pulls in a copy of Drake as an external and compiles it. If
+you have an existing local checkout at `/home/user/stuff/drake` that you would
+like to use instead, set the environment variable
 ```
 export IDTO_LOCAL_DRAKE_PATH=/home/user/stuff/drake
 ```
