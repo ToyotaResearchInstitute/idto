@@ -79,19 +79,6 @@ simulation with MPC. Only the simulation will be saved for playback.
 
 ## Other Tips and Tricks
 
-### Enable OpenMP parallelization
-
-Our solver supports parallel derivative computations with OpenMP. Enable OpenMP
-with the build flag `--config=omp` and set `num_threads : N` in the YAML config
-file for each example. 
-
-You may want to want to add
-```
-build --config=omp
-```
-to `user.bazelrc` (create this file in `/path/to/idto/` if it does not exist) to
-enable OpenMP by default. 
-
 ### Use an existing Drake installation
 
 By default, Bazel pulls in a copy of Drake as an external and compiles it. If
