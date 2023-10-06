@@ -42,11 +42,7 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   idto::examples::acrobot::AcrobotExample example;
-  if (FLAGS_test) {
-    example.RunExample("idto/examples/acrobot/test.yaml");
-  } else {
-    example.RunExample("idto/examples/acrobot/acrobot.yaml");
-  }
+  example.RunExample("idto/examples/acrobot/acrobot.yaml", FLAGS_test);
 
   return 0;
 }

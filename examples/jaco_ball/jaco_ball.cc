@@ -166,10 +166,7 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   idto::examples::jaco_ball::JacoBallExample example;
-  if (FLAGS_test) {
-    example.RunExample("idto/examples/jaco_ball/test.yaml");
-  } else {
-    example.RunExample("idto/examples/jaco_ball/jaco_ball.yaml");
-  }
+  example.RunExample("idto/examples/jaco_ball/jaco_ball.yaml", FLAGS_test);
+
   return 0;
 }

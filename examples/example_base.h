@@ -59,8 +59,12 @@ class TrajOptExample {
    *
    * @param options_file YAML file containing cost function definition, solver
    * parameters, etc., with fields as defined in yaml_config.h.
+   * @param test Flag for whether this is being run as a unit test. If set to
+   * true, some of the options are overwritten for simplicity. For example, mpc
+   * is disabled, all visualizations are disabled, and we use fewer iterations.
    */
-  void RunExample(const std::string options_file) const;
+  void RunExample(const std::string options_file,
+                  const bool test = false) const;
 
   /**
    * Solve the optimization problem, as defined by the parameters in the given

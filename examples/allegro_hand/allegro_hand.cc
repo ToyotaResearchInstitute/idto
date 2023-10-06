@@ -227,16 +227,12 @@ int main(int argc, char* argv[]) {
 
   idto::examples::allegro_hand::AllegroHandExample example;
   std::string yaml_file;
-  if (FLAGS_test) {
-    yaml_file = "idto/examples/allegro_hand/test.yaml";
+  if (FLAGS_upside_down) {
+    yaml_file = "idto/examples/allegro_hand/allegro_hand_upside_down.yaml";
   } else {
-    if (FLAGS_upside_down) {
-      yaml_file = "idto/examples/allegro_hand/allegro_hand_upside_down.yaml";
-    } else {
-      yaml_file = "idto/examples/allegro_hand/allegro_hand.yaml";
-    }
+    yaml_file = "idto/examples/allegro_hand/allegro_hand.yaml";
   }
-  example.RunExample(yaml_file);
+  example.RunExample(yaml_file, FLAGS_test);
 
   return 0;
 }

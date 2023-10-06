@@ -31,10 +31,8 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   idto::examples::pendulum::PendulumExample pendulum_example;
-  if (FLAGS_test) {
-    pendulum_example.RunExample("idto/examples/pendulum/test.yaml");
-  } else {
-    pendulum_example.RunExample("idto/examples/pendulum/pendulum.yaml");
-  }
+  pendulum_example.RunExample("idto/examples/pendulum/pendulum.yaml",
+                              FLAGS_test);
+
   return 0;
 }

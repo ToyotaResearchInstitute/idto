@@ -46,10 +46,7 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   idto::examples::spinner::SpinnerExample spinner_example;
 
-  if (FLAGS_test) {
-    spinner_example.RunExample("idto/examples/spinner/test.yaml");
-  } else {
-    spinner_example.RunExample("idto/examples/spinner/spinner.yaml");
-  }
+  spinner_example.RunExample("idto/examples/spinner/spinner.yaml", FLAGS_test);
+
   return 0;
 }

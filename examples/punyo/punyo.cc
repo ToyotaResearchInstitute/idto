@@ -156,10 +156,7 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   idto::examples::punyo::PunyoExample example;
-  if (FLAGS_test) {
-    example.RunExample("idto/examples/punyo/test.yaml");
-  } else {
-    example.RunExample("idto/examples/punyo/punyo.yaml");
-  }
+  example.RunExample("idto/examples/punyo/punyo.yaml", FLAGS_test);
+
   return 0;
 }

@@ -25,7 +25,7 @@ cc_test(
     srcs = ["mini_cheetah.cc"],
     args = ["--test"],
     data = [
-        ":test.yaml",
+        ":mini_cheetah.yaml",
         "//examples:models",
     ],
     deps = [

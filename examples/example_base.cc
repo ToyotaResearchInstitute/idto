@@ -24,12 +24,24 @@ using mpc::Interpolator;
 using mpc::ModelPredictiveController;
 using pd_plus::PdPlusController;
 
-void TrajOptExample::RunExample(const std::string options_file) const {
+void TrajOptExample::RunExample(const std::string options_file,
+                                const bool test) const {
   // Load parameters from file
   TrajOptExampleParams default_options;
   TrajOptExampleParams options =
       drake::yaml::LoadYamlFile<TrajOptExampleParams>(
           idto::FindIdtoResourceOrThrow(options_file), {}, default_options);
+
+  if (test) {
+    // Use simplified options for a smoke test
+    options.mpc = false;
+    options.max_iters = 10;
+    options.save_solver_stats_csv = false;
+    options.play_target_trajectory = false;
+    options.play_initial_guess = false;
+    options.play_optimal_trajectory = false;
+    options.num_threads = 1;
+  }
 
   UpdateCustomMeshcatElements(options);
 

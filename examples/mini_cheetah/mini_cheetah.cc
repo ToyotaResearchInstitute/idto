@@ -76,10 +76,8 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   idto::examples::mini_cheetah::MiniCheetahExample example;
-  if (FLAGS_test) {
-    example.RunExample("idto/examples/mini_cheetah/test.yaml");
-  } else {
-    example.RunExample("idto/examples/mini_cheetah/mini_cheetah.yaml");
-  }
+  example.RunExample("idto/examples/mini_cheetah/mini_cheetah.yaml",
+                     FLAGS_test);
+
   return 0;
 }
