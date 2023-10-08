@@ -15,12 +15,14 @@ cc_binary(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 
 cc_test(
     name = "airhockey_test",
     srcs = ["airhockey.cc"],
+    args = ["--test"],
     data = [
         ":airhockey.yaml",
     ],
@@ -29,6 +31,7 @@ cc_test(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags"
     ],
 )
 

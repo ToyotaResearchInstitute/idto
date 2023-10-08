@@ -1,13 +1,15 @@
-#include <gflags/gflags.h>
 #include "examples/example_base.h"
-
 #include <drake/common/find_resource.h>
 #include <drake/geometry/proximity_properties.h>
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
+#include <gflags/gflags.h>
 
 DEFINE_bool(upside_down, false,
             "whether to treat the hand as upside down (by reversing gravity)");
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -36,8 +38,9 @@ class AllegroHandExample : public TrajOptExample {
  public:
   AllegroHandExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {0.3, 0.5, 0.0};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(0.3, 0.0, 0.5);
+    const Vector3d target_pose(0.0, 0.0, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
 
     // Add a visualization of the desired ball pose
     const double basis_length = 0.1;
@@ -81,8 +84,8 @@ class AllegroHandExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a model of the hand
-    std::string sdf_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/allegro_hand.sdf");
+    std::string sdf_file =
+        idto::FindIdtoResourceOrThrow("idto/examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),
@@ -122,6 +125,23 @@ class AllegroHandExample : public TrajOptExample {
     plant->RegisterVisualGeometry(ball, X_m3,
                                   Cylinder(0.1 * radius, 2 * radius),
                                   "ball_marker_three", black);
+
+    // Add some markers to show the ball's orientation with the same colors as
+    // the target frame
+    const RigidTransformd Xx(RollPitchYawd(0, M_PI_2, 0),
+                             Vector3d(radius / 2, 0, 0));
+    const RigidTransformd Xy(RollPitchYawd(M_PI_2, 0, 0),
+                             Vector3d(0, radius / 2, 0));
+    const RigidTransformd Xz(Vector3d(0, 0, radius / 2));
+    plant->RegisterVisualGeometry(
+        ball, Xx, Cylinder(0.1 * radius, radius * 1.01), "ball_axis_x",
+        drake::Vector4<double>(1.0, 0.0, 0.0, 1.0));
+    plant->RegisterVisualGeometry(
+        ball, Xy, Cylinder(0.1 * radius, radius * 1.01), "ball_axis_y",
+        drake::Vector4<double>(0.0, 1.0, 0.0, 1.0));
+    plant->RegisterVisualGeometry(
+        ball, Xz, Cylinder(0.1 * radius, radius * 1.01), "ball_axis_z",
+        drake::Vector4<double>(0.0, 0.0, 1.0, 1.0));
   }
 
   void CreatePlantModelForSimulation(
@@ -130,8 +150,8 @@ class AllegroHandExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a model of the hand
-    std::string sdf_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/allegro_hand.sdf");
+    std::string sdf_file =
+        idto::FindIdtoResourceOrThrow("idto/examples/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),
@@ -212,7 +232,7 @@ int main(int argc, char* argv[]) {
   } else {
     yaml_file = "idto/examples/allegro_hand/allegro_hand.yaml";
   }
-  example.RunExample(yaml_file);
+  example.RunExample(yaml_file, FLAGS_test);
 
   return 0;
 }

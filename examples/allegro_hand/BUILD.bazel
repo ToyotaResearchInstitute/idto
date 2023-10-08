@@ -25,9 +25,9 @@ cc_binary(
 cc_test(
     name = "allegro_hand_test",
     srcs = ["allegro_hand.cc"],
+    args = ["--test"],
     data = [
         ":allegro_hand.yaml",
-        ":allegro_hand_upside_down.yaml",
         "//examples:models",
         "@drake//manipulation/models/allegro_hand_description:models",
     ],

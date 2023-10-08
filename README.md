@@ -1,5 +1,10 @@
 # Inverse Dynamics Trajectory Optimization for Contact-Implicit Model Predictive Control
 
+## Installation
+
+Follow the standard instructions for installing [Drake](https://drake.mit.edu)
+from source. 
+
 ## Running the Examples
 
 Once you're in the directory where this repository was cloned, just run

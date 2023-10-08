@@ -1,9 +1,13 @@
 #include "examples/example_base.h"
-
+#include "utils/find_resource.h"
 #include <drake/geometry/proximity_properties.h>
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
-#include "utils/find_resource.h"
+#include <gflags/gflags.h>
+
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -25,8 +29,9 @@ class DualJacoExample : public TrajOptExample {
  public:
   DualJacoExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {1.5, 0.5, 0.0};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(1.5, 0.0, 0.5);
+    const Vector3d target_pose(0.0, 0.0, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:
@@ -35,8 +40,7 @@ class DualJacoExample : public TrajOptExample {
     std::string robot_file = idto::FindIdtoResourceOrThrow(
         "idto/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
 
-    ModelInstanceIndex jaco_left =
-        Parser(plant).AddModels(robot_file)[0];
+    ModelInstanceIndex jaco_left = Parser(plant).AddModels(robot_file)[0];
     plant->RenameModelInstance(jaco_left, "jaco_left");
     RigidTransformd X_left(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
@@ -44,8 +48,7 @@ class DualJacoExample : public TrajOptExample {
                       plant->GetFrameByName("base", jaco_left), X_left);
     plant->set_gravity_enabled(jaco_left, false);
 
-    ModelInstanceIndex jaco_right =
-        Parser(plant).AddModels(robot_file)[0];
+    ModelInstanceIndex jaco_right = Parser(plant).AddModels(robot_file)[0];
     plant->RenameModelInstance(jaco_right, "jaco_right");
     RigidTransformd X_right(RollPitchYaw<double>(0, 0, M_PI_2),
                             Vector3d(0, -0.27, 0.11));
@@ -78,8 +81,7 @@ class DualJacoExample : public TrajOptExample {
     std::string robot_file = idto::FindIdtoResourceOrThrow(
         "idto/examples/models/j2s7s300_arm_hydro_collision.sdf");
 
-    ModelInstanceIndex jaco_left =
-        Parser(plant).AddModels(robot_file)[0];
+    ModelInstanceIndex jaco_left = Parser(plant).AddModels(robot_file)[0];
     plant->RenameModelInstance(jaco_left, "jaco_left");
     RigidTransformd X_left(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
@@ -87,8 +89,7 @@ class DualJacoExample : public TrajOptExample {
                       plant->GetFrameByName("base", jaco_left), X_left);
     plant->set_gravity_enabled(jaco_left, false);
 
-    ModelInstanceIndex jaco_right =
-        Parser(plant).AddModels(robot_file)[0];
+    ModelInstanceIndex jaco_right = Parser(plant).AddModels(robot_file)[0];
     plant->RenameModelInstance(jaco_right, "jaco_right");
     RigidTransformd X_right(RollPitchYaw<double>(0, 0, M_PI_2),
                             Vector3d(0, -0.27, 0.11));
@@ -125,8 +126,11 @@ class DualJacoExample : public TrajOptExample {
 }  // namespace examples
 }  // namespace idto
 
-int main() {
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   idto::examples::dual_jaco::DualJacoExample example;
-  example.RunExample("idto/examples/dual_jaco/dual_jaco.yaml");
+  example.RunExample("idto/examples/dual_jaco/dual_jaco.yaml", FLAGS_test);
+
   return 0;
 }

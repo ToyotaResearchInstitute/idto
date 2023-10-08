@@ -1,9 +1,13 @@
 #include "examples/example_base.h"
-
+#include "utils/find_resource.h"
 #include <drake/geometry/proximity_properties.h>
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
-#include "utils/find_resource.h"
+#include <gflags/gflags.h>
+
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -30,8 +34,9 @@ class JacoBallExample : public TrajOptExample {
  public:
   JacoBallExample() {
     // Set the camera viewpoint
-    std::vector<double> p = {1.5, 0.5, 0.0};
-    meshcat_->SetProperty("/Cameras/default/rotated/<object>", "position", p);
+    const Vector3d camera_pose(1.5, 0.0, 0.5);
+    const Vector3d target_pose(0.0, 0.0, 0.0);
+    meshcat_->SetCameraPose(camera_pose, target_pose);
   }
 
  private:
@@ -157,8 +162,11 @@ class JacoBallExample : public TrajOptExample {
 }  // namespace examples
 }  // namespace idto
 
-int main() {
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   idto::examples::jaco_ball::JacoBallExample example;
-  example.RunExample("idto/examples/jaco_ball/jaco_ball.yaml");
+  example.RunExample("idto/examples/jaco_ball/jaco_ball.yaml", FLAGS_test);
+
   return 0;
 }

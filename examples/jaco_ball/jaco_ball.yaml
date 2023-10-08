@@ -71,9 +71,9 @@ tolerances:
 gradients_method: "forward_differences"
 
 # Playback/visualization parameters
-play_target_trajectory : true
-play_initial_guess : true
-play_optimal_trajectory : true
+play_target_trajectory : false
+play_initial_guess : false
+play_optimal_trajectory : false
 
 # Debugging parameters
 linesearch_plot_every_iteration : false
@@ -96,7 +96,7 @@ friction_coefficient : 0.5  # Coefficient of friction.
 stiction_velocity: 0.01    # Regularization velocity, in m/s.
 
 # MPC parameters
-mpc : false
+mpc : true
 mpc_iters : 2
 controller_frequency : 100
 sim_time : 5

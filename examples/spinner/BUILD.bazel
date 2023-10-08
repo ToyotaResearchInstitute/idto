@@ -16,12 +16,14 @@ cc_binary(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags",
     ],
 )
 
 cc_test(
     name = "spinner_test",
     srcs = ["spinner.cc"],
+    args = ["--test"],
     data = [
         "//examples:models",
         ":spinner.yaml",
@@ -31,6 +33,7 @@ cc_test(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags",
     ],
 )
 

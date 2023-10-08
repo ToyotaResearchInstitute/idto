@@ -1,3 +1,9 @@
+##
+#
+# Defines a locomotion problem for the mini cheetah qudruped
+#
+##
+
 # Initial state
 q_init : [ 1.0, 0.0, 0.0, 0.0,    # base orientation
            0.0, 0.0, 0.29,        # base position
@@ -89,7 +95,7 @@ scaling : true
 equality_constraints : false
 normalize_quaternions : false
 linear_solver : pentadiagonal_lu
-num_threads : 8
+num_threads : 4
 
 # Convergence thresholds
 tolerances:
@@ -107,7 +113,7 @@ gradients_method: "forward_differences"
 # Playback/visualization parameters
 play_target_trajectory : false
 play_initial_guess : false
-play_optimal_trajectory : true
+play_optimal_trajectory : false
 
 # Debugging parameters
 linesearch_plot_every_iteration : false
@@ -130,10 +136,10 @@ friction_coefficient : 1.0  # Coefficient of friction.
 stiction_velocity: 0.5     # Regularization velocity, in m/s.
 
 # MPC parameters
-mpc : false
+mpc : true
 mpc_iters : 1
 controller_frequency : 60
-sim_time : 20
+sim_time : 10
 sim_time_step : 1e-3
 sim_realtime_rate : 0.0
 feed_forward : true

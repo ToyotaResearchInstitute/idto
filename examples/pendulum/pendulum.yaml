@@ -44,8 +44,8 @@ rho_proximal : 1e-5         # the proximal cost multiplier
 gradients_method: "forward_differences"
 
 # Playback/visualization parameters
-play_target_trajectory : true
-play_initial_guess : true
+play_target_trajectory : false
+play_initial_guess : false
 play_optimal_trajectory : true
 
 # Debugging parameters

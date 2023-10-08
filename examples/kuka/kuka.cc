@@ -1,8 +1,12 @@
 #include "examples/example_base.h"
-
+#include "utils/find_resource.h"
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
-#include "utils/find_resource.h"
+#include <gflags/gflags.h>
+
+DEFINE_bool(test, false,
+            "whether this example is being run in test mode, where we solve a "
+            "simpler problem");
 
 namespace idto {
 namespace examples {
@@ -31,8 +35,8 @@ class KukaExample : public TrajOptExample {
     plant->set_gravity_enabled(kuka, false);
 
     // Add a manipuland
-    std::string manipuland_file = FindIdtoResourceOrThrow(
-        "idto/examples/models/box_intel_nuc.sdf");
+    std::string manipuland_file =
+        FindIdtoResourceOrThrow("idto/examples/models/box_intel_nuc.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
@@ -49,8 +53,11 @@ class KukaExample : public TrajOptExample {
 }  // namespace examples
 }  // namespace idto
 
-int main() {
+int main(int argc, char* argv[]) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   idto::examples::kuka::KukaExample example;
-  example.RunExample("idto/examples/kuka/kuka.yaml");
+  example.RunExample("idto/examples/kuka/kuka.yaml", FLAGS_test);
+
   return 0;
 }

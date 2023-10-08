@@ -24,5 +24,10 @@ build --action_env=CCACHE_DISABLE=1
 # Escalate warnings to errors
 build --copt=-Werror
 
+# Enable OpenMP when requested via --config=omp
+build:omp --copt=-DEIGEN_DONT_PARALLELIZE
+build:omp --copt=-fopenmp
+build:omp --linkopt=-fopenmp
+
 # Try to import user-specific configuration local to workspace.
 try-import %workspace%/user.bazelrc

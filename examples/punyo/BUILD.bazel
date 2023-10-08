@@ -16,12 +16,14 @@ cc_binary(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags",
     ],
 )
 
 cc_test(
     name = "punyo_test",
     srcs = ["punyo.cc"],
+    args = ["--test"],
     data = [
         "//examples:models",
         ":punyo.yaml",
@@ -31,6 +33,7 @@ cc_test(
         "//utils:find_resource",
         "@drake//multibody/parsing",
         "@drake//multibody/plant",
+        "@gflags",
     ],
 )
 
