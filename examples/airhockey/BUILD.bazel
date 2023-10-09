@@ -24,7 +24,7 @@ cc_test(
     srcs = ["airhockey.cc"],
     args = ["--test"],
     data = [
-        ":test.yaml",
+        ":airhockey.yaml",
     ],
     deps = [
         "//examples:example_base",

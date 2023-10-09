@@ -26,7 +26,7 @@ cc_test(
     args = ["--test"],
     data = [
         "//examples:models",
-        ":test.yaml",
+        ":spinner.yaml",
     ],
     deps = [
         "//examples:example_base",

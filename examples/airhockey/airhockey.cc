@@ -109,10 +109,7 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   idto::examples::airhockey::AirHockeyExample example;
-  if (FLAGS_test) {
-    example.RunExample("idto/examples/airhockey/test.yaml");
-  } else {
-    example.RunExample("idto/examples/airhockey/airhockey.yaml");
-  }
+  example.RunExample("idto/examples/airhockey/airhockey.yaml", FLAGS_test);
+
   return 0;
 }

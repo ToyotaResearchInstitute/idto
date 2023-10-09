@@ -27,7 +27,7 @@ cc_test(
     srcs = ["allegro_hand.cc"],
     args = ["--test"],
     data = [
-        ":test.yaml",
+        ":allegro_hand.yaml",
         "//examples:models",
         "@drake//manipulation/models/allegro_hand_description:models",
     ],

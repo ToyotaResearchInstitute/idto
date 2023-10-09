@@ -26,7 +26,7 @@ cc_test(
     srcs = ["jaco_ball.cc"],
     args = ["--test"],
     data = [
-        ":test.yaml",
+        ":jaco_ball.yaml",
         "//examples:models",
         "@drake//manipulation/models/jaco_description:models",
     ],
