@@ -1,7 +1,6 @@
 # Inverse Dynamics Trajectory Optimization 
 
 Implements the contact-implicit trajectory optimization algorithm described in
-the paper
 
 [Inverse Dynamics Trajectory Optimization for Contact-Implicit Model Predictive
 Control](https://idto.github.io/) by Vince Kurtz, Alejandro Castro, Aykut Özgün
@@ -71,7 +70,8 @@ config files, e.g., `spinner.yaml`. Here are some common options:
   optimal trajectory over Meshcat. This is not a simulation: the generated
   trajectory may or may not be dynamically feasible. 
 
-**NOTE** If Meshcat plays multiple things, only the last one will be recorded for
+**NOTE** 
+If Meshcat plays multiple things, only the last one will be recorded for
 playback via the dropdown menu. For example, if `play_target_trajectory`,
 `play_optimal_trajectory`, and `mpc` are all set to `true`, Meshcat will first
 play the target trajectory, followed by the open-loop solution, followed by a
@@ -95,3 +95,19 @@ Run a (fairly minimal) set of unit tests and lint checks with
 ```
 bazel test //...
 ```
+
+## Contributing
+
+We welcome your contributions, whether they are bug fixes, solver improvements,
+or new features! To make a contribution:
+
+1. Open a new pull request
+2. Make sure all the unit tests and lint checks pass
+3. Obtain a review from a code owner (e.g., @vincekurtz, @amcastro-tri, or
+   @aykut-tri)
+4. Once the review is approved, we'll merge it into the `main` branch!
+
+Since this is research code, we will not review to the same production-quality
+standards as Drake. Nonetheless, new contributions should be clean and
+well-documented, and unit tests are encouraged. The standard of review should be
+*improving the health of the codebase* rather than perfection.
