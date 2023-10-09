@@ -1187,7 +1187,6 @@ void TrajectoryOptimizer<T>::CalcGradient(
   INSTRUMENT_FUNCTION("Assembly of the gradient.");
   const double dt = time_step();
   const int nq = plant().num_positions();
-  TrajectoryOptimizerWorkspace<T>* workspace = &state.workspace;
 
   const std::vector<VectorX<T>>& q = state.q();
   const std::vector<VectorX<T>>& v = EvalV(state);
@@ -1206,54 +1205,41 @@ void TrajectoryOptimizer<T>::CalcGradient(
   // are constant.
   g->topRows(plant().num_positions()).setZero();
 
-  // Scratch variables for storing intermediate cost terms
-  VectorX<T>& qt_term = workspace->q_size_tmp1;
-  VectorX<T>& vt_term = workspace->v_size_tmp1;
-  VectorX<T>& vp_term = workspace->v_size_tmp2;
-  VectorX<T>& taum_term = workspace->tau_size_tmp1;
-  VectorX<T>& taut_term = workspace->tau_size_tmp2;
-  VectorX<T>& taup_term = workspace->tau_size_tmp3;
-
   for (int t = 1; t < num_steps(); ++t) {
+    auto gt = g->segment(t * nq, nq);
+
     // Contribution from position cost
-    qt_term = (q[t] - prob_.q_nom[t]).transpose() * 2 * prob_.Qq * dt;
+    gt = (q[t] - prob_.q_nom[t]).transpose() * 2 * prob_.Qq * dt;
 
     // Contribution from velocity cost
-    vt_term =
-        (v[t] - prob_.v_nom[t]).transpose() * 2 * prob_.Qv * dt * dvt_dqt[t];
+    gt += (v[t] - prob_.v_nom[t]).transpose() * 2 * prob_.Qv * dt * dvt_dqt[t];
     if (t == num_steps() - 1) {
       // The terminal cost needs to be handled differently
-      vp_term = (v[t + 1] - prob_.v_nom[t + 1]).transpose() * 2 * prob_.Qf_v *
+      gt += (v[t + 1] - prob_.v_nom[t + 1]).transpose() * 2 * prob_.Qf_v *
                 dvt_dqm[t + 1];
     } else {
-      vp_term = (v[t + 1] - prob_.v_nom[t + 1]).transpose() * 2 * prob_.Qv *
+      gt += (v[t + 1] - prob_.v_nom[t + 1]).transpose() * 2 * prob_.Qv *
                 dt * dvt_dqm[t + 1];
     }
 
     // Contribution from control cost
-    taum_term = tau[t - 1].transpose() * 2 * prob_.R * dt * dtau_dqp[t - 1];
-    taut_term = tau[t].transpose() * 2 * prob_.R * dt * dtau_dqt[t];
-    if (t == num_steps() - 1) {
+    gt += tau[t - 1].transpose() * 2 * prob_.R * dt * dtau_dqp[t - 1];
+    gt += tau[t].transpose() * 2 * prob_.R * dt * dtau_dqt[t];
+    if (t != num_steps() - 1) {
       // There is no constrol input at the final timestep
-      taup_term.setZero(nq);
-    } else {
-      taup_term = tau[t + 1].transpose() * 2 * prob_.R * dt * dtau_dqm[t + 1];
+      gt += tau[t + 1].transpose() * 2 * prob_.R * dt * dtau_dqm[t + 1];
     }
-
-    // Put it all together to get the gradient w.r.t q[t]
-    g->segment(t * nq, nq) =
-        qt_term + vt_term + vp_term + taum_term + taut_term + taup_term;
   }
 
   // Last step is different, because there is terminal cost and v[t+1] doesn't
   // exist
-  taum_term = tau[num_steps() - 1].transpose() * 2 * prob_.R * dt *
+  auto gT = g->tail(nq);
+  gT = tau[num_steps() - 1].transpose() * 2 * prob_.R * dt *
               dtau_dqp[num_steps() - 1];
-  qt_term =
+  gT +=
       (q[num_steps()] - prob_.q_nom[num_steps()]).transpose() * 2 * prob_.Qf_q;
-  vt_term = (v[num_steps()] - prob_.v_nom[num_steps()]).transpose() * 2 *
-            prob_.Qf_v * dvt_dqt[num_steps()];
-  g->tail(nq) = qt_term + vt_term + taum_term;
+  gT += (v[num_steps()] - prob_.v_nom[num_steps()]).transpose() * 2 *
+        prob_.Qf_v * dvt_dqt[num_steps()];
 
   // Add proximal operator term to the gradient, if requested
   if (params_.proximal_operator) {
