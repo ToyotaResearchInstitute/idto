@@ -24,5 +24,11 @@ jobs:
       - name: Setup Bazelisk
         uses: bazelbuild/setup-bazelisk@v1.0.1
 
-      - name: bazel build
-        run: bazel build //... -k
+      - name: Get drake
+        run: bazel fetch @drake//common || true
+      
+      - name: install prereqs
+        run: sudo `bazel info output_base`/external/drake/setup/ubuntu/install_prereqs.sh
+
+      - name: build
+        run: bazel build //...
