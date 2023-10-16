@@ -1,11 +1,28 @@
-- name: Setup Bazelisk
-  # You may pin to the exact commit or the version.
-  # uses: bazelbuild/setup-bazelisk@2351cf5a7584ce72638fbce7c22e5128a5fcd5b2
-  uses: bazelbuild/setup-bazelisk@v1.0.1
-  with:
-    # The Bazelisk version to download (if necessary) and use. Supports semver spec and ranges.
-    bazelisk-version: # optional, default is 1.x
-    # Used to query bazelisk releases.  Since there's a default, this is typically not supplied by the user.
-    token: # optional, default is ${{ github.token }}
-- name: bazel build
-  run: bazel build //... -k
+name: 'Run bazel build'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  # This line defines a job with the ID `check-links` that is stored within the `jobs` key.
+  bazel_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Bazelisk
+        uses: bazelbuild/setup-bazelisk@v1.0.1
+
+      - name: bazel build
+        run: bazel build //... -k
