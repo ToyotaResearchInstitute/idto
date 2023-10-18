@@ -380,34 +380,6 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
 }
 
 template <typename T>
-void TrajectoryOptimizer<T>::CalcSdfData(
-    const TrajectoryOptimizerState<T>& state,
-    typename TrajectoryOptimizerCache<T>::SdfData* sdf_data) const {
-  sdf_data->sdf_pairs.resize(num_steps());
-  for (int t = 0; t < num_steps(); ++t) {
-    const Context<T>& context = EvalPlantContext(state, t);
-    const drake::geometry::QueryObject<T>& query_object =
-        plant()
-            .get_geometry_query_input_port()
-            .template Eval<drake::geometry::QueryObject<T>>(context);
-    sdf_data->sdf_pairs[t] =
-        query_object.ComputeSignedDistancePairwiseClosestPoints();
-  }
-  sdf_data->up_to_date = true;
-}
-
-template <typename T>
-const std::vector<drake::geometry::SignedDistancePair<T>>&
-TrajectoryOptimizer<T>::EvalSignedDistancePairs(
-    const TrajectoryOptimizerState<T>& state, int t) const {
-  DRAKE_DEMAND(0 <= t && t < num_steps());
-  if (!state.cache().sdf_data.up_to_date) {
-    CalcSdfData(state, &state.mutable_cache().sdf_data);
-  }
-  return state.cache().sdf_data.sdf_pairs[t];
-}
-
-template <typename T>
 void TrajectoryOptimizer<T>::CalcInverseDynamicsPartials(
     const TrajectoryOptimizerState<T>& state,
     InverseDynamicsPartials<T>* id_partials) const {

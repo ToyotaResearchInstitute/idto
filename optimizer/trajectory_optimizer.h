@@ -432,19 +432,6 @@ class TrajectoryOptimizer {
                                      int t) const;
 
   /**
-   * Evaluate signed distance pairs for each potential contact pair at the given
-   * time step
-   *
-   * @param state optimizer state
-   * @param t time step
-   * @return const std::vector<drake::geometry::SignedDistancePair<T>>& contact
-   * geometry information for each contact pair at time t
-   */
-  const std::vector<drake::geometry::SignedDistancePair<T>>&
-  EvalSignedDistancePairs(const TrajectoryOptimizerState<T>& state,
-                          int t) const;
-
-  /**
    * Overwrite the initial conditions x0 = [q0, v0] stored in the solver
    * parameters. This is particularly useful when re-solving the optimization
    * problem for MPC.
@@ -684,17 +671,6 @@ class TrajectoryOptimizer {
    */
   void CalcContactForceContribution(const Context<T>& context,
                                     MultibodyForces<T>* forces) const;
-
-  /**
-   * Compute signed distance data for all contact pairs for all time steps.
-   *
-   * @param state state variable storing system configurations at each time
-   * step.
-   * @param sdf_data signed distance data that we'll set.
-   */
-  void CalcSdfData(
-      const TrajectoryOptimizerState<T>& state,
-      typename TrajectoryOptimizerCache<T>::SdfData* sdf_data) const;
 
   /**
    * Compute the mapping from qdot to v, v = N+(q)*qdot, at each time step.

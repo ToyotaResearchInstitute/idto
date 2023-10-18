@@ -130,13 +130,6 @@ struct TrajectoryOptimizerCache {
     bool up_to_date{false};
   } inverse_dynamics_cache;
 
-  struct SdfData {
-    // sdf_pairs[t], with t=0 to num_steps-1, stores the contact pairs for the
-    // t-th step.
-    std::vector<std::vector<drake::geometry::SignedDistancePair<T>>> sdf_pairs;
-    bool up_to_date{false};
-  } sdf_data;
-
   // The mapping from qdot to v, v = N+(q)*qdot, at each time step
   std::vector<MatrixX<T>> N_plus;
   bool n_plus_up_to_date{false};
@@ -345,7 +338,6 @@ class TrajectoryOptimizerState {
     cache_.gradient_up_to_date = false;
     cache_.hessian_up_to_date = false;
     if (cache_.context_cache) cache_.context_cache->up_to_date = false;
-    cache_.sdf_data.up_to_date = false;
     cache_.n_plus_up_to_date = false;
     cache_.scaled_hessian_up_to_date = false;
     cache_.scaled_gradient_up_to_date = false;
