@@ -68,9 +68,6 @@ struct TrajectoryOptimizerCache {
     scale_factors.setConstant(1.0);
     constraint_jacobian.setZero();
     lagrange_multipliers.setZero();
-    // TODO(amcastro-tri): We could allocate contact_jacobian_data here if we
-    // knew the number of contacts. For now, we'll defer the allocation to a
-    // later stage when the number of contacts is available.
   }
 
   TrajectoryOptimizerCache(const int num_steps, const Diagram<T>& diagram,
@@ -139,20 +136,6 @@ struct TrajectoryOptimizerCache {
     std::vector<std::vector<drake::geometry::SignedDistancePair<T>>> sdf_pairs;
     bool up_to_date{false};
   } sdf_data;
-
-  struct ContactJacobianData {
-    // body_pairs[t] stores body pairs for all contacts at time t.
-    std::vector<std::vector<std::pair<BodyIndex, BodyIndex>>> body_pairs;
-
-    // R_WC[t] is a std::vector storing R_WC for all contact pairs at time t.
-    std::vector<std::vector<drake::math::RotationMatrix<T>>> R_WC;
-
-    // Contact Jacobian, std::vector of size num_steps.
-    // Each Jacobian matrix has 3*num_contacts rows and num_velocities columns.
-    // J[t] stores the contact Jacobian for the t-th step.
-    std::vector<MatrixX<T>> J;
-    bool up_to_date{false};
-  } contact_jacobian_data;
 
   // The mapping from qdot to v, v = N+(q)*qdot, at each time step
   std::vector<MatrixX<T>> N_plus;
@@ -361,7 +344,6 @@ class TrajectoryOptimizerState {
     cache_.cost_up_to_date = false;
     cache_.gradient_up_to_date = false;
     cache_.hessian_up_to_date = false;
-    cache_.contact_jacobian_data.up_to_date = false;
     if (cache_.context_cache) cache_.context_cache->up_to_date = false;
     cache_.sdf_data.up_to_date = false;
     cache_.n_plus_up_to_date = false;
