@@ -217,25 +217,6 @@ struct TrajectoryOptimizerCache {
   bool merit_gradient_up_to_date{false};
 };
 
-template <typename T>
-struct ProximalOperatorData {
-  // Decision variables (generalized positions) from the {k-1}^th iteration
-  std::vector<VectorX<T>> q_last;
-
-  // Diagonal of the Hessian from the {k-1}^th iteration. This is stored as a
-  // vector of diagonals, where each diagonal corresponds to a block of size nq,
-  // i.e.,
-  //
-  // H = [C0 D0 E0 0  0  0 ... ]
-  //     [B1 C1 D1 E1 0  0 ... ]
-  //     [A2 B2 C2 D2 E2 0 ... ]
-  //     [ ...             ... ]
-  //
-  // H_diag = [diag(C0), diag(C1), diag(C2), ...]
-  //
-  std::vector<VectorX<T>> H_diag;
-};
-
 /**
  * Struct for storing the "state" of the trajectory optimizer.
  *
@@ -273,8 +254,6 @@ class TrajectoryOptimizerState {
         cache_(num_steps, diagram, plant, num_eq_constraints) {
     const int nq = plant.num_positions();
     q_.assign(num_steps + 1, VectorX<T>(nq));
-    proximal_operator_data_.q_last.assign(num_steps + 1, VectorX<T>(nq));
-    proximal_operator_data_.H_diag.assign(num_steps + 1, VectorX<T>::Zero(nq));
     per_timestep_workspace.assign(
         num_steps + 1, TrajectoryOptimizerWorkspace<T>(num_steps, plant));
   }
@@ -357,35 +336,6 @@ class TrajectoryOptimizerState {
    */
   mutable std::vector<TrajectoryOptimizerWorkspace<T>> per_timestep_workspace;
 
-  /**
-   * Getter for the decision variables and Hessian diagonal at the previous
-   * iteration
-   */
-  const ProximalOperatorData<T>& proximal_operator_data() const {
-    return proximal_operator_data_;
-  }
-
-  /**
-   * Setter for the proximal operator data (decision variables and Hessian
-   * diagonal from the previous iteration).
-   *
-   * @param q  decision variables at iteration k-1
-   * @param H  the Hessian at iteration k-1
-   */
-  void set_proximal_operator_data(const std::vector<VectorX<T>>& q,
-                                  const PentaDiagonalMatrix<T>& H) {
-    // Set previous decision variables
-    proximal_operator_data_.q_last = q;
-
-    // Set Hessian diagonal
-    const std::vector<MatrixX<T>>& C = H.C();
-    for (unsigned int t = 0; t < C.size(); ++t) {
-      proximal_operator_data_.H_diag[t] = C[t].diagonal();
-    }
-
-    invalidate_cache();
-  }
-
  private:
   // Number of timesteps in the optimization problem
   const int num_steps_;
@@ -398,10 +348,6 @@ class TrajectoryOptimizerState {
   // TODO(vincekurtz): consider storing as a single VectorX<T> for better memory
   // layout.
   std::vector<VectorX<T>> q_;
-
-  // Struct to store the diagonal of the Hessian and the decision variables (q)
-  // from the previous iteration
-  ProximalOperatorData<T> proximal_operator_data_;
 
   // Storage for all other quantities that are computed from q, and are useful
   // for our calculations

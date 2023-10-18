@@ -116,17 +116,6 @@ struct SolverParameters {
   // found somewhere in idto/bazel-out/.
   bool linesearch_plot_every_iteration{false};
 
-  // Flag for whether to add a proximal operator term,
-  //
-  //      1/2 * rho * (q_k - q_{k-1})' * diag(H) * (q_k - q_{k-1})
-  //
-  // to the cost, where q_{k-1} are the decision variables at iteration {k-1}
-  // and H_{k-1} is the Hessian at iteration k-1.
-  bool proximal_operator{false};
-
-  // Scale factor for the proximal operator cost
-  double rho_proximal{1e-8};
-
   // Contact model parameters
   // TODO(vincekurtz): this is definitely the wrong place to specify the contact
   // model - figure out the right place and put these parameters there

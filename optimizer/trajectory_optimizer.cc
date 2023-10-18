@@ -135,19 +135,6 @@ T TrajectoryOptimizer<T>::CalcCost(
   const std::vector<VectorX<T>>& tau = EvalTau(state);
   T cost = CalcCost(state.q(), v, tau, &state.workspace);
 
-  // Add a proximal operator term to the cost, if requested
-  if (params_.proximal_operator) {
-    const std::vector<VectorX<T>>& q = state.q();
-    const std::vector<VectorX<T>>& q_last =
-        state.proximal_operator_data().q_last;
-    const std::vector<VectorX<T>>& H_diag =
-        state.proximal_operator_data().H_diag;
-    for (int t = 0; t <= num_steps(); ++t) {
-      cost += T(0.5 * params_.rho_proximal * (q[t] - q_last[t]).transpose() *
-                H_diag[t].asDiagonal() * (q[t] - q_last[t]));
-    }
-  }
-
   return cost;
 }
 
@@ -1240,18 +1227,6 @@ void TrajectoryOptimizer<T>::CalcGradient(
       (q[num_steps()] - prob_.q_nom[num_steps()]).transpose() * 2 * prob_.Qf_q;
   gT += (v[num_steps()] - prob_.v_nom[num_steps()]).transpose() * 2 *
         prob_.Qf_v * dvt_dqt[num_steps()];
-
-  // Add proximal operator term to the gradient, if requested
-  if (params_.proximal_operator) {
-    const std::vector<VectorX<T>>& q_last =
-        state.proximal_operator_data().q_last;
-    const std::vector<VectorX<T>>& H_diag =
-        state.proximal_operator_data().H_diag;
-    for (int t = 0; t <= num_steps(); ++t) {
-      g->segment(t * nq, nq) +=
-          params_.rho_proximal * H_diag[t].asDiagonal() * (q[t] - q_last[t]);
-    }
-  }
 }
 
 template <typename T>
@@ -1333,14 +1308,6 @@ void TrajectoryOptimizer<T>::CalcHessian(
   dgT_dqT += dvt_dqt[num_steps()].transpose() * Qf_v * dvt_dqt[num_steps()];
   dgT_dqT +=
       dtau_dqp[num_steps() - 1].transpose() * R * dtau_dqp[num_steps() - 1];
-
-  // Add proximal operator terms to the Hessian, if requested
-  if (params_.proximal_operator) {
-    for (int t = 0; t <= num_steps(); ++t) {
-      C[t] += params_.rho_proximal *
-              state.proximal_operator_data().H_diag[t].asDiagonal();
-    }
-  }
 
   // Copy lower triangular part to upper triangular part
   H->MakeSymmetric();
@@ -2423,15 +2390,6 @@ SolverFlag TrajectoryOptimizer<double>::SolveWithLinesearch(
   double cost;
   VectorXd dq((num_steps() + 1) * plant().num_positions());
 
-  // Set proximal operator data for the first iteration
-  // N.B. since state.proximal_operator_data.H_diag is initialized to zero, this
-  // first computation of the Hessian, which is for scaling purposes only, will
-  // not include the proximal operator term.
-  if (params_.proximal_operator) {
-    state.set_proximal_operator_data(q_guess, EvalHessian(state));
-    scratch_state.set_proximal_operator_data(q_guess, EvalHessian(state));
-  }
-
   if (params_.verbose) {
     // Define printout data
     std::cout << "-------------------------------------------------------------"
@@ -2506,12 +2464,6 @@ SolverFlag TrajectoryOptimizer<double>::SolveWithLinesearch(
     // Update the decision variables
     state.AddToQ(alpha * dq);
     if (params_.normalize_quaternions) NormalizeQuaternions(&state);
-
-    // Update the stored decision variables for the proximal operator cost
-    if (params_.proximal_operator) {
-      state.set_proximal_operator_data(state.q(), H);
-      scratch_state.set_proximal_operator_data(state.q(), H);
-    }
 
     iter_time = std::chrono::high_resolution_clock::now() - iter_start_time;
 
@@ -2730,12 +2682,6 @@ SolverFlag TrajectoryOptimizer<double>::SolveFromWarmStart(
 
     // If the ratio is large enough, accept the change
     if (rho > eta) {
-      // Update the coefficients for the proximal operator cost
-      if (params_.proximal_operator) {
-        state.set_proximal_operator_data(state.q(), EvalHessian(state));
-        scratch_state.set_proximal_operator_data(state.q(), EvalHessian(state));
-      }
-
       state.AddToQ(dq);  // q += dq
       if (params_.normalize_quaternions) NormalizeQuaternions(&state);
     }

@@ -39,8 +39,6 @@ struct TrajOptExampleParams {
     a->Visit(DRAKE_NVP(linesearch));
     a->Visit(DRAKE_NVP(gradients_method));
     a->Visit(DRAKE_NVP(method));
-    a->Visit(DRAKE_NVP(proximal_operator));
-    a->Visit(DRAKE_NVP(rho_proximal));
     a->Visit(DRAKE_NVP(play_optimal_trajectory));
     a->Visit(DRAKE_NVP(play_initial_guess));
     a->Visit(DRAKE_NVP(play_target_trajectory));
@@ -129,11 +127,6 @@ struct TrajOptExampleParams {
 
   // Linear solve type: dense_ldlt, pentadiagonal_lu.
   std::string linear_solver{"pentadiagonal_lu"};
-
-  // Whether to add a proximal operator term to the cost (essentially adds to
-  // the diagonal of the Hessian)
-  bool proximal_operator{false};
-  double rho_proximal{1e-8};
 
   // Flags for playing back the target trajectory, initital guess, and optimal
   // trajectory on the visualizer
