@@ -198,9 +198,21 @@ TrajectoryOptimizerSolution<double> TrajOptExample::SolveTrajectoryOptimization(
   auto [plant, scene_graph] = AddMultibodyPlant(config, &builder);
   CreatePlantModel(&plant);
   plant.Finalize();
+  const int nq = plant.num_positions();
   const int nv = plant.num_velocities();
-
   auto diagram = builder.Build();
+
+  // Check sizes of things we load from YAML
+  DRAKE_DEMAND(options.q_init.size() == nq);
+  DRAKE_DEMAND(options.v_init.size() == nv);
+  DRAKE_DEMAND(options.q_nom_start.size() == nq);
+  DRAKE_DEMAND(options.q_nom_end.size() == nq);
+  DRAKE_DEMAND(options.q_guess.size() == nq);
+  DRAKE_DEMAND(options.Qq.size() == nq);
+  DRAKE_DEMAND(options.Qv.size() == nv);
+  DRAKE_DEMAND(options.R.size() == nv);
+  DRAKE_DEMAND(options.Qfq.size() == nq);
+  DRAKE_DEMAND(options.Qfv.size() == nv);
 
   // Define the optimization problem
   ProblemDefinition opt_prob;
