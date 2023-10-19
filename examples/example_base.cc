@@ -469,9 +469,6 @@ void TrajOptExample::SetSolverParameters(
 
   solver_params->convergence_tolerances = options.tolerances;
 
-  solver_params->proximal_operator = options.proximal_operator;
-  solver_params->rho_proximal = options.rho_proximal;
-
   // Set contact parameters
   solver_params->contact_stiffness = options.contact_stiffness;
   solver_params->dissipation_velocity = options.dissipation_velocity;

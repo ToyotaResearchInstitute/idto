@@ -36,8 +36,6 @@ num_steps : 40    # number of timesteps
 max_iters : 50              # maximum Gauss-Newton iterations
 method : "trust_region"     # solver method, {linesearch, trust_region}
 linesearch : "armijo"       # linesearch strategy, {armino, backtracking}
-proximal_operator : false   # whether to add a proximal operator cost term
-rho_proximal : 1e-5         # the proximal cost multiplier
 
 # Method used to compute gradients of inverse dynamics, one of
 # {forward_differences, central_differences, central_differences4, autodiff}

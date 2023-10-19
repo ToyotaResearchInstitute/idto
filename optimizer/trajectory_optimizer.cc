@@ -135,19 +135,6 @@ T TrajectoryOptimizer<T>::CalcCost(
   const std::vector<VectorX<T>>& tau = EvalTau(state);
   T cost = CalcCost(state.q(), v, tau, &state.workspace);
 
-  // Add a proximal operator term to the cost, if requested
-  if (params_.proximal_operator) {
-    const std::vector<VectorX<T>>& q = state.q();
-    const std::vector<VectorX<T>>& q_last =
-        state.proximal_operator_data().q_last;
-    const std::vector<VectorX<T>>& H_diag =
-        state.proximal_operator_data().H_diag;
-    for (int t = 0; t <= num_steps(); ++t) {
-      cost += T(0.5 * params_.rho_proximal * (q[t] - q_last[t]).transpose() *
-                H_diag[t].asDiagonal() * (q[t] - q_last[t]));
-    }
-  }
-
   return cost;
 }
 
@@ -390,161 +377,6 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
     forces->mutable_body_forces()[bodyA.node_index()] += F_AAo_W;
     forces->mutable_body_forces()[bodyB.node_index()] += F_BBo_W;
   }
-}
-
-template <typename T>
-void TrajectoryOptimizer<T>::CalcSdfData(
-    const TrajectoryOptimizerState<T>& state,
-    typename TrajectoryOptimizerCache<T>::SdfData* sdf_data) const {
-  sdf_data->sdf_pairs.resize(num_steps());
-  for (int t = 0; t < num_steps(); ++t) {
-    const Context<T>& context = EvalPlantContext(state, t);
-    const drake::geometry::QueryObject<T>& query_object =
-        plant()
-            .get_geometry_query_input_port()
-            .template Eval<drake::geometry::QueryObject<T>>(context);
-    sdf_data->sdf_pairs[t] =
-        query_object.ComputeSignedDistancePairwiseClosestPoints();
-  }
-  sdf_data->up_to_date = true;
-}
-
-template <typename T>
-const std::vector<drake::geometry::SignedDistancePair<T>>&
-TrajectoryOptimizer<T>::EvalSignedDistancePairs(
-    const TrajectoryOptimizerState<T>& state, int t) const {
-  DRAKE_DEMAND(0 <= t && t < num_steps());
-  if (!state.cache().sdf_data.up_to_date) {
-    CalcSdfData(state, &state.mutable_cache().sdf_data);
-  }
-  return state.cache().sdf_data.sdf_pairs[t];
-}
-
-template <typename T>
-void TrajectoryOptimizer<T>::CalcContactJacobian(
-    const Context<T>& context,
-    const std::vector<drake::geometry::SignedDistancePair<T>>& sdf_pairs,
-    MatrixX<T>* J, std::vector<drake::math::RotationMatrix<T>>* R_WC,
-    std::vector<std::pair<BodyIndex, BodyIndex>>* body_pairs) const {
-  // TODO(amcastro-tri): consider moving into workspace to avoid heap
-  // allocating.
-  const int nv = plant().num_velocities();
-  drake::Matrix3X<T> Jv_WAc_W(3, nv);
-  drake::Matrix3X<T> Jv_WBc_W(3, nv);
-  const int nc = sdf_pairs.size();
-  J->resize(3 * nc, nv);
-  R_WC->resize(nc);
-  body_pairs->resize(nc);
-
-  const drake::geometry::QueryObject<T>& query_object =
-      plant()
-          .get_geometry_query_input_port()
-          .template Eval<drake::geometry::QueryObject<T>>(context);
-  const drake::geometry::SceneGraphInspector<T>& inspector =
-      query_object.inspector();
-
-  int ic = 0;
-  const Frame<T>& frame_W = plant().world_frame();
-  for (const SignedDistancePair<T>& pair : sdf_pairs) {
-    // Normal outwards from A.
-    const drake::Vector3<T> nhat_W = -pair.nhat_BA_W;
-
-    // Get geometry and transformation data for the witness points
-    const GeometryId geometryA_id = pair.id_A;
-    const GeometryId geometryB_id = pair.id_B;
-
-    const Body<T>& bodyA =
-        *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryA_id)));
-    const BodyIndex bodyA_index = bodyA.index();
-    const Body<T>& bodyB =
-        *(plant().GetBodyFromFrameId(inspector.GetFrameId(geometryB_id)));
-    const BodyIndex bodyB_index = bodyB.index();
-
-    body_pairs->at(ic) = std::make_pair(bodyA_index, bodyB_index);
-
-    // Body poses in world.
-    const drake::math::RigidTransform<T>& X_WA =
-        plant().EvalBodyPoseInWorld(context, bodyA);
-    const drake::math::RigidTransform<T>& X_WB =
-        plant().EvalBodyPoseInWorld(context, bodyB);
-
-    // Geometry poses in body frames.
-    const drake::math::RigidTransform<T> X_AGa =
-        inspector.GetPoseInFrame(geometryA_id).template cast<T>();
-    const drake::math::RigidTransform<T> X_BGb =
-        inspector.GetPoseInFrame(geometryB_id).template cast<T>();
-
-    // Position of the witness points in the world frame.
-    const auto& p_GaCa_Ga = pair.p_ACa;
-    const RigidTransform<T> X_WGa = X_WA * X_AGa;
-    const drake::Vector3<T> p_WCa_W = X_WGa * p_GaCa_Ga;
-    const auto& p_GbCb_Gb = pair.p_BCb;
-    const RigidTransform<T> X_WGb = X_WB * X_BGb;
-    const drake::Vector3<T> p_WCb_W = X_WGb * p_GbCb_Gb;
-
-    // We define the (common, unique) contact point C as the midpoint between
-    // witness points Ca and Cb.
-    const drake::Vector3<T> p_WC = 0.5 * (p_WCa_W + p_WCb_W);
-
-    // Since v_AcBc_W = v_WBc - v_WAc the relative velocity Jacobian will be:
-    //   J_AcBc_W = Jv_WBc_W - Jv_WAc_W.
-    // That is the relative velocity at C is v_AcBc_W = J_AcBc_W * v.
-    const drake::Vector3<T> p_AoC_A = X_WA.inverse() * p_WC;
-    plant().CalcJacobianTranslationalVelocity(
-        context, drake::multibody::JacobianWrtVariable::kV, bodyA.body_frame(),
-        p_AoC_A, frame_W, frame_W, &Jv_WAc_W);
-    const drake::Vector3<T> p_BoC_B = X_WB.inverse() * p_WC;
-    plant().CalcJacobianTranslationalVelocity(
-        context, drake::multibody::JacobianWrtVariable::kV, bodyB.body_frame(),
-        p_BoC_B, frame_W, frame_W, &Jv_WBc_W);
-
-    // Define a contact frame C at the contact point such that the z-axis Cz
-    // equals nhat_W. The tangent vectors are arbitrary, with the only
-    // requirement being that they form a valid right handed basis with nhat_W.
-    R_WC->at(ic) = drake::math::RotationMatrix<T>::MakeFromOneVector(nhat_W, 2);
-
-    // Contact Jacobian J_AcBc_C, expressed in the contact frame C.
-    // That is, vc = J * v stores the contact velocities expressed in the
-    // contact frame C. Similarly for contact forces, they are expressed in this
-    // same frame C.
-    J->middleRows(3 * ic, 3) =
-        R_WC->at(ic).matrix().transpose() * (Jv_WBc_W - Jv_WAc_W);
-
-    ++ic;
-  }
-}
-
-template <typename T>
-void TrajectoryOptimizer<T>::CalcContactJacobianData(
-    const TrajectoryOptimizerState<T>& state,
-    typename TrajectoryOptimizerCache<T>::ContactJacobianData*
-        contact_jacobian_data) const {
-  // Resize contact data accordingly.
-  // We resize to include all pairs, even for positive distances for which the
-  // contact forces will be zero.
-  contact_jacobian_data->J.resize(num_steps());
-  contact_jacobian_data->R_WC.resize(num_steps());
-  contact_jacobian_data->body_pairs.resize(num_steps());
-
-  for (int t = 0; t < num_steps(); ++t) {
-    const Context<T>& context = EvalPlantContext(state, t);
-    const std::vector<drake::geometry::SignedDistancePair<T>>& sdf_pairs =
-        EvalSignedDistancePairs(state, t);
-    CalcContactJacobian(context, sdf_pairs, &contact_jacobian_data->J[t],
-                        &contact_jacobian_data->R_WC[t],
-                        &contact_jacobian_data->body_pairs[t]);
-  }
-}
-
-template <typename T>
-const typename TrajectoryOptimizerCache<T>::ContactJacobianData&
-TrajectoryOptimizer<T>::EvalContactJacobianData(
-    const TrajectoryOptimizerState<T>& state) const {
-  if (!state.cache().contact_jacobian_data.up_to_date) {
-    CalcContactJacobianData(state,
-                            &state.mutable_cache().contact_jacobian_data);
-  }
-  return state.cache().contact_jacobian_data;
 }
 
 template <typename T>
@@ -1240,18 +1072,6 @@ void TrajectoryOptimizer<T>::CalcGradient(
       (q[num_steps()] - prob_.q_nom[num_steps()]).transpose() * 2 * prob_.Qf_q;
   gT += (v[num_steps()] - prob_.v_nom[num_steps()]).transpose() * 2 *
         prob_.Qf_v * dvt_dqt[num_steps()];
-
-  // Add proximal operator term to the gradient, if requested
-  if (params_.proximal_operator) {
-    const std::vector<VectorX<T>>& q_last =
-        state.proximal_operator_data().q_last;
-    const std::vector<VectorX<T>>& H_diag =
-        state.proximal_operator_data().H_diag;
-    for (int t = 0; t <= num_steps(); ++t) {
-      g->segment(t * nq, nq) +=
-          params_.rho_proximal * H_diag[t].asDiagonal() * (q[t] - q_last[t]);
-    }
-  }
 }
 
 template <typename T>
@@ -1333,14 +1153,6 @@ void TrajectoryOptimizer<T>::CalcHessian(
   dgT_dqT += dvt_dqt[num_steps()].transpose() * Qf_v * dvt_dqt[num_steps()];
   dgT_dqT +=
       dtau_dqp[num_steps() - 1].transpose() * R * dtau_dqp[num_steps() - 1];
-
-  // Add proximal operator terms to the Hessian, if requested
-  if (params_.proximal_operator) {
-    for (int t = 0; t <= num_steps(); ++t) {
-      C[t] += params_.rho_proximal *
-              state.proximal_operator_data().H_diag[t].asDiagonal();
-    }
-  }
 
   // Copy lower triangular part to upper triangular part
   H->MakeSymmetric();
@@ -2423,15 +2235,6 @@ SolverFlag TrajectoryOptimizer<double>::SolveWithLinesearch(
   double cost;
   VectorXd dq((num_steps() + 1) * plant().num_positions());
 
-  // Set proximal operator data for the first iteration
-  // N.B. since state.proximal_operator_data.H_diag is initialized to zero, this
-  // first computation of the Hessian, which is for scaling purposes only, will
-  // not include the proximal operator term.
-  if (params_.proximal_operator) {
-    state.set_proximal_operator_data(q_guess, EvalHessian(state));
-    scratch_state.set_proximal_operator_data(q_guess, EvalHessian(state));
-  }
-
   if (params_.verbose) {
     // Define printout data
     std::cout << "-------------------------------------------------------------"
@@ -2506,12 +2309,6 @@ SolverFlag TrajectoryOptimizer<double>::SolveWithLinesearch(
     // Update the decision variables
     state.AddToQ(alpha * dq);
     if (params_.normalize_quaternions) NormalizeQuaternions(&state);
-
-    // Update the stored decision variables for the proximal operator cost
-    if (params_.proximal_operator) {
-      state.set_proximal_operator_data(state.q(), H);
-      scratch_state.set_proximal_operator_data(state.q(), H);
-    }
 
     iter_time = std::chrono::high_resolution_clock::now() - iter_start_time;
 
@@ -2730,12 +2527,6 @@ SolverFlag TrajectoryOptimizer<double>::SolveFromWarmStart(
 
     // If the ratio is large enough, accept the change
     if (rho > eta) {
-      // Update the coefficients for the proximal operator cost
-      if (params_.proximal_operator) {
-        state.set_proximal_operator_data(state.q(), EvalHessian(state));
-        scratch_state.set_proximal_operator_data(state.q(), EvalHessian(state));
-      }
-
       state.AddToQ(dq);  // q += dq
       if (params_.normalize_quaternions) NormalizeQuaternions(&state);
     }

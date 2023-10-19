@@ -432,29 +432,6 @@ class TrajectoryOptimizer {
                                      int t) const;
 
   /**
-   * Evaluate signed distance pairs for each potential contact pair at the given
-   * time step
-   *
-   * @param state optimizer state
-   * @param t time step
-   * @return const std::vector<drake::geometry::SignedDistancePair<T>>& contact
-   * geometry information for each contact pair at time t
-   */
-  const std::vector<drake::geometry::SignedDistancePair<T>>&
-  EvalSignedDistancePairs(const TrajectoryOptimizerState<T>& state,
-                          int t) const;
-
-  /**
-   * Evaluate contact jacobians (includes all contact pairs) at each time step.
-   *
-   * @param state optimizer state
-   * @return const TrajectoryOptimizerCache<T>::ContactJacobianData& contact
-   * jacobian data
-   */
-  const typename TrajectoryOptimizerCache<T>::ContactJacobianData&
-  EvalContactJacobianData(const TrajectoryOptimizerState<T>& state) const;
-
-  /**
    * Overwrite the initial conditions x0 = [q0, v0] stored in the solver
    * parameters. This is particularly useful when re-solving the optimization
    * problem for MPC.
@@ -694,47 +671,6 @@ class TrajectoryOptimizer {
    */
   void CalcContactForceContribution(const Context<T>& context,
                                     MultibodyForces<T>* forces) const;
-
-  /**
-   * Compute signed distance data for all contact pairs for all time steps.
-   *
-   * @param state state variable storing system configurations at each time
-   * step.
-   * @param sdf_data signed distance data that we'll set.
-   */
-  void CalcSdfData(
-      const TrajectoryOptimizerState<T>& state,
-      typename TrajectoryOptimizerCache<T>::SdfData* sdf_data) const;
-
-  /**
-   * Helper to compute the contact Jacobian (at a particular time step) for the
-   * configuration stored in `context`.
-   *
-   * Signed distance pairs `sdf_pairs` must be consistent with
-   * `context`.
-   *
-   * @param context context storing q and v
-   * @param sdf_pairs vector of signed distance pairs
-   * @param J the jacobian to set
-   * @param R_WC the rotation of each contact frame in the world
-   * @param body_pairs each pair of bodies that are in contact
-   */
-  void CalcContactJacobian(
-      const Context<T>& context,
-      const std::vector<drake::geometry::SignedDistancePair<T>>& sdf_pairs,
-      MatrixX<T>* J, std::vector<drake::math::RotationMatrix<T>>* R_WC,
-      std::vector<std::pair<BodyIndex, BodyIndex>>* body_pairs) const;
-
-  /**
-   * Compute Jacobian data for all time steps.
-   *
-   * @param state state variable containing configurations q for each time
-   * @param contact_jacobian_data jacobian data that we'll set
-   */
-  void CalcContactJacobianData(
-      const TrajectoryOptimizerState<T>& state,
-      typename TrajectoryOptimizerCache<T>::ContactJacobianData*
-          contact_jacobian_data) const;
 
   /**
    * Compute the mapping from qdot to v, v = N+(q)*qdot, at each time step.
