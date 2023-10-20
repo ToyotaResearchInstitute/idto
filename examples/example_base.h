@@ -95,9 +95,11 @@ class TrajOptExample {
    * YAML.
    *
    * @param options parameters loaded from yaml
+   * @param plant model of the system that we're optimizing over
    * @param opt_prob the problem definition (cost, initital state, etc)
    */
   void SetProblemDefinition(const TrajOptExampleParams& options,
+                            const MultibodyPlant<double>& plant,
                             ProblemDefinition* opt_prob) const;
 
   /**
@@ -121,6 +123,16 @@ class TrajOptExample {
    */
   void NormalizeQuaternions(const MultibodyPlant<double>& plant,
                             std::vector<VectorXd>* q) const;
+
+  /**
+   * Normalize quaternion in the given vector of generalized positions.
+   *
+   * @param plant model of the system that we're optimizing over
+   * @param q vector of generalized positions, including quaternion DoFs, that
+   * we'll normalize
+   */
+  void NormalizeQuaternions(const MultibodyPlant<double>& plant,
+                            VectorXd* q) const;
 
  protected:
   /**

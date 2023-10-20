@@ -15,6 +15,8 @@ namespace idto {
 namespace examples {
 
 using drake::math::RigidTransformd;
+using drake::multibody::Body;
+using drake::multibody::BodyIndex;
 using drake::systems::DiscreteTimeDelay;
 using drake::visualization::AddDefaultVisualization;
 using Eigen::Matrix4d;
@@ -90,8 +92,7 @@ void TrajOptExample::RunModelPredictiveControl(
 
   // Define the optimization problem
   ProblemDefinition opt_prob;
-  SetProblemDefinition(options, &opt_prob);
-  NormalizeQuaternions(ctrl_plant, &opt_prob.q_nom);
+  SetProblemDefinition(options, plant, &opt_prob);
 
   // Set MPC-specific solver parameters
   SolverParameters solver_params;
@@ -212,11 +213,7 @@ TrajectoryOptimizerSolution<double> TrajOptExample::SolveTrajectoryOptimization(
 
   // Define the optimization problem
   ProblemDefinition opt_prob;
-  SetProblemDefinition(options, &opt_prob);
-
-  // Normalize quaternions in the reference
-  // TODO(vincekurtz): consider moving this to SetProblemDefinition
-  NormalizeQuaternions(plant, &opt_prob.q_nom);
+  SetProblemDefinition(options, plant, &opt_prob);
 
   // Set our solver parameters
   SolverParameters solver_params;
@@ -377,6 +374,7 @@ void TrajOptExample::PlayBackTrajectory(const std::vector<VectorXd>& q,
 }
 
 void TrajOptExample::SetProblemDefinition(const TrajOptExampleParams& options,
+                                          const MultibodyPlant<double>& plant,
                                           ProblemDefinition* opt_prob) const {
   opt_prob->num_steps = options.num_steps;
 
@@ -420,6 +418,10 @@ void TrajOptExample::SetProblemDefinition(const TrajOptExampleParams& options,
       opt_prob->v_nom.push_back(opt_prob->v_init);
     }
   }
+
+  // Normalize quaternions in the reference and initial condition
+  NormalizeQuaternions(plant, &opt_prob->q_nom);
+  NormalizeQuaternions(plant, &opt_prob->q_init);
 }
 
 void TrajOptExample::SetSolverParameters(
@@ -542,15 +544,19 @@ void TrajOptExample::SetSolverParameters(
 void TrajOptExample::NormalizeQuaternions(const MultibodyPlant<double>& plant,
                                           std::vector<VectorXd>* q) const {
   const int num_steps = q->size() - 1;
-  for (const drake::multibody::BodyIndex& index :
-       plant.GetFloatingBaseBodies()) {
-    const drake::multibody::Body<double>& body = plant.get_body(index);
-    const int q_start = body.floating_positions_start();
+  for (int t = 0; t <= num_steps; ++t) {
+    NormalizeQuaternions(plant, &q->at(t));
+  }
+}
+
+void TrajOptExample::NormalizeQuaternions(const MultibodyPlant<double>& plant,
+                                          VectorXd* q) const {
+  for (const BodyIndex& index : plant.GetFloatingBaseBodies()) {
+    const Body<double>& body = plant.get_body(index);
     DRAKE_DEMAND(body.has_quaternion_dofs());
-    for (int t = 0; t <= num_steps; ++t) {
-      auto body_qs = q->at(t).segment<4>(q_start);
-      body_qs.normalize();
-    }
+    const int q_start = body.floating_positions_start();
+    auto body_qs = q->segment<4>(q_start);
+    body_qs.normalize();
   }
 }
 
