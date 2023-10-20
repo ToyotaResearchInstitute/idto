@@ -122,6 +122,16 @@ class TrajOptExample {
   void NormalizeQuaternions(const MultibodyPlant<double>& plant,
                             std::vector<VectorXd>* q) const;
 
+  /**
+   * Normalize quaternion in the given vector of generalized positions.
+   *
+   * @param plant model of the system that we're optimizing over
+   * @param q vector of generalized positions, including quaternion DoFs, that
+   * we'll normalize
+   */
+  void NormalizeQuaternions(const MultibodyPlant<double>& plant,
+                            VectorXd* q) const;
+
  protected:
   /**
    * Meshcat instance used for visualization.

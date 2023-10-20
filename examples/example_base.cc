@@ -15,6 +15,8 @@ namespace idto {
 namespace examples {
 
 using drake::math::RigidTransformd;
+using drake::multibody::Body;
+using drake::multibody::BodyIndex;
 using drake::systems::DiscreteTimeDelay;
 using drake::visualization::AddDefaultVisualization;
 using Eigen::Matrix4d;
@@ -542,15 +544,19 @@ void TrajOptExample::SetSolverParameters(
 void TrajOptExample::NormalizeQuaternions(const MultibodyPlant<double>& plant,
                                           std::vector<VectorXd>* q) const {
   const int num_steps = q->size() - 1;
-  for (const drake::multibody::BodyIndex& index :
-       plant.GetFloatingBaseBodies()) {
-    const drake::multibody::Body<double>& body = plant.get_body(index);
-    const int q_start = body.floating_positions_start();
+  for (int t = 0; t <= num_steps; ++t) {
+    NormalizeQuaternions(plant, &q->at(t));
+  }
+}
+
+void TrajOptExample::NormalizeQuaternions(const MultibodyPlant<double>& plant,
+                                          VectorXd* q) const {
+  for (const BodyIndex& index : plant.GetFloatingBaseBodies()) {
+    const Body<double>& body = plant.get_body(index);
     DRAKE_DEMAND(body.has_quaternion_dofs());
-    for (int t = 0; t <= num_steps; ++t) {
-      auto body_qs = q->at(t).segment<4>(q_start);
-      body_qs.normalize();
-    }
+    const int q_start = body.floating_positions_start();
+    auto body_qs = q->segment<4>(q_start);
+    body_qs.normalize();
   }
 }
 
