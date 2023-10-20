@@ -95,9 +95,11 @@ class TrajOptExample {
    * YAML.
    *
    * @param options parameters loaded from yaml
+   * @param plant model of the system that we're optimizing over
    * @param opt_prob the problem definition (cost, initital state, etc)
    */
   void SetProblemDefinition(const TrajOptExampleParams& options,
+                            const MultibodyPlant<double>& plant,
                             ProblemDefinition* opt_prob) const;
 
   /**

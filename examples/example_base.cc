@@ -92,8 +92,7 @@ void TrajOptExample::RunModelPredictiveControl(
 
   // Define the optimization problem
   ProblemDefinition opt_prob;
-  SetProblemDefinition(options, &opt_prob);
-  NormalizeQuaternions(ctrl_plant, &opt_prob.q_nom);
+  SetProblemDefinition(options, plant, &opt_prob);
 
   // Set MPC-specific solver parameters
   SolverParameters solver_params;
@@ -214,11 +213,7 @@ TrajectoryOptimizerSolution<double> TrajOptExample::SolveTrajectoryOptimization(
 
   // Define the optimization problem
   ProblemDefinition opt_prob;
-  SetProblemDefinition(options, &opt_prob);
-
-  // Normalize quaternions in the reference
-  // TODO(vincekurtz): consider moving this to SetProblemDefinition
-  NormalizeQuaternions(plant, &opt_prob.q_nom);
+  SetProblemDefinition(options, plant, &opt_prob);
 
   // Set our solver parameters
   SolverParameters solver_params;
@@ -379,6 +374,7 @@ void TrajOptExample::PlayBackTrajectory(const std::vector<VectorXd>& q,
 }
 
 void TrajOptExample::SetProblemDefinition(const TrajOptExampleParams& options,
+                                          const MultibodyPlant<double>& plant,
                                           ProblemDefinition* opt_prob) const {
   opt_prob->num_steps = options.num_steps;
 
@@ -422,6 +418,9 @@ void TrajOptExample::SetProblemDefinition(const TrajOptExampleParams& options,
       opt_prob->v_nom.push_back(opt_prob->v_init);
     }
   }
+
+  // Normalize quaternions in the reference
+  NormalizeQuaternions(plant, &opt_prob->q_nom);
 }
 
 void TrajOptExample::SetSolverParameters(
