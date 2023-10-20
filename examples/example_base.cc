@@ -419,8 +419,9 @@ void TrajOptExample::SetProblemDefinition(const TrajOptExampleParams& options,
     }
   }
 
-  // Normalize quaternions in the reference
+  // Normalize quaternions in the reference and initial condition
   NormalizeQuaternions(plant, &opt_prob->q_nom);
+  NormalizeQuaternions(plant, &opt_prob->q_init);
 }
 
 void TrajOptExample::SetSolverParameters(
