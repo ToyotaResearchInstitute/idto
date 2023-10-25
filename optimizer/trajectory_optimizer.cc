@@ -135,6 +135,16 @@ T TrajectoryOptimizer<T>::CalcCost(
   const std::vector<VectorX<T>>& tau = EvalTau(state);
   T cost = CalcCost(state.q(), v, tau, &state.workspace);
 
+  const double dt = time_step();
+  // Add a running penalty on signed distances
+  const std::vector<VectorX<T>>& contact_phi = EvalContactPhi(state);
+  if (prob_.signed_distance_penalty > 0) {
+    for (int t = 0; t <= num_steps(); ++t) {
+      cost += T(0.5 * dt * prob_.signed_distance_penalty * contact_phi[t].transpose().cwiseMax(0) *
+                contact_phi[t].cwiseMax(0));
+    }
+  }
+
   // Add a proximal operator term to the cost, if requested
   if (params_.proximal_operator) {
     const std::vector<VectorX<T>>& q = state.q();
@@ -211,12 +221,13 @@ void TrajectoryOptimizer<T>::CalcAccelerations(
 template <typename T>
 void TrajectoryOptimizer<T>::CalcInverseDynamics(
     const TrajectoryOptimizerState<T>& state, const std::vector<VectorX<T>>& a,
-    std::vector<VectorX<T>>* tau) const {
+    std::vector<VectorX<T>>* tau, std::vector<VectorX<T>>* contact_phi) const {
   // Generalized forces aren't defined for the last timestep
   // TODO(vincekurtz): additional checks that q_t, v_t, tau_t are the right size
   // for the plant?
   DRAKE_DEMAND(static_cast<int>(a.size()) == num_steps());
   DRAKE_DEMAND(static_cast<int>(tau->size()) == num_steps());
+  DRAKE_DEMAND(static_cast<int>(contact_phi->size()) == num_steps()+1);
 
 #if defined(_OPENMP)
 #pragma omp parallel for num_threads(params_.num_threads)
@@ -228,14 +239,16 @@ void TrajectoryOptimizer<T>::CalcInverseDynamics(
     // All dynamics terms are treated implicitly, i.e.,
     // tau[t] = M(q[t+1]) * a[t] - k(q[t+1],v[t+1]) - f_ext[t+1]
     CalcInverseDynamicsSingleTimeStep(context_tp, a[t], &workspace,
-                                      &tau->at(t));
+                                      &tau->at(t), &contact_phi->at(t + 1));
+    contact_phi->at(0).setZero();
   }
 }
 
 template <typename T>
 void TrajectoryOptimizer<T>::CalcInverseDynamicsSingleTimeStep(
     const Context<T>& context, const VectorX<T>& a,
-    TrajectoryOptimizerWorkspace<T>* workspace, VectorX<T>* tau) const {
+    TrajectoryOptimizerWorkspace<T>* workspace, VectorX<T>* tau,
+    VectorX<T>* contact_phi) const {
   plant().CalcForceElementsContribution(context, &workspace->f_ext);
 
   // Add in contact force contribution to f_ext
@@ -253,7 +266,8 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsSingleTimeStep(
 
 template <typename T>
 void TrajectoryOptimizer<T>::CalcContactForceContribution(
-    const Context<T>& context, MultibodyForces<T>* forces) const {
+    const Context<T>& context, MultibodyForces<T>* forces,
+    VectorX<T>* contact_signed_distances) const {
   using std::abs;
   using std::exp;
   using std::log;
@@ -285,7 +299,21 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
   const std::vector<SignedDistancePair<T>>& signed_distance_pairs =
       query_object.ComputeSignedDistancePairwiseClosestPoints(threshold);
 
+  int num_contacts = 0;
   for (const SignedDistancePair<T>& pair : signed_distance_pairs) {
+    if (pair.distance < 0) {
+      num_contacts++;
+    }
+  }
+  VectorX<T> contact_phi(num_contacts);
+  int contact_index = 0;
+
+  for (const SignedDistancePair<T>& pair : signed_distance_pairs) {
+    if (pair.distance < 0) {
+      contact_phi[contact_index] = pair.distance;
+      contact_index++;
+    }
+
     // Normal outwards from A.
     const drake::Vector3<T> nhat = -pair.nhat_BA_W;
 
@@ -390,6 +418,9 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
     forces->mutable_body_forces()[bodyA.node_index()] += F_AAo_W;
     forces->mutable_body_forces()[bodyB.node_index()] += F_BBo_W;
   }
+  std::cout << "Before update, contact_phi_size: " << contact_signed_distances->size() << std::endl;
+  contact_signed_distances = &contact_phi;
+  std::cout << "After update, contact_phi_size: " << contact_signed_distances->size() << std::endl;
 }
 
 template <typename T>
@@ -599,11 +630,13 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsPartialsFiniteDiff(
   const std::vector<VectorX<T>>& v = EvalV(state);
   const std::vector<VectorX<T>>& a = EvalA(state);
   const std::vector<VectorX<T>>& tau = EvalTau(state);
+  const std::vector<VectorX<T>>& contact_phi = EvalContactPhi(state);
 
   // Get references to the partials that we'll be setting
   std::vector<MatrixX<T>>& dtau_dqm = id_partials->dtau_dqm;
   std::vector<MatrixX<T>>& dtau_dqt = id_partials->dtau_dqt;
   std::vector<MatrixX<T>>& dtau_dqp = id_partials->dtau_dqp;
+  std::vector<MatrixX<T>>& dphi_dqt = id_partials->dphi_dqt;
 
   // Get kinematic mapping matrices for each time step
   const std::vector<MatrixX<T>>& Nplus = EvalNplus(state);
@@ -682,6 +715,8 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsPartialsFiniteDiff(
         a_eps_t -= da_i * (Nplus[t + 1].col(i) + Nplus[t].col(i));
       }
 
+      VectorX<T> contact_phi_eps(contact_phi[t].size());
+
       // Compute perturbed tau(q) and calculate the nonzero entries of dtau/dq
       // via finite differencing
 
@@ -689,8 +724,9 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsPartialsFiniteDiff(
       plant().SetPositions(&context_t, q_eps_t);
       plant().SetVelocities(&context_t, v_eps_t);
       CalcInverseDynamicsSingleTimeStep(context_t, a_eps_tm, &workspace,
-                                        &tau_eps_tm);
+                                        &tau_eps_tm, &contact_phi_eps);
       dtau_dqp[t - 1].col(i) = (tau_eps_tm - tau[t - 1]) / dq_i;
+      dphi_dqt[t].col(i) = (contact_phi_eps - contact_phi[t]) / dq_i;
 
       // tau[t] = ID(q[t+1], v[t+1], a[t])
       if (t < num_steps()) {
@@ -1191,6 +1227,7 @@ void TrajectoryOptimizer<T>::CalcGradient(
   const std::vector<VectorX<T>>& q = state.q();
   const std::vector<VectorX<T>>& v = EvalV(state);
   const std::vector<VectorX<T>>& tau = EvalTau(state);
+  const std::vector<VectorX<T>>& contact_phi = EvalContactPhi(state);
 
   const VelocityPartials<T>& v_partials = EvalVelocityPartials(state);
   const InverseDynamicsPartials<T>& id_partials =
@@ -1200,6 +1237,7 @@ void TrajectoryOptimizer<T>::CalcGradient(
   const std::vector<MatrixX<T>>& dtau_dqp = id_partials.dtau_dqp;
   const std::vector<MatrixX<T>>& dtau_dqt = id_partials.dtau_dqt;
   const std::vector<MatrixX<T>>& dtau_dqm = id_partials.dtau_dqm;
+  const std::vector<MatrixX<T>>& dphi_dqt = id_partials.dphi_dqt;
 
   // Set first block of g (derivatives w.r.t. q_0) to zero, since q0 = q_init
   // are constant.
@@ -1229,6 +1267,10 @@ void TrajectoryOptimizer<T>::CalcGradient(
       // There is no constrol input at the final timestep
       gt += tau[t + 1].transpose() * 2 * prob_.R * dt * dtau_dqm[t + 1];
     }
+
+    // Contribution from contact signed distance cost
+    if (prob_.signed_distance_penalty > 0)
+      gt += 2 * prob_.signed_distance_penalty * dt * (contact_phi[t] - prob_.signed_distance_threshold * VectorX<T>::Ones(contact_phi[t].size())).cwiseMax(0).transpose() * dphi_dqt[t];
   }
 
   // Last step is different, because there is terminal cost and v[t+1] doesn't
@@ -1240,6 +1282,9 @@ void TrajectoryOptimizer<T>::CalcGradient(
       (q[num_steps()] - prob_.q_nom[num_steps()]).transpose() * 2 * prob_.Qf_q;
   gT += (v[num_steps()] - prob_.v_nom[num_steps()]).transpose() * 2 *
         prob_.Qf_v * dvt_dqt[num_steps()];
+  // Contribution from contact signed distance cost
+  if (prob_.signed_distance_penalty > 0)
+    gT += 2 * prob_.signed_distance_penalty * dt * (contact_phi[num_steps()] - prob_.signed_distance_threshold * VectorX<T>::Ones(contact_phi[num_steps()].size())).cwiseMax(0).transpose() * dphi_dqt[num_steps()];
 
   // Add proximal operator term to the gradient, if requested
   if (params_.proximal_operator) {
@@ -1288,11 +1333,27 @@ void TrajectoryOptimizer<T>::CalcHessian(
   const std::vector<MatrixX<T>>& dtau_dqp = id_partials.dtau_dqp;
   const std::vector<MatrixX<T>>& dtau_dqt = id_partials.dtau_dqt;
   const std::vector<MatrixX<T>>& dtau_dqm = id_partials.dtau_dqm;
+  const std::vector<MatrixX<T>>& dphi_dqt = id_partials.dphi_dqt;
+
+  const std::vector<VectorX<T>>& contact_phi = EvalContactPhi(state);
 
   // Get mutable references to the non-zero bands of the Hessian
   std::vector<MatrixX<T>>& A = H->mutable_A();  // 2 rows below diagonal
   std::vector<MatrixX<T>>& B = H->mutable_B();  // 1 row below diagonal
   std::vector<MatrixX<T>>& C = H->mutable_C();  // diagonal
+
+  auto heaviside = [](const VectorX<T>& x) {
+    VectorX<T> hx(x.size());
+    for (int i = 0; i < x.size(); ++i) {
+      hx(i) = (x(i) >= 0) ? 1.0 : 0.0;
+    }
+    return hx;
+  };
+
+  std::vector<VectorX<T>> heaviside_phi(contact_phi.size());
+  for (int t = 0; t < static_cast<int>(contact_phi.size()); ++t) {
+    heaviside_phi[t] = heaviside(contact_phi[t] - prob_.signed_distance_threshold * VectorX<T>::Ones(contact_phi[t].size()));
+  }
 
   // Fill in the non-zero blocks
   C[0].setIdentity();  // Initial condition q0 fixed at t=0
@@ -1303,11 +1364,19 @@ void TrajectoryOptimizer<T>::CalcHessian(
     dgt_dqt += dvt_dqt[t].transpose() * Qv * dvt_dqt[t];
     dgt_dqt += dtau_dqp[t - 1].transpose() * R * dtau_dqp[t - 1];
     dgt_dqt += dtau_dqt[t].transpose() * R * dtau_dqt[t];
+    // TODO: Add contributions from phi
     if (t < num_steps() - 1) {
       dgt_dqt += dtau_dqm[t + 1].transpose() * R * dtau_dqm[t + 1];
       dgt_dqt += dvt_dqm[t + 1].transpose() * Qv * dvt_dqm[t + 1];
     } else {
       dgt_dqt += dvt_dqm[t + 1].transpose() * Qf_v * dvt_dqm[t + 1];
+    }
+    const int nc = heaviside_phi[t].rows();
+    if (prob_.signed_distance_penalty > 0) {
+      for (int ip =0;ip<nc;++ip){
+        dgt_dqt += 2 * prob_.signed_distance_penalty * dt * dphi_dqt[t].row(ip).transpose() *
+                  dphi_dqt[t].row(ip) * heaviside_phi[t](ip);
+      }
     }
 
     // dg_t/dq_{t+1}
@@ -1333,6 +1402,8 @@ void TrajectoryOptimizer<T>::CalcHessian(
   dgT_dqT += dvt_dqt[num_steps()].transpose() * Qf_v * dvt_dqt[num_steps()];
   dgT_dqT +=
       dtau_dqp[num_steps() - 1].transpose() * R * dtau_dqp[num_steps() - 1];
+  if (prob_.signed_distance_penalty > 0)
+    dgT_dqT += 2 * prob_.signed_distance_penalty * dphi_dqt[num_steps()].transpose() * dphi_dqt[num_steps()];
 
   // Add proximal operator terms to the Hessian, if requested
   if (params_.proximal_operator) {
@@ -1691,7 +1762,7 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsCache(
     typename TrajectoryOptimizerCache<T>::InverseDynamicsCache* cache) const {
   // Compute corresponding generalized torques
   const std::vector<VectorX<T>>& a = EvalA(state);
-  CalcInverseDynamics(state, a, &cache->tau);
+  CalcInverseDynamics(state, a, &cache->tau, &cache->contact_phi);
 
   // Set cache invalidation flag
   cache->up_to_date = true;
@@ -1748,6 +1819,15 @@ const std::vector<VectorX<T>>& TrajectoryOptimizer<T>::EvalTau(
     CalcInverseDynamicsCache(state,
                              &state.mutable_cache().inverse_dynamics_cache);
   return state.cache().inverse_dynamics_cache.tau;
+}
+
+template <typename T>
+const std::vector<VectorX<T>>& TrajectoryOptimizer<T>::EvalContactPhi(
+    const TrajectoryOptimizerState<T>& state) const {
+  if (!state.cache().inverse_dynamics_cache.up_to_date)
+    CalcInverseDynamicsCache(state,
+                             &state.mutable_cache().inverse_dynamics_cache);
+  return state.cache().inverse_dynamics_cache.contact_phi;
 }
 
 template <typename T>
@@ -2579,6 +2659,9 @@ SolverFlag TrajectoryOptimizer<double>::SolveWithLinesearch(
   solution->q = state.q();
   solution->v = EvalV(state);
   solution->tau = EvalTau(state);
+  solution->contact_phi = EvalContactPhi(state);
+
+  stats->SavePhiData(fmt::format("force_traj_{}.csv", prob_.signed_distance_penalty), solution->contact_phi);
 
   if (linesearch_failed) {
     return SolverFlag::kLinesearchMaxIters;

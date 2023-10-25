@@ -234,6 +234,15 @@ class TrajectoryOptimizer {
       const TrajectoryOptimizerState<T>& state) const;
 
   /**
+   * Evaluated signed distances for contacts to penalize high contact forces.
+   * 
+   * @param state optimizer_state
+   * @return const std::vector<VectorX<T>>& contact_phi
+   */  
+  const std::vector<VectorX<T>>& EvalContactPhi(
+      const TrajectoryOptimizerState<T>& state) const;
+
+  /**
    * Evaluate partial derivatives of velocites with respect to positions at each
    * time step.
    *
@@ -664,10 +673,12 @@ class TrajectoryOptimizer {
    * context in turn stores q(t) and v(t) for each timestep.
    * @param a sequence of generalized accelerations
    * @param tau sequence of generalized forces
+   * @param contact_phi signed distances for contacts used to penalize high forces
    */
   void CalcInverseDynamics(const TrajectoryOptimizerState<T>& state,
                            const std::vector<VectorX<T>>& a,
-                           std::vector<VectorX<T>>* tau) const;
+                           std::vector<VectorX<T>>* tau,
+                           std::vector<VectorX<T>>* contact_phi) const;
 
   /**
    * Helper function for computing the inverse dynamics
@@ -680,10 +691,12 @@ class TrajectoryOptimizer {
    * @param a generalized acceleration
    * @param workspace scratch space for intermediate computations
    * @param tau generalized forces
+   * @param contact_phi Signed distances for contacts
    */
   void CalcInverseDynamicsSingleTimeStep(
       const Context<T>& context, const VectorX<T>& a,
-      TrajectoryOptimizerWorkspace<T>* workspace, VectorX<T>* tau) const;
+      TrajectoryOptimizerWorkspace<T>* workspace, VectorX<T>* tau,
+      VectorX<T>* contact_phi = nullptr) const;
 
   /**
    * Calculate the force contribution from contacts for each body, and add them
@@ -691,9 +704,11 @@ class TrajectoryOptimizer {
    *
    * @param context system context storing q and v
    * @param forces total forces applied to the plant, which we will add into.
+   * @param contact_signed_distances signed distances for contacts.
    */
   void CalcContactForceContribution(const Context<T>& context,
-                                    MultibodyForces<T>* forces) const;
+                                    MultibodyForces<T>* forces,
+                                    VectorX<T>* contact_signed_distances = nullptr) const;
 
   /**
    * Compute signed distance data for all contact pairs for all time steps.

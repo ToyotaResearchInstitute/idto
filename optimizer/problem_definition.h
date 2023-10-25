@@ -56,6 +56,11 @@ struct ProblemDefinition {
 
   // Target generalized velocities at each time step
   std::vector<VectorXd> v_nom;
+
+  // Contact signed distance cost
+  double signed_distance_penalty{0};
+
+  double signed_distance_threshold;
 };
 
 }  // namespace optimizer

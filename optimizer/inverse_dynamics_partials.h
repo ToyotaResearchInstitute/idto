@@ -32,6 +32,9 @@ struct InverseDynamicsPartials {
     dtau_dqt.assign(num_steps, MatrixX<T>(nv, nq));
     dtau_dqp.assign(num_steps, MatrixX<T>(nv, nq));
 
+    // TODO(rishabh): set correct dimensions later
+    dphi_dqt.assign(num_steps + 1, MatrixX<T>(2, nq));
+
     // Set all derivatives w.r.t q(-1) to NaN
     dtau_dqm[0].setConstant(nv, nq, NAN);
 
@@ -82,6 +85,8 @@ struct InverseDynamicsPartials {
   //                                     d(tau_{num_steps-1})/d(q_{num_steps})]
   //
   std::vector<MatrixX<T>> dtau_dqp;
+
+  std::vector<MatrixX<T>> dphi_dqt;
 };
 
 }  // namespace optimizer

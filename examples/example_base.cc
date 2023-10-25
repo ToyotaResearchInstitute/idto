@@ -267,6 +267,17 @@ TrajectoryOptimizerSolution<double> TrajOptExample::SolveTrajectoryOptimization(
   std::cout << fmt::format("Max torques: {}",
                            drake::fmt_eigen(tau_max.transpose()))
             << std::endl;
+  double phi_max = 0;
+  VectorXd abs_phi_t;
+  for (int t = 0; t < options.num_steps; ++t) {
+    abs_phi_t = solution.contact_phi[t].cwiseAbs();
+    for (int i = 0; i < abs_phi_t.size(); ++i) {
+      if (abs_phi_t(i) > phi_max) {
+        phi_max = abs_phi_t(i);
+      }
+    }
+  }
+  std::cout << "Max contact phi: " << phi_max << std::endl;
 
   // Report maximum actuated and unactuated torques
   // TODO(vincekurtz): deal with the fact that B is not well-defined for some

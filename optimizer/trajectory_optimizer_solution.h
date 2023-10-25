@@ -49,6 +49,9 @@ struct TrajectoryOptimizerSolution {
 
   // Optimal sequence of generalized forces at each timestep
   std::vector<VectorX<T>> tau;
+
+  // Signed distances for contacts at each timestep
+  std::vector<VectorX<T>> contact_phi;
 };
 
 /**
@@ -179,6 +182,24 @@ struct TrajectoryOptimizerStats {
           h_norms[i], merits[i]);
     }
 
+    // Close the file
+    data_file.close();
+  }
+
+  void SavePhiData(std::string fname, std::vector<VectorX<T>>& contact_phi) {
+    std::ofstream data_file;
+    data_file.open(fname);
+
+    data_file << "t, contact_signed_distances\n";
+    const int num_steps = contact_phi.size();
+    for (int i = 0; i < num_steps; ++i) {
+      auto avg_phi = contact_phi[i].norm() / contact_phi[i].size();
+      // check if nan and set to 0
+      if (avg_phi != avg_phi) {
+        avg_phi = 0;
+      }
+      data_file << fmt::format("{}, {}\n", i, avg_phi);
+    }
     // Close the file
     data_file.close();
   }
