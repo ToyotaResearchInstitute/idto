@@ -269,11 +269,13 @@ TrajectoryOptimizerSolution<double> TrajOptExample::SolveTrajectoryOptimization(
             << std::endl;
   double phi_max = 0;
   VectorXd abs_phi_t;
-  for (int t = 0; t < options.num_steps; ++t) {
-    abs_phi_t = solution.contact_phi[t].cwiseAbs();
-    for (int i = 0; i < abs_phi_t.size(); ++i) {
-      if (abs_phi_t(i) > phi_max) {
-        phi_max = abs_phi_t(i);
+  if (solution.contact_phi.size() > 0) {
+    for (int t = 0; t < options.num_steps; ++t) {
+      abs_phi_t = solution.contact_phi[t].cwiseAbs();
+      for (int i = 0; i < abs_phi_t.size(); ++i) {
+        if (abs_phi_t(i) > phi_max) {
+          phi_max = abs_phi_t(i);
+        }
       }
     }
   }

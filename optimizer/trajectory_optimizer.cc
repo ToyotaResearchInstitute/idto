@@ -257,7 +257,7 @@ void TrajectoryOptimizer<T>::CalcInverseDynamicsSingleTimeStep(
     // TODO(vincekurtz): perform this check earlier, and maybe print some
     // warnings to stdout if we're not connected (we do want to be able to run
     // problems w/o contact sometimes)
-    CalcContactForceContribution(context, &workspace->f_ext);
+    CalcContactForceContribution(context, &workspace->f_ext, contact_phi);
   }
 
   // Inverse dynamics computes tau = M*a - k(q,v) - f_ext
@@ -300,18 +300,23 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
       query_object.ComputeSignedDistancePairwiseClosestPoints(threshold);
 
   int num_contacts = 0;
-  for (const SignedDistancePair<T>& pair : signed_distance_pairs) {
-    if (pair.distance < 0) {
-      num_contacts++;
+  if (contact_signed_distances != nullptr) {
+    for (const SignedDistancePair<T>& pair : signed_distance_pairs) {
+      if (pair.distance < 0) {
+        num_contacts++;
+      }
     }
   }
+
   VectorX<T> contact_phi(num_contacts);
   int contact_index = 0;
 
   for (const SignedDistancePair<T>& pair : signed_distance_pairs) {
-    if (pair.distance < 0) {
-      contact_phi[contact_index] = pair.distance;
-      contact_index++;
+    if (contact_signed_distances != nullptr) {
+      if (pair.distance < 0) {
+        contact_phi[contact_index] = pair.distance;
+        contact_index++;
+      }
     }
 
     // Normal outwards from A.
@@ -418,9 +423,8 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
     forces->mutable_body_forces()[bodyA.node_index()] += F_AAo_W;
     forces->mutable_body_forces()[bodyB.node_index()] += F_BBo_W;
   }
-  std::cout << "Before update, contact_phi_size: " << contact_signed_distances->size() << std::endl;
   contact_signed_distances = &contact_phi;
-  std::cout << "After update, contact_phi_size: " << contact_signed_distances->size() << std::endl;
+  // std::cout << "contact_signed_distances size: " << contact_signed_distances->size() << std::endl;
 }
 
 template <typename T>
