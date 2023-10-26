@@ -28,11 +28,16 @@ struct TrajOptExampleParams {
     a->Visit(DRAKE_NVP(q_nom_start));
     a->Visit(DRAKE_NVP(q_nom_end));
     a->Visit(DRAKE_NVP(q_guess));
+    a->Visit(DRAKE_NVP(q_min));
+    a->Visit(DRAKE_NVP(q_max));
     a->Visit(DRAKE_NVP(Qq));
     a->Visit(DRAKE_NVP(Qv));
     a->Visit(DRAKE_NVP(R));
+    a->Visit(DRAKE_NVP(Qlq));
     a->Visit(DRAKE_NVP(Qfq));
     a->Visit(DRAKE_NVP(Qfv));
+    a->Visit(DRAKE_NVP(signed_distance_penalty));
+    a->Visit(DRAKE_NVP(signed_distance_threshold));
     a->Visit(DRAKE_NVP(time_step));
     a->Visit(DRAKE_NVP(num_steps));
     a->Visit(DRAKE_NVP(max_iters));
@@ -96,14 +101,23 @@ struct TrajOptExampleParams {
   // Initial guess is defined by linear interpolation between q_init and q_guess
   VectorXd q_guess;
 
+  // Joint position limits
+  VectorXd q_min;
+  VectorXd q_max;
+
   // Running cost weights (diagonal matrices)
   VectorXd Qq;
   VectorXd Qv;
   VectorXd R;
+  VectorXd Qlq;
 
   // Terminal cost weights (diagonal matrices)
   VectorXd Qfq;
   VectorXd Qfv;
+
+  // Signed distance cost terms
+  double signed_distance_penalty;
+  double signed_distance_threshold;
 
   // Time step size, in seconds
   double time_step;

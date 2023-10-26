@@ -169,6 +169,9 @@ T TrajectoryOptimizer<T>::CalcCost(
   T cost = 0;
   VectorX<T>& q_err = workspace->q_size_tmp1;
   VectorX<T>& v_err = workspace->v_size_tmp1;
+  // Joint limit error terms
+  VectorX<T> q_low_err(q_err.size());
+  VectorX<T> q_high_err(q_err.size());
 
   // Running cost
   for (int t = 0; t < num_steps(); ++t) {
@@ -177,6 +180,12 @@ T TrajectoryOptimizer<T>::CalcCost(
     cost += T(q_err.transpose() * prob_.Qq * q_err);
     cost += T(v_err.transpose() * prob_.Qv * v_err);
     cost += T(tau[t].transpose() * prob_.R * tau[t]);
+    // add joint position limit 
+    
+    q_low_err = (prob_.q_min.diagonal() - q[t]).cwiseMax(0);
+    q_high_err = (q[t] - prob_.q_max.diagonal()).cwiseMax(0);
+    cost += T(q_low_err.transpose() * prob_.Qlq * q_low_err);
+    cost += T(q_high_err.transpose() * prob_.Qlq * q_high_err);
   }
 
   // Scale running cost by dt (so the optimization problem we're solving doesn't
@@ -188,6 +197,10 @@ T TrajectoryOptimizer<T>::CalcCost(
   v_err = v[num_steps()] - prob_.v_nom[num_steps()];
   cost += T(q_err.transpose() * prob_.Qf_q * q_err);
   cost += T(v_err.transpose() * prob_.Qf_v * v_err);
+  q_low_err = (prob_.q_min.diagonal() - q[num_steps()]).cwiseMax(0);
+  q_high_err = (q[num_steps()] - prob_.q_max.diagonal()).cwiseMax(0);
+  cost += T(q_low_err.transpose() * prob_.Qlq * q_low_err);
+  cost += T(q_high_err.transpose() * prob_.Qlq * q_high_err);
 
   return cost;
 }
@@ -1272,6 +1285,10 @@ void TrajectoryOptimizer<T>::CalcGradient(
       gt += tau[t + 1].transpose() * 2 * prob_.R * dt * dtau_dqm[t + 1];
     }
 
+    // Contribution from joint limit cost
+    gt += (q[t] - prob_.q_max.diagonal()).transpose().cwiseMax(0) * 2 * prob_.Qlq * dt + 
+              (q[t] - prob_.q_min.diagonal()).transpose().cwiseMin(0) * 2 * prob_.Qlq * dt;
+
     // Contribution from contact signed distance cost
     if (prob_.signed_distance_penalty > 0)
       gt += 2 * prob_.signed_distance_penalty * dt * (contact_phi[t] - prob_.signed_distance_threshold * VectorX<T>::Ones(contact_phi[t].size())).cwiseMax(0).transpose() * dphi_dqt[t];
@@ -1286,6 +1303,8 @@ void TrajectoryOptimizer<T>::CalcGradient(
       (q[num_steps()] - prob_.q_nom[num_steps()]).transpose() * 2 * prob_.Qf_q;
   gT += (v[num_steps()] - prob_.v_nom[num_steps()]).transpose() * 2 *
         prob_.Qf_v * dvt_dqt[num_steps()];
+  gT += (q[num_steps()] - prob_.q_max.diagonal()).transpose().cwiseMax(0) * 2 * prob_.Qlq + 
+            (q[num_steps()] - prob_.q_min.diagonal()).transpose().cwiseMin(0) * 2 * prob_.Qlq * dt;
   // Contribution from contact signed distance cost
   if (prob_.signed_distance_penalty > 0)
     gT += 2 * prob_.signed_distance_penalty * dt * (contact_phi[num_steps()] - prob_.signed_distance_threshold * VectorX<T>::Ones(contact_phi[num_steps()].size())).cwiseMax(0).transpose() * dphi_dqt[num_steps()];
@@ -1346,6 +1365,10 @@ void TrajectoryOptimizer<T>::CalcHessian(
   std::vector<MatrixX<T>>& B = H->mutable_B();  // 1 row below diagonal
   std::vector<MatrixX<T>>& C = H->mutable_C();  // diagonal
 
+  // For recalculating gradient for the joint limit cost
+  const std::vector<VectorX<T>>& q = state.q();
+  VectorX<T> qlt_term = VectorX<T>::Zero(plant().num_positions());
+
   auto heaviside = [](const VectorX<T>& x) {
     VectorX<T> hx(x.size());
     for (int i = 0; i < x.size(); ++i) {
@@ -1368,13 +1391,20 @@ void TrajectoryOptimizer<T>::CalcHessian(
     dgt_dqt += dvt_dqt[t].transpose() * Qv * dvt_dqt[t];
     dgt_dqt += dtau_dqp[t - 1].transpose() * R * dtau_dqp[t - 1];
     dgt_dqt += dtau_dqt[t].transpose() * R * dtau_dqt[t];
-    // TODO: Add contributions from phi
     if (t < num_steps() - 1) {
       dgt_dqt += dtau_dqm[t + 1].transpose() * R * dtau_dqm[t + 1];
       dgt_dqt += dvt_dqm[t + 1].transpose() * Qv * dvt_dqm[t + 1];
     } else {
       dgt_dqt += dvt_dqm[t + 1].transpose() * Qf_v * dvt_dqm[t + 1];
     }
+    qlt_term = (q[t] - prob_.q_max).cwiseMax(0).transpose() * 2 * prob_.Qlq * dt + 
+                  (q[t] - prob_.q_min).cwiseMin(0).transpose() * 2 * prob_.Qlq * dt;
+    // TODO (rishabh): Improve this computation
+    for (int i = 0; i < qlt_term.size(); i++) {
+      if (qlt_term[i] != 0)
+        qlt_term[i] = 2 * prob_.Qlq.diagonal()[i] * dt;
+    }
+    dgt_dqt.diagonal() += qlt_term;
     const int nc = heaviside_phi[t].rows();
     if (prob_.signed_distance_penalty > 0) {
       for (int ip =0;ip<nc;++ip){
@@ -1406,6 +1436,13 @@ void TrajectoryOptimizer<T>::CalcHessian(
   dgT_dqT += dvt_dqt[num_steps()].transpose() * Qf_v * dvt_dqt[num_steps()];
   dgT_dqT +=
       dtau_dqp[num_steps() - 1].transpose() * R * dtau_dqp[num_steps() - 1];
+  qlt_term = (q[num_steps()] - prob_.q_max).cwiseMax(0).transpose() * 2 * prob_.Qlq * dt + 
+                (q[num_steps()] - prob_.q_min).cwiseMin(0).transpose() * 2 * prob_.Qlq * dt;
+  for (int i = 0; i < qlt_term.size(); i++) {
+    if (qlt_term[i] != 0)
+      qlt_term[i] = 2 * prob_.Qlq.diagonal()[i];
+  }
+  dgT_dqT.diagonal() += qlt_term;
   if (prob_.signed_distance_penalty > 0)
     dgT_dqT += 2 * prob_.signed_distance_penalty * dphi_dqt[num_steps()].transpose() * dphi_dqt[num_steps()];
 

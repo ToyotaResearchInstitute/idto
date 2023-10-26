@@ -8,6 +8,9 @@
 q_init : [0.3, 1.5, 0.0]
 v_init : [0.0, 0.0, 0.0]
 
+q_min : [-1, -1, -1]
+q_max : [3, 3, 3]
+
 # Target state
 q_nom_start : [0.3, 1.5, 0.0]
 q_nom_end : [0.3, 1.5, 2.0]
@@ -22,6 +25,7 @@ q_guess : [0.3, 1.5, 0.0]
 Qq : [1, 1, 1]  # Running cost
 Qv : [0.1, 0.1, 0.1]
 R : [0.1, 0.1, 1e3]
+Qlq : [0, 0, 0.01] 
 
 Qfq : [10, 10, 10]  # Terminal cost
 Qfv : [0.1, 0.1, 0.1]

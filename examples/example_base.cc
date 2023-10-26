@@ -390,6 +390,9 @@ void TrajOptExample::SetProblemDefinition(const TrajOptExampleParams& options,
   // Initial state
   opt_prob->q_init = options.q_init;
   opt_prob->v_init = options.v_init;
+  // Joint Position Limits
+  opt_prob->q_min = options.q_min.asDiagonal();
+  opt_prob->q_max = options.q_max.asDiagonal();
 
   // Cost weights
   opt_prob->Qq = options.Qq.asDiagonal();
@@ -397,6 +400,10 @@ void TrajOptExample::SetProblemDefinition(const TrajOptExampleParams& options,
   opt_prob->Qf_q = options.Qfq.asDiagonal();
   opt_prob->Qf_v = options.Qfv.asDiagonal();
   opt_prob->R = options.R.asDiagonal();
+  opt_prob->Qlq = options.Qlq.asDiagonal();
+  // Contact signed distance cost weights  
+  opt_prob->signed_distance_penalty = options.signed_distance_penalty;
+  opt_prob->signed_distance_threshold = options.signed_distance_threshold;
 
   // Check which DoFs the cost is updated relative to the initial condition for
   VectorX<bool> q_nom_relative = options.q_nom_relative_to_q_init;
