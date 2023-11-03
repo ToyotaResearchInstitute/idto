@@ -24,7 +24,7 @@ q_nom = []   # Can't use list comprehension here because of Eigen conversion
 v_nom = []
 for i in range(problem.num_steps + 1):
     q_nom.append(np.array([0.3, 1.5, 2.0]))
-    v_nom.append(np.array([0.0, 0.0]))
+    v_nom.append(np.array([0.0, 0.0, 0.0]))
 problem.q_nom = q_nom
 problem.v_nom = v_nom
 
@@ -35,13 +35,15 @@ params.scaling = True
 params.equality_constraints = True
 params.Delta0 = 1e1
 params.Delta_max = 1e5
-params.num_threads = 4
+params.num_threads = 1
 
 params.contact_stiffness = 200
 params.dissipation_velocity = 0.1
 params.smoothing_factor = 0.01
 params.friction_coefficient = 0.5
 params.stiction_velocity = 0.05
+
+params.verbose = False
 
 # Define an initial guess
 q_guess = []
@@ -64,4 +66,5 @@ solve_time = np.sum(stats.iteration_times)
 print("Solved in ", solve_time, "seconds")
 
 assert len(solution.q) == problem.num_steps + 1
-print(solution.q[-1])
+expected_qN = np.array([0.287, 1.497, 1.995])  # from CPP version
+assert np.linalg.norm(solution.q[-1]-expected_qN) < 1e-3
