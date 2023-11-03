@@ -5,7 +5,7 @@ load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 
 pybind_extension(
     name = "problem_definition",  # This name should match the *.so below
-    srcs = ["problem_definition.cc"],
+    srcs = ["problem_definition_py.cc"],
     deps = [
         "//optimizer:problem_definition",
     ]
@@ -22,5 +22,23 @@ py_test(
     ],
 )
 
-add_lint_tests()
+pybind_extension(
+    name = "solver_parameters",
+    srcs = ["solver_parameters_py.cc"],
+    deps = [
+        "//optimizer:solver_parameters",
+    ]
+)
+py_library(
+    name = "solver_parameters",
+    data = [":solver_parameters.so"],
+)
+py_test(
+    name = "solver_parameters_test",
+    srcs = ["solver_parameters_test.py"],
+    deps = [
+        ":solver_parameters"
+    ],
+)
 
+add_lint_tests()
