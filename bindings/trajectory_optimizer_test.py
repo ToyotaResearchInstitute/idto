@@ -1,6 +1,6 @@
 import numpy as np
 
-from bindings.trajectory_optimizer import TrajectoryOptimizer
+from bindings.trajectory_optimizer import MakeOptimizer
 from bindings.problem_definition import ProblemDefinition
 from bindings.solver_parameters import SolverParameters
 
@@ -31,9 +31,11 @@ problem.v_nom = v_nom
 
 # Create the optimizer object
 time_step = 0.05
-opt = TrajectoryOptimizer(model_file, problem, params, time_step)
-
+opt = MakeOptimizer(model_file, problem, params, time_step)
 
 print(params)
 print(problem)
 print(opt)
+
+print(opt.time_step())
+print(opt.num_steps())

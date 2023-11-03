@@ -33,31 +33,10 @@ TrajectoryOptimizer<double> MakeOptimizer(
   return TrajectoryOptimizer<double>(diagram.get(), &plant, problem, params);
 }
 
-/**
- * A thin wrapper around TrajectoryOptimizer to expose it to Python.
- */
-class TrajectoryOptimizerWrapper {
- public:
-  /**
-   * Constructor that uses a model file (SDF or URDF) to construct a
-   * MultibodyPlant model internally. This allows us to avoid having to
-   * interface with pydrake.
-   */
-  TrajectoryOptimizerWrapper(const std::string& model_file,
-                             const ProblemDefinition& problem,
-                             const SolverParameters& params,
-                             const double time_step) 
-      : builder_(),
-      optimizer_(MakeOptimizer(model_file, problem, params, time_step)) {}
-
- private:
-  DiagramBuilder<double> builder_;
-  MultibodyPlantConfig config_;
-  TrajectoryOptimizer<double> optimizer_;
-};
-
 PYBIND11_MODULE(trajectory_optimizer, m) {
-  py::class_<TrajectoryOptimizerWrapper>(m, "TrajectoryOptimizer")
-      .def(py::init<const std::string&, const ProblemDefinition&,
-                    const SolverParameters&, const double>());
+  m.def("MakeOptimizer", &MakeOptimizer,
+        py::return_value_policy::take_ownership);
+  py::class_<TrajectoryOptimizer<double>>(m, "TrajectoryOptimizer")
+      .def("time_step", &TrajectoryOptimizer<double>::time_step)
+      .def("num_steps", &TrajectoryOptimizer<double>::num_steps);
 }
