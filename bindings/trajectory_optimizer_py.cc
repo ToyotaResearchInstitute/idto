@@ -61,7 +61,6 @@ class TrajectoryOptimizerPy {
 
       optimizer_ = std::make_unique<TrajectoryOptimizer<double>>(
           diagram_.get(), plant_, problem, params);
-
     }
 
     void Solve(const std::vector<VectorXd>& q_guess,
@@ -95,20 +94,3 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
       .def("num_steps", &TrajectoryOptimizerPy::num_steps)
       .def("Solve", &TrajectoryOptimizerPy::Solve);
 }
-
-//PYBIND11_MODULE(trajectory_optimizer, m) {
-//  m.def("MakeOptimizer", &MakeOptimizer,
-//        py::return_value_policy::take_ownership);
-//  //m.def("TestFunction", &TestFunction);
-//  py::class_<TrajectoryOptimizer<double>>(m, "TrajectoryOptimizer")
-//      .def("time_step", &TrajectoryOptimizer<double>::time_step)
-//      .def("num_steps", &TrajectoryOptimizer<double>::num_steps)
-//      // Solve, but with no return value
-//      .def("Solve", [](TrajectoryOptimizer<double>& self,
-//                       const std::vector<VectorXd>& q_guess,
-//                       TrajectoryOptimizerSolution<double>* solution,
-//                       TrajectoryOptimizerStats<double>* stats) {
-//        self.Solve(q_guess, solution, stats);
-//      });
-//
-//}
