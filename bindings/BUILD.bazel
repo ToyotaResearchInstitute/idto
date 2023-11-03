@@ -98,6 +98,8 @@ py_test(
         ":trajectory_optimizer",
         ":problem_definition",
         ":solver_parameters",
+        ":trajectory_optimizer_solution",
+        ":trajectory_optimizer_stats",
     ],
 )
 

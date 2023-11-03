@@ -3,6 +3,8 @@ import numpy as np
 from bindings.trajectory_optimizer import MakeOptimizer
 from bindings.problem_definition import ProblemDefinition
 from bindings.solver_parameters import SolverParameters
+from bindings.trajectory_optimizer_solution import TrajectoryOptimizerSolution
+from bindings.trajectory_optimizer_stats import TrajectoryOptimizerStats
 
 # TODO(vincekurtz): use a relative path, or bind FindIdtoResource
 model_file = "/home/vkurtz/build/drake/examples/acrobot/Acrobot.urdf"
@@ -29,6 +31,11 @@ for i in range(problem.num_steps + 1):
 problem.q_nom = q_nom
 problem.v_nom = v_nom
 
+# Define an initial guess
+q_guess = []
+for i in range(problem.num_steps + 1):
+    q_guess.append(np.array([0.1, 0.2]))
+
 # Create the optimizer object
 time_step = 0.05
 opt = MakeOptimizer(model_file, problem, params, time_step)
@@ -36,4 +43,17 @@ opt = MakeOptimizer(model_file, problem, params, time_step)
 assert opt.time_step() == time_step
 assert opt.num_steps() == problem.num_steps
 
+# Allocate containers for the solution and solver stats
+solution = TrajectoryOptimizerSolution()
+stats = TrajectoryOptimizerStats()
+
+print(type(opt))
+print(opt.Solve)
+
+opt.Solve(q_guess, solution, stats)
+
+
+
+# Solve the problem
+#opt.Solve(q_guess, solution, stats)
 #opt.Solve(None, None, None)
