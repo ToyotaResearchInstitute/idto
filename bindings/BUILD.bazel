@@ -1,0 +1,24 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools/lint:lint.bzl", "add_lint_tests")
+load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
+
+pybind_extension(
+    name = "adder",  # This name should match the *.so below
+    srcs = ["adder.cc"],
+)
+py_library(
+    name = "adder",
+    data = [":adder.so"],
+)
+
+py_test(
+    name = "adder_test",
+    srcs = ["adder_test.py"],
+    deps = [
+        ":adder"
+    ],
+)
+
+add_lint_tests()
+
