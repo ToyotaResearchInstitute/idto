@@ -1,6 +1,6 @@
 import numpy as np
 
-from bindings.trajectory_optimizer import MakeOptimizer
+from bindings.trajectory_optimizer import TrajectoryOptimizer
 from bindings.problem_definition import ProblemDefinition
 from bindings.solver_parameters import SolverParameters
 from bindings.trajectory_optimizer_solution import TrajectoryOptimizerSolution
@@ -38,22 +38,15 @@ for i in range(problem.num_steps + 1):
 
 # Create the optimizer object
 time_step = 0.05
-opt = MakeOptimizer(model_file, problem, params, time_step)
+opt = TrajectoryOptimizer(model_file, problem, params, time_step)
 
 assert opt.time_step() == time_step
 assert opt.num_steps() == problem.num_steps
+
+print("good so far..")
 
 # Allocate containers for the solution and solver stats
 solution = TrajectoryOptimizerSolution()
 stats = TrajectoryOptimizerStats()
 
-print(type(opt))
-print(opt.Solve)
-
 opt.Solve(q_guess, solution, stats)
-
-
-
-# Solve the problem
-#opt.Solve(q_guess, solution, stats)
-#opt.Solve(None, None, None)
