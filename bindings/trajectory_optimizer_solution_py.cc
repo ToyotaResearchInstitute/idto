@@ -11,7 +11,8 @@ PYBIND11_MODULE(trajectory_optimizer_solution, m) {
   py::class_<TrajectoryOptimizerSolution<double>>(m,
                                                   "TrajectoryOptimizerSolution")
       .def(py::init<>())
-      .def_readwrite("q", &TrajectoryOptimizerSolution<double>::q)
-      .def_readwrite("v", &TrajectoryOptimizerSolution<double>::v)
-      .def_readwrite("tau", &TrajectoryOptimizerSolution<double>::tau);
+      // Traj-opt solution should only be written to by the solver.
+      .def_readonly("q", &TrajectoryOptimizerSolution<double>::q)
+      .def_readonly("v", &TrajectoryOptimizerSolution<double>::v)
+      .def_readonly("tau", &TrajectoryOptimizerSolution<double>::tau);
 }

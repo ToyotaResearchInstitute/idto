@@ -61,6 +61,25 @@ py_test(
 )
 
 pybind_extension(
+    name="trajectory_optimizer_stats",
+    srcs=["trajectory_optimizer_stats_py.cc"],
+    deps=[
+        "//optimizer:trajectory_optimizer_solution",
+    ]
+)
+py_library(
+    name="trajectory_optimizer_stats",
+    data=[":trajectory_optimizer_stats.so"],
+)
+py_test(
+    name="trajectory_optimizer_stats_test",
+    srcs=["test/trajectory_optimizer_stats_test.py"],
+    deps=[
+        ":trajectory_optimizer_stats",
+    ],
+)
+
+pybind_extension(
     name = "trajectory_optimizer",
     srcs = ["trajectory_optimizer_py.cc"],
     deps = [
