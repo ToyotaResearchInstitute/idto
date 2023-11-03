@@ -4,19 +4,19 @@ load("//tools/lint:lint.bzl", "add_lint_tests")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 
 pybind_extension(
-    name = "adder",  # This name should match the *.so below
-    srcs = ["adder.cc"],
+    name = "example",  # This name should match the *.so below
+    srcs = ["example.cc"],
 )
 py_library(
-    name = "adder",
-    data = [":adder.so"],
+    name = "example",
+    data = [":example.so"],
 )
 
 py_test(
-    name = "adder_test",
-    srcs = ["adder_test.py"],
+    name = "example_test",
+    srcs = ["example_test.py"],
     deps = [
-        ":adder"
+        ":example"
     ],
 )
 
