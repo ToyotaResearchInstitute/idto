@@ -64,5 +64,4 @@ solve_time = np.sum(stats.iteration_times)
 print("Solved in ", solve_time, "seconds")
 
 assert len(solution.q) == problem.num_steps + 1
-
 print(solution.q[-1])
