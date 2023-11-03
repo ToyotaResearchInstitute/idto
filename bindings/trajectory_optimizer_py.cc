@@ -38,5 +38,6 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
         py::return_value_policy::take_ownership);
   py::class_<TrajectoryOptimizer<double>>(m, "TrajectoryOptimizer")
       .def("time_step", &TrajectoryOptimizer<double>::time_step)
-      .def("num_steps", &TrajectoryOptimizer<double>::num_steps);
+      .def("num_steps", &TrajectoryOptimizer<double>::num_steps)
+      .def("Solve", &TrajectoryOptimizer<double>::Solve);
 }

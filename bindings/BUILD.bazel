@@ -16,7 +16,7 @@ py_library(
 )
 py_test(
     name = "problem_definition_test",
-    srcs = ["problem_definition_test.py"],
+    srcs = ["test/problem_definition_test.py"],
     deps = [
         ":problem_definition"
     ],
@@ -35,9 +35,28 @@ py_library(
 )
 py_test(
     name = "solver_parameters_test",
-    srcs = ["solver_parameters_test.py"],
+    srcs = ["test/solver_parameters_test.py"],
     deps = [
         ":solver_parameters"
+    ],
+)
+
+pybind_extension(
+    name="trajectory_optimizer_solution",
+    srcs=["trajectory_optimizer_solution_py.cc"],
+    deps=[
+        "//optimizer:trajectory_optimizer_solution",
+    ]
+)
+py_library(
+    name="trajectory_optimizer_solution",
+    data=[":trajectory_optimizer_solution.so"],
+)
+py_test(
+    name="trajectory_optimizer_solution_test",
+    srcs=["test/trajectory_optimizer_solution_test.py"],
+    deps=[
+        ":trajectory_optimizer_solution",
     ],
 )
 
@@ -55,7 +74,7 @@ py_library(
 )
 py_test(
     name = "trajectory_optimizer_test",
-    srcs = ["trajectory_optimizer_test.py"],
+    srcs = ["test/trajectory_optimizer_test.py"],
     deps = [
         ":trajectory_optimizer",
         ":problem_definition",

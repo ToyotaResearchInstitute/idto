@@ -33,9 +33,7 @@ problem.v_nom = v_nom
 time_step = 0.05
 opt = MakeOptimizer(model_file, problem, params, time_step)
 
-print(params)
-print(problem)
-print(opt)
+assert opt.time_step() == time_step
+assert opt.num_steps() == problem.num_steps
 
-print(opt.time_step())
-print(opt.num_steps())
+#opt.Solve(None, None, None)
