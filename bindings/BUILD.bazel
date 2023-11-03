@@ -4,22 +4,21 @@ load("//tools/lint:lint.bzl", "add_lint_tests")
 load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 
 pybind_extension(
-    name = "example",  # This name should match the *.so below
-    srcs = ["example.cc"],
+    name = "problem_definition",  # This name should match the *.so below
+    srcs = ["problem_definition.cc"],
     deps = [
         "//optimizer:problem_definition",
     ]
 )
 py_library(
-    name = "example",
-    data = [":example.so"],
+    name = "problem_definition",
+    data = [":problem_definition.so"],
 )
-
 py_test(
-    name = "example_test",
-    srcs = ["example_test.py"],
+    name = "problem_definition_test",
+    srcs = ["problem_definition_test.py"],
     deps = [
-        ":example"
+        ":problem_definition"
     ],
 )
 
