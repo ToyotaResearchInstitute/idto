@@ -6,6 +6,9 @@ load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
 pybind_extension(
     name = "example",  # This name should match the *.so below
     srcs = ["example.cc"],
+    deps = [
+        "//optimizer:problem_definition",
+    ]
 )
 py_library(
     name = "example",

@@ -1,4 +1,6 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/eigen.h>
+#include "optimizer/problem_definition.h"
 
 namespace py = pybind11;
 
@@ -18,6 +20,15 @@ struct Pet {
   std::string name;
 };
 
+class MyEigenClass {
+ public:
+  Eigen::MatrixXd& getMatrix() { return big_mat_; }
+  const Eigen::MatrixXd& viewMatrix() { return big_mat_; }
+
+ private:
+  Eigen::MatrixXd big_mat_ = Eigen::MatrixXd::Zero(10000, 10000);
+};
+
 PYBIND11_MODULE(example, m) {
   m.doc() = "pybind11 example plugin";
 
@@ -28,4 +39,23 @@ PYBIND11_MODULE(example, m) {
       .def(py::init<const std::string&>())
       .def("setName", &Pet::setName)
       .def("getName", &Pet::getName);
+
+  py::class_<MyEigenClass>(m, "MyEigenClass")
+      .def(py::init<>())
+      .def("getMatrix", &MyEigenClass::getMatrix, py::return_value_policy::reference_internal)
+      .def("viewMatrix", &MyEigenClass::viewMatrix, py::return_value_policy::reference_internal);
+
+  py::class_<idto::optimizer::ProblemDefinition>(m, "ProblemDefinition")
+      .def(py::init<>())
+      .def_readwrite("num_steps",
+                     &idto::optimizer::ProblemDefinition::num_steps)
+      .def_property(
+          "q_init",
+          [](idto::optimizer::ProblemDefinition& self) {
+            return self.q_init;
+          },
+          [](idto::optimizer::ProblemDefinition& self,
+             const Eigen::VectorXd& q_init) {
+            self.q_init = q_init;
+          });
 }
