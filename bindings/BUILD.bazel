@@ -42,6 +42,18 @@ py_test(
 )
 
 pybind_extension(
+    name="find_idto_resource",
+    srcs=["find_idto_resource_py.cc"],
+    deps=[
+        "//utils:find_resource",
+    ]
+)
+py_library(
+    name="find_idto_resource",
+    data=[":find_idto_resource.so"],
+)
+
+pybind_extension(
     name="trajectory_optimizer_solution",
     srcs=["trajectory_optimizer_solution_py.cc"],
     deps=[
@@ -100,7 +112,11 @@ py_test(
         ":solver_parameters",
         ":trajectory_optimizer_solution",
         ":trajectory_optimizer_stats",
+        ":find_idto_resource",
     ],
+    data = [
+        "//examples:models"
+    ]
 )
 
 add_lint_tests()

@@ -5,9 +5,11 @@ from bindings.problem_definition import ProblemDefinition
 from bindings.solver_parameters import SolverParameters
 from bindings.trajectory_optimizer_solution import TrajectoryOptimizerSolution
 from bindings.trajectory_optimizer_stats import TrajectoryOptimizerStats
+from bindings.find_idto_resource import FindIdtoResourceOrThrow
 
-# TODO(vincekurtz): use a relative path, or bind FindIdtoResource
-model_file = "/home/vkurtz/projects/idto/examples/models/spinner_friction.urdf"
+# Get the absolute path to a model file
+model_file = FindIdtoResourceOrThrow(
+    "idto/examples/models/spinner_friction.urdf")
 
 # Define the optimization problem
 problem = ProblemDefinition()
