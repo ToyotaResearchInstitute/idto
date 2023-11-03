@@ -41,4 +41,26 @@ py_test(
     ],
 )
 
+pybind_extension(
+    name = "trajectory_optimizer",
+    srcs = ["trajectory_optimizer_py.cc"],
+    deps = [
+        "//optimizer:trajectory_optimizer",
+        "@drake//multibody/parsing",
+    ]
+)
+py_library(
+    name = "trajectory_optimizer",
+    data = [":trajectory_optimizer.so"],
+)
+py_test(
+    name = "trajectory_optimizer_test",
+    srcs = ["trajectory_optimizer_test.py"],
+    deps = [
+        ":trajectory_optimizer",
+        ":problem_definition",
+        ":solver_parameters",
+    ],
+)
+
 add_lint_tests()
