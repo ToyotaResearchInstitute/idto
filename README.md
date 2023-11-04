@@ -40,6 +40,21 @@ Compile the package:
 bazel build //...
 ```
 
+## Python Bindings
+
+A limited subset of solver functionality is available in python via
+[pybind11](https://github.com/pybind/pybind11). To use the python bindings,
+first install the dependencies and compile with bazel, as described above.
+
+Then update the python path:
+```
+export PYTHONPATH=${PYTHONPATH}:"/path/to/idto/bazel-bin"
+```
+This line can be added to `.bashrc` if you want to permanently update the path.
+
+A simple example of using the python bindings can be found in
+`spinner_python_example.py`.
+
 ## Examples
 
 The `examples` folder contains various examples, including those described in
