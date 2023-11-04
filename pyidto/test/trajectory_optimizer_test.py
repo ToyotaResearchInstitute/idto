@@ -1,11 +1,11 @@
 import numpy as np
 
-from bindings.trajectory_optimizer import TrajectoryOptimizer
-from bindings.problem_definition import ProblemDefinition
-from bindings.solver_parameters import SolverParameters
-from bindings.trajectory_optimizer_solution import TrajectoryOptimizerSolution
-from bindings.trajectory_optimizer_stats import TrajectoryOptimizerStats
-from bindings.find_idto_resource import FindIdtoResourceOrThrow
+from pyidto.trajectory_optimizer import TrajectoryOptimizer
+from pyidto.problem_definition import ProblemDefinition
+from pyidto.solver_parameters import SolverParameters
+from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
+from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
+from pyidto.find_idto_resource import FindIdtoResourceOrThrow
 
 # Get the absolute path to a model file
 model_file = FindIdtoResourceOrThrow(

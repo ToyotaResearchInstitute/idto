@@ -1,4 +1,4 @@
-from bindings.trajectory_optimizer_solution import TrajectoryOptimizerSolution
+from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
 import numpy as np
 
 solution = TrajectoryOptimizerSolution()

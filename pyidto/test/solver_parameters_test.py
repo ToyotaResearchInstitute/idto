@@ -1,5 +1,5 @@
 import numpy as np
-from bindings.solver_parameters import SolverParameters
+from pyidto.solver_parameters import SolverParameters
 
 params = SolverParameters()
 

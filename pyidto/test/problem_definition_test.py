@@ -1,5 +1,5 @@
 import numpy as np
-from bindings.problem_definition import ProblemDefinition
+from pyidto.problem_definition import ProblemDefinition
 
 # Construct a problem definition object
 problem_definition = ProblemDefinition()
