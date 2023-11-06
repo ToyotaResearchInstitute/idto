@@ -139,8 +139,9 @@ GTEST_TEST(TrajectoryOptimizerTest, QuaternionDofs) {
   opt_prob.q_init = VectorXd(7);
   opt_prob.q_init << 1, 0, 0, 0, 0, 0, 0;
   opt_prob.v_init = drake::Vector6d::Zero();
-  opt_prob.q_nom.resize(num_steps + 1);
-  opt_prob.v_nom.resize(num_steps + 1);
+  opt_prob.q_nom.resize(num_steps + 1, VectorXd::Zero(nq));
+  opt_prob.v_nom.resize(num_steps + 1, VectorXd::Zero(nv));
+
 
   TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob);
   TrajectoryOptimizerState<double> state = optimizer.CreateState();
@@ -197,8 +198,8 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactGradientMethods) {
   opt_prob.num_steps = num_steps;
   opt_prob.q_init = Vector3d(0.2, 1.5, 0.0);
   opt_prob.v_init = Vector3d(0.0, 0.0, 0.0);
-  opt_prob.q_nom.resize(num_steps + 1);
-  opt_prob.v_nom.resize(num_steps + 1);
+  opt_prob.q_nom.resize(num_steps + 1, Vector3d::Zero());
+  opt_prob.v_nom.resize(num_steps + 1, Vector3d::Zero());
   SolverParameters solver_params;
   solver_params.contact_stiffness = 100;
   solver_params.dissipation_velocity = 0.1;
@@ -1077,8 +1078,8 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumDtauDq) {
   opt_prob.q_init = drake::Vector1d(0.0);
   opt_prob.v_init = drake::Vector1d(0.1);
   opt_prob.num_steps = num_steps;
-  opt_prob.q_nom.resize(num_steps + 1);
-  opt_prob.v_nom.resize(num_steps + 1);
+  opt_prob.q_nom.resize(num_steps + 1, drake::Vector1d(0.0));
+  opt_prob.v_nom.resize(num_steps + 1, drake::Vector1d(0.0));
   TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob);
   TrajectoryOptimizerState<double> state = optimizer.CreateState();
 
@@ -1253,12 +1254,15 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcCost) {
   const int num_steps = 100;
   const double dt = 1e-2;
 
-  // Set up an (empty) system model
+  // Set up a system model with 2 DoFs
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file = drake::FindResourceOrThrow(
+      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1335,8 +1339,8 @@ GTEST_TEST(TrajectoryOptimizerTest, PendulumCalcInverseDynamics) {
   ProblemDefinition opt_prob;
   opt_prob.num_steps = num_steps;
   opt_prob.v_init = drake::Vector1d(-0.23);
-  opt_prob.q_nom.resize(num_steps + 1);
-  opt_prob.v_nom.resize(num_steps + 1);
+  opt_prob.q_nom.resize(num_steps + 1, drake::Vector1d(0.0));
+  opt_prob.v_nom.resize(num_steps + 1, drake::Vector1d(0.0));
   TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob);
   TrajectoryOptimizerState<double> state = optimizer.CreateState();
   state.set_q(q);
@@ -1393,12 +1397,15 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcVelocities) {
   const int num_steps = 5;
   const double dt = 1e-2;
 
-  // Create an empty plant model
+  // Create a plant model with 2 DoFs
   DiagramBuilder<double> builder;
   MultibodyPlantConfig config;
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file = drake::FindResourceOrThrow(
+      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -1407,8 +1414,8 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcVelocities) {
   opt_prob.q_init = Vector2d(0.1, 0.2);
   opt_prob.v_init = Vector2d(0.5 / dt, 1.5 / dt);
   opt_prob.num_steps = num_steps;
-  opt_prob.q_nom.resize(num_steps + 1);
-  opt_prob.v_nom.resize(num_steps + 1);
+  opt_prob.q_nom.resize(num_steps + 1, Vector2d::Zero());
+  opt_prob.v_nom.resize(num_steps + 1, Vector2d::Zero());
   TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob);
 
   // Construct a std::vector of generalized positions (q)
