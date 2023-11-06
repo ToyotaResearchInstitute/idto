@@ -1,0 +1,122 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools/lint:lint.bzl", "add_lint_tests")
+load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
+
+pybind_extension(
+    name = "problem_definition",  # This name should match the *.so below
+    srcs = ["problem_definition_py.cc"],
+    deps = [
+        "//optimizer:problem_definition",
+    ]
+)
+py_library(
+    name = "problem_definition",
+    data = [":problem_definition.so"],
+)
+py_test(
+    name = "problem_definition_test",
+    srcs = ["test/problem_definition_test.py"],
+    deps = [
+        ":problem_definition"
+    ],
+)
+
+pybind_extension(
+    name = "solver_parameters",
+    srcs = ["solver_parameters_py.cc"],
+    deps = [
+        "//optimizer:solver_parameters",
+    ]
+)
+py_library(
+    name = "solver_parameters",
+    data = [":solver_parameters.so"],
+)
+py_test(
+    name = "solver_parameters_test",
+    srcs = ["test/solver_parameters_test.py"],
+    deps = [
+        ":solver_parameters"
+    ],
+)
+
+pybind_extension(
+    name="find_idto_resource",
+    srcs=["find_idto_resource_py.cc"],
+    deps=[
+        "//utils:find_resource",
+    ]
+)
+py_library(
+    name="find_idto_resource",
+    data=[":find_idto_resource.so"],
+)
+
+pybind_extension(
+    name="trajectory_optimizer_solution",
+    srcs=["trajectory_optimizer_solution_py.cc"],
+    deps=[
+        "//optimizer:trajectory_optimizer_solution",
+    ]
+)
+py_library(
+    name="trajectory_optimizer_solution",
+    data=[":trajectory_optimizer_solution.so"],
+)
+py_test(
+    name="trajectory_optimizer_solution_test",
+    srcs=["test/trajectory_optimizer_solution_test.py"],
+    deps=[
+        ":trajectory_optimizer_solution",
+    ],
+)
+
+pybind_extension(
+    name="trajectory_optimizer_stats",
+    srcs=["trajectory_optimizer_stats_py.cc"],
+    deps=[
+        "//optimizer:trajectory_optimizer_solution",
+    ]
+)
+py_library(
+    name="trajectory_optimizer_stats",
+    data=[":trajectory_optimizer_stats.so"],
+)
+py_test(
+    name="trajectory_optimizer_stats_test",
+    srcs=["test/trajectory_optimizer_stats_test.py"],
+    deps=[
+        ":trajectory_optimizer_stats",
+    ],
+)
+
+pybind_extension(
+    name = "trajectory_optimizer",
+    srcs = ["trajectory_optimizer_py.cc"],
+    deps = [
+        "//optimizer:trajectory_optimizer",
+        "@drake//multibody/parsing",
+    ]
+)
+py_library(
+    name = "trajectory_optimizer",
+    data = [":trajectory_optimizer.so"],
+)
+py_test(
+    name = "trajectory_optimizer_test",
+    srcs = ["test/trajectory_optimizer_test.py"],
+    deps = [
+        ":trajectory_optimizer",
+        ":problem_definition",
+        ":solver_parameters",
+        ":trajectory_optimizer_solution",
+        ":trajectory_optimizer_stats",
+        ":find_idto_resource",
+    ],
+    data = [
+        "//examples:models"
+    ]
+)
+
+add_lint_tests()

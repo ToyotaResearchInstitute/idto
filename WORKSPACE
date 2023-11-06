@@ -54,3 +54,18 @@ print("Using IDTO_LOCAL_DRAKE_PATH={}".format(IDTO_LOCAL_DRAKE_PATH)) if IDTO_LO
 # other sites.
 load("@drake//tools/workspace:default.bzl", "add_default_workspace")
 add_default_workspace()
+
+# Load pybind11 for python bindings
+http_archive(
+  name = "pybind11_bazel",
+  strip_prefix = "pybind11_bazel-2.11.1",
+  urls = ["https://github.com/pybind/pybind11_bazel/archive/v2.11.1.zip"],
+)
+http_archive(
+  name = "pybind11",
+  build_file = "@pybind11_bazel//:pybind11.BUILD",
+  strip_prefix = "pybind11-2.11.1",
+  urls = ["https://github.com/pybind/pybind11/archive/v2.11.1.tar.gz"],
+)
+load("@pybind11_bazel//:python_configure.bzl", "python_configure")
+python_configure(name = "local_config_python")
