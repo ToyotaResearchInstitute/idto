@@ -13,19 +13,20 @@
 # as a better long-term solution
 import os
 import sys
-sys.path.insert(0, os.getcwd() + "/bazel-bin/")
+sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
 
 import numpy as np
 import time
 
+from pydrake.all import (StartMeshcat, DiagramBuilder,
+        AddMultibodyPlantSceneGraph, AddDefaultVisualization, Parser)
+
+from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pyidto.problem_definition import ProblemDefinition
 from pyidto.solver_parameters import SolverParameters
 from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
 from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
-
-from pydrake.all import (StartMeshcat, DiagramBuilder,
-        AddMultibodyPlantSceneGraph, AddDefaultVisualization, Parser)
 
 def define_spinner_optimization_problem():
     """
