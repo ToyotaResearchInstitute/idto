@@ -75,6 +75,12 @@ TrajectoryOptimizer<T>::TrajectoryOptimizer(const Diagram<T>* diagram,
   DRAKE_DEMAND(static_cast<int>(prob.q_nom.size()) == (num_steps() + 1));
   DRAKE_DEMAND(static_cast<int>(prob.v_nom.size()) == (num_steps() + 1));
 
+  // Target positions and velocities must be the right size
+  for (int t = 0; t <= num_steps(); ++t) {
+    DRAKE_DEMAND(prob.q_nom[t].size() == plant_->num_positions());
+    DRAKE_DEMAND(prob.v_nom[t].size() == plant_->num_velocities());
+  }
+
   // Create an autodiff optimizer if we need exact gradients
   if constexpr (std::is_same_v<T, double>) {
     if ((params_.gradients_method == GradientsMethod::kAutoDiff) ||
