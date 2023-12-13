@@ -26,21 +26,6 @@ using idto::optimizer::TrajectoryOptimizerSolution;
 using idto::optimizer::TrajectoryOptimizerStats;
 using idto::optimizer::WarmStart;
 
-TrajectoryOptimizer<double> MakeOptimizer(const std::string& model_file,
-                                          const ProblemDefinition& problem,
-                                          const SolverParameters& params,
-                                          const double time_step) {
-  DiagramBuilder<double> builder;
-  MultibodyPlantConfig config;
-  config.time_step = time_step;
-  auto [plant, scene_graph] = AddMultibodyPlant(config, &builder);
-  Parser(&plant).AddModels(model_file);
-  plant.Finalize();
-  auto diagram = builder.Build();
-
-  return TrajectoryOptimizer<double>(diagram.get(), &plant, problem, params);
-}
-
 /**
  * A python wrapper class for TrajectoryOptimizer. Has access to a limited
  * set of methods, and is initialized from a URDF or SDF file instead of a
@@ -85,6 +70,10 @@ class TrajectoryOptimizerPy {
         optimizer_->params().Delta0);
   }
 
+  void ResetInitialConditions(const VectorXd& q0, const VectorXd& v0) {
+    optimizer_->ResetInitialConditions(q0, v0);
+  }
+
   double time_step() const { return optimizer_->time_step(); }
 
   int num_steps() const { return optimizer_->num_steps(); }
@@ -106,7 +95,9 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
       .def("num_steps", &TrajectoryOptimizerPy::num_steps)
       .def("Solve", &TrajectoryOptimizerPy::Solve)
       .def("SolveFromWarmStart", &TrajectoryOptimizerPy::SolveFromWarmStart)
-      .def("MakeWarmStart", &TrajectoryOptimizerPy::MakeWarmStart);
+      .def("MakeWarmStart", &TrajectoryOptimizerPy::MakeWarmStart)
+      .def("ResetInitialConditions",
+           &TrajectoryOptimizerPy::ResetInitialConditions);
   py::class_<WarmStart>(m, "WarmStart")
       // Warm start is not default constructible: it should be created
       // in python using the TrajectoryOptimizer.MakeWarmStart method.
