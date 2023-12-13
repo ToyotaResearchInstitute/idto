@@ -46,8 +46,14 @@ class TrajectoryOptimizerPy {
     plant_->Finalize();
     diagram_ = builder.Build();
 
+    // For python we create a new set of parameters, where
+    // q_nom_relative_to_q_init is false for all DoFs.
+    SolverParameters py_params = params;
+    py_params.q_nom_relative_to_q_init =
+        Eigen::VectorX<bool>::Zero(plant_->num_positions());
+
     optimizer_ = std::make_unique<TrajectoryOptimizer<double>>(
-        diagram_.get(), plant_, problem, params);
+        diagram_.get(), plant_, problem, py_params);
   }
 
   void Solve(const std::vector<VectorXd>& q_guess,

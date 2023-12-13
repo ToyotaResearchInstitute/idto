@@ -81,3 +81,16 @@ print("Initial Delta", warm_start.Delta)
 opt.SolveFromWarmStart(warm_start, warm_start_solution, warm_start_stats)
 assert warm_start.Delta < params.Delta0  # trust region should have shrunk
 print("Final Delta", warm_start.Delta)
+
+# Test resetting the initial conditions
+print("Resetting initial conditions")
+new_q_init = np.array([0.5, 1.2, -0.1])
+new_v_init = np.array([0.04, 0.3, 0.2])
+opt.ResetInitialConditions(new_q_init, new_v_init)
+new_solution = TrajectoryOptimizerSolution()
+new_stats = TrajectoryOptimizerStats()
+q_guess[0] = new_q_init
+opt.Solve(q_guess, new_solution, new_stats)
+assert np.linalg.norm(new_solution.q[0] - new_q_init) < 1e-8
+assert np.linalg.norm(new_solution.v[0] - new_v_init) < 1e-8
+print("Done.")
