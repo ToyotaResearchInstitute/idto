@@ -105,6 +105,11 @@ class TrajectoryOptimizer {
   const Diagram<T>& diagram() const { return *diagram_; }
 
   /**
+   * Convienience function to get a const reference to the solver parameters.
+  */
+  const SolverParameters& params() const { return params_; }
+
+  /**
    * Create a state object which contains the decision variables (generalized
    * positions at each timestep), along with a cache of other things that are
    * computed from positions, such as velocities, accelerations, forces, and

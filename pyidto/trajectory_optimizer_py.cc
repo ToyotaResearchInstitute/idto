@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "optimizer/trajectory_optimizer.h"
+#include "optimizer/warm_start.h"
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
 #include <drake/multibody/plant/multibody_plant_config_functions.h>
@@ -23,6 +24,7 @@ using idto::optimizer::SolverParameters;
 using idto::optimizer::TrajectoryOptimizer;
 using idto::optimizer::TrajectoryOptimizerSolution;
 using idto::optimizer::TrajectoryOptimizerStats;
+using idto::optimizer::WarmStart;
 
 TrajectoryOptimizer<double> MakeOptimizer(const std::string& model_file,
                                           const ProblemDefinition& problem,
@@ -69,6 +71,20 @@ class TrajectoryOptimizerPy {
     optimizer_->Solve(q_guess, solution, stats);
   }
 
+  void SolveFromWarmStart(WarmStart* warm_start,
+                          TrajectoryOptimizerSolution<double>* solution,
+                          TrajectoryOptimizerStats<double>* stats) {
+    optimizer_->SolveFromWarmStart(warm_start, solution, stats);
+  }
+
+  std::unique_ptr<WarmStart> MakeWarmStart(
+      const std::vector<VectorXd>& q_guess) const {
+    return std::make_unique<WarmStart>(
+        optimizer_->num_steps(), optimizer_->diagram(), optimizer_->plant(),
+        optimizer_->num_equality_constraints(), q_guess,
+        optimizer_->params().Delta0);
+  }
+
   double time_step() const { return optimizer_->time_step(); }
 
   int num_steps() const { return optimizer_->num_steps(); }
@@ -88,5 +104,13 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
                     const SolverParameters&, const double>())
       .def("time_step", &TrajectoryOptimizerPy::time_step)
       .def("num_steps", &TrajectoryOptimizerPy::num_steps)
-      .def("Solve", &TrajectoryOptimizerPy::Solve);
+      .def("Solve", &TrajectoryOptimizerPy::Solve)
+      .def("SolveFromWarmStart", &TrajectoryOptimizerPy::SolveFromWarmStart)
+      .def("MakeWarmStart", &TrajectoryOptimizerPy::MakeWarmStart);
+  py::class_<WarmStart>(m, "WarmStart")
+      // Warm start is not default constructible: it should be created
+      // in python using the TrajectoryOptimizer.MakeWarmStart method.
+      .def_readonly("Delta", &WarmStart::Delta)
+      .def_readonly("dq", &WarmStart::dq)
+      .def_readonly("dqH", &WarmStart::dqH);
 }

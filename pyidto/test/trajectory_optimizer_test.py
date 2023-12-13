@@ -70,3 +70,14 @@ print("Solved in ", solve_time, "seconds")
 assert len(solution.q) == problem.num_steps + 1
 expected_qN = np.array([0.287, 1.497, 1.995])  # from CPP version
 assert np.linalg.norm(solution.q[-1]-expected_qN) < 1e-3
+
+# Solve the optimization problem from a warm start
+print("Solving from warm start")
+warm_start = opt.MakeWarmStart(solution.q)
+warm_start_solution = TrajectoryOptimizerSolution()
+warm_start_stats = TrajectoryOptimizerStats()
+assert warm_start.Delta == params.Delta0
+print("Initial Delta", warm_start.Delta)
+opt.SolveFromWarmStart(warm_start, warm_start_solution, warm_start_stats)
+assert warm_start.Delta < params.Delta0  # trust region should have shrunk
+print("Final Delta", warm_start.Delta)
