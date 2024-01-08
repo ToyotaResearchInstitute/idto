@@ -380,8 +380,8 @@ void TrajectoryOptimizer<T>::CalcContactForceContribution(
     const SpatialForce<T> F_AAo_W = F_AC_W.Shift(-p_AC_W);
 
     // Add the forces into the given MultibodyForces
-    forces->mutable_body_forces()[bodyA.node_index()] += F_AAo_W;
-    forces->mutable_body_forces()[bodyB.node_index()] += F_BBo_W;
+    forces->mutable_body_forces()[bodyA.mobod_index()] += F_AAo_W;
+    forces->mutable_body_forces()[bodyB.mobod_index()] += F_BBo_W;
   }
 }
 
