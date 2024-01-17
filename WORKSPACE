@@ -3,8 +3,8 @@
 workspace(name = "idto")
 
 # Set the version of Drake that we'll use
-DRAKE_COMMIT = "0d90af76f9b852670e819b72f50aa47b6ff0dac1"
-DRAKE_CHECKSUM = "1cda2a4e6989b8f0c40353766ead11e63c517bc8e469e3012cd27f0f8b2fa2bb"
+DRAKE_COMMIT = "v1.25.0"
+DRAKE_CHECKSUM = "ebebd812c4f3644cf2fefbbf72835060cbd26e8896a0959ad0fcd2f3428a0547"
 
 # Or choose a specific revision of Drake to use.
 # DRAKE_COMMIT = "251bd6982d48343cbd727d0a46d887461b2d13cc"
