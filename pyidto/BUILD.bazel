@@ -119,4 +119,20 @@ py_test(
     ]
 )
 
+py_test(
+    name = "warm_start_test",
+    srcs = ["test/warm_start_test.py"],
+    deps = [
+        ":trajectory_optimizer",
+        ":problem_definition",
+        ":solver_parameters",
+        ":trajectory_optimizer_solution",
+        ":trajectory_optimizer_stats",
+        ":find_idto_resource",
+    ],
+    data = [
+        "//examples:models"
+    ]
+)
+
 add_lint_tests()
