@@ -72,16 +72,18 @@ def solve_once():
     solution = TrajectoryOptimizerSolution()
     stats = TrajectoryOptimizerStats()
     opt.Solve(q_guess, solution, stats)
-
+    
     solve_time = np.sum(stats.iteration_times)
     print("Solved in ", solve_time, "seconds")
+
+    return solution, stats
 
 
 def solve_step_by_step():
     """Solve the test problem step-by-step with warm starts."""
     # Problem setup
     model_file, problem, params, q_guess = define_problem_parameters()
-    params.max_iterations = 2
+    params.max_iterations = 1
 
     # Create the optimizer object
     time_step = 0.05
@@ -91,37 +93,46 @@ def solve_step_by_step():
     solution = TrajectoryOptimizerSolution()
     stats = TrajectoryOptimizerStats()
     warm_start = opt.MakeWarmStart(q_guess)
-    for _ in range(5):
+    for _ in range(10):
         opt.SolveFromWarmStart(warm_start, solution, stats)
 
     solve_time = np.sum(stats.iteration_times)
     print("Solved in ", solve_time, "seconds")
+    
+    return solution, stats
 
-# Solve the optimization problem from a warm start
-#print("Solving from warm start")
-#warm_start = opt.MakeWarmStart(solution.q)
-#warm_start_solution = TrajectoryOptimizerSolution()
-#warm_start_stats = TrajectoryOptimizerStats()
-#assert warm_start.Delta == params.Delta0
-#print("Initial Delta", warm_start.Delta)
-#opt.SolveFromWarmStart(warm_start, warm_start_solution, warm_start_stats)
-#assert warm_start.Delta < params.Delta0  # trust region should have shrunk
-#print("Final Delta", warm_start.Delta)
+def reset_initial_conditions():
+    """Test resetting the initial conditions."""
+    model_file, problem, params, q_guess = define_problem_parameters()
+    time_step = 0.05
+    opt = TrajectoryOptimizer(model_file, problem, params, time_step)
 
-# Test resetting the initial conditions
-#print("Resetting initial conditions")
-#new_q_init = np.array([0.5, 1.2, -0.1])
-#new_v_init = np.array([0.04, 0.3, 0.2])
-#opt.ResetInitialConditions(new_q_init, new_v_init)
-#new_solution = TrajectoryOptimizerSolution()
-#new_stats = TrajectoryOptimizerStats()
-#q_guess[0] = new_q_init
-#opt.Solve(q_guess, new_solution, new_stats)
-#assert np.linalg.norm(new_solution.q[0] - new_q_init) < 1e-8
-#assert np.linalg.norm(new_solution.v[0] - new_v_init) < 1e-8
-#print("Done.")
+    new_q_init = np.array([0.5, 1.2, -0.1])
+    new_v_init = np.array([0.04, 0.3, 0.2])
+    opt.ResetInitialConditions(new_q_init, new_v_init)
+    new_solution = TrajectoryOptimizerSolution()
+    new_stats = TrajectoryOptimizerStats()
+    q_guess[0] = new_q_init
+    opt.Solve(q_guess, new_solution, new_stats)
+    assert np.linalg.norm(new_solution.q[0] - new_q_init) < 1e-8
+    assert np.linalg.norm(new_solution.v[0] - new_v_init) < 1e-8
     
 if __name__=="__main__":
-    solve_once()
-    solve_step_by_step()
-    print("Done.")
+    # Solve once open-loop and once with warm starts
+    one_shot_solution, one_shot_stats = solve_once()
+    warm_stat_solution, warm_start_stats = solve_step_by_step()
+
+    # Solutions should be the same
+    assert np.linalg.norm(one_shot_solution.q[-1] - warm_stat_solution.q[-1]) < 1e-8
+    assert np.linalg.norm(one_shot_solution.v[-1] - warm_stat_solution.v[-1]) < 1e-8
+
+    # Stats should be the same
+    assert np.linalg.norm(np.array(one_shot_stats.iteration_costs) 
+                          - np.array(warm_start_stats.iteration_costs)) < 1e-8
+    assert np.linalg.norm(np.array(one_shot_stats.trust_region_radii) 
+                          - np.array(warm_start_stats.trust_region_radii)) < 1e-8
+    assert np.linalg.norm(np.array(one_shot_stats.gradient_norms)
+                          - np.array(warm_start_stats.gradient_norms)) < 1e-8
+
+    # Test resetting initial conditions
+    reset_initial_conditions()
