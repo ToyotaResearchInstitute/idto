@@ -16,12 +16,11 @@ import sys
 sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
 
 import numpy as np
-import time
 
-from pydrake.all import (AddDefaultVisualization, AddMultibodyPlantSceneGraph, BasicVector,
-        ConstantVectorSource, DiagramBuilder, LeafSystem, Parser, Simulator, StartMeshcat)
+from pydrake.all import (AddDefaultVisualization, AddMultibodyPlantSceneGraph, 
+                         BasicVector, DiagramBuilder, LeafSystem, Parser, 
+                         Simulator, StartMeshcat)
 
-from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pyidto.problem_definition import ProblemDefinition
 from pyidto.solver_parameters import SolverParameters
