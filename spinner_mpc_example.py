@@ -33,7 +33,7 @@ def define_spinner_optimization_problem():
     Create a problem definition for the spinner.
     """
     problem = ProblemDefinition()
-    problem.num_steps = 10
+    problem.num_steps = 40
     problem.q_init = np.array([0.3, 1.5, 0.0])
     problem.v_init = np.array([0.0, 0.0, 0.0])
     problem.Qq = 1.0 * np.eye(3)
@@ -58,7 +58,7 @@ def define_spinner_solver_parameters():
     """
     params = SolverParameters()
 
-    params.max_iterations = 10
+    params.max_iterations = 1
     params.scaling = True
     params.equality_constraints = True
     params.Delta0 = 1e1
@@ -193,17 +193,19 @@ class SpinnerMPCController(LeafSystem):
         q0 = x[:3]
         v0 = x[3:]
         self.opt.ResetInitialConditions(q0, v0)
-        self.q_guess[0] = q0
 
         # Solve the optimization problem
-        solution = TrajectoryOptimizerSolution()
-        stats = TrajectoryOptimizerStats()
-        self.opt.Solve(self.q_guess, solution, stats)
-        #self.opt.SolveFromWarmStart(self.warm_start, self.solution, self.stats)
+        self.opt.SolveFromWarmStart(self.warm_start, self.solution, self.stats)
 
         # Get the first control input
-        tau = solution.tau[0]
-        u = tau[0:2]  # IDTO returns torques on all DoFs, but we only have control over the first two
+        # N.B. IDTO returns generalized forces for all DoFs, but we only have
+        # actuators on the first two.
+        u = self.solution.tau[0][0:2]
+        q_nom = self.solution.q[1][0:2]
+        v_nom = self.solution.v[1][0:2]
+        q = q0[0:2]
+        v = v0[0:2]
+        u = u - 10 * (q - q_nom) - 1 * (v - v_nom)
 
         # Return the control input
         output.SetFromVector(u)
@@ -212,7 +214,7 @@ class SpinnerMPCController(LeafSystem):
 if __name__ == "__main__":
     # Set up a Drake diagram for simulation
     builder = DiagramBuilder()
-    plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 1e-3)
+    plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 5e-3)
     Parser(plant).AddModels("examples/models/spinner_friction.urdf")
     plant.Finalize()
 
