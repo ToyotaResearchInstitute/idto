@@ -101,7 +101,7 @@ class SpinnerMPCController(LeafSystem):
         self.time_step = 0.05
 
         # Create the optimizer object
-        model_file = "./examples/models/spinner_friction.urdf"
+        model_file = "../examples/models/spinner_friction.urdf"
         self.opt = TrajectoryOptimizer(model_file, self.problem, self.params, self.time_step)
 
         # Allocate a warm-start
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     # Set up a Drake diagram for simulation
     builder = DiagramBuilder()
     plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 1e-2)
-    Parser(plant).AddModels("examples/models/spinner_friction.urdf")
+    Parser(plant).AddModels("../examples/models/spinner_friction.urdf")
     plant.Finalize()
 
     # Create the MPC controller
