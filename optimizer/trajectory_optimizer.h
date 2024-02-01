@@ -462,6 +462,21 @@ class TrajectoryOptimizer {
     }
   }
 
+  /**
+   * Overwrite the nominal trajectory q_nom stored in the solver parameters.
+   * This is particularly useful when re-solving the optimization problem for
+   * MPC.
+   *
+   * @param q_nom Nominal trajectory for the generalized positions
+   */
+  void UpdateNominalTrajectory(const std::vector<VectorXd>& q_nom,
+                               const std::vector<VectorXd>& v_nom) {
+    DRAKE_DEMAND(static_cast<int>(q_nom.size()) == num_steps() + 1);
+    DRAKE_DEMAND(static_cast<int>(q_nom[0].size()) == plant().num_positions());
+    prob_.q_nom = q_nom;
+    prob_.v_nom = v_nom;
+  }
+
  private:
   // Friend class to facilitate testing.
   friend class TrajectoryOptimizerTester;
