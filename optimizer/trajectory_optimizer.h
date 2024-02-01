@@ -110,6 +110,11 @@ class TrajectoryOptimizer {
   const SolverParameters& params() const { return params_; }
 
   /**
+   * Convienience function to get a const reference to the problem definition.
+  */
+  const ProblemDefinition& prob() const { return prob_; }
+
+  /**
    * Create a state object which contains the decision variables (generalized
    * positions at each timestep), along with a cache of other things that are
    * computed from positions, such as velocities, accelerations, forces, and
@@ -449,17 +454,8 @@ class TrajectoryOptimizer {
     DRAKE_DEMAND(v_init.size() == plant().num_velocities());
     DRAKE_DEMAND(params_.q_nom_relative_to_q_init.size() ==
                  plant().num_positions());
-    // Reset the initial conditions
     prob_.q_init = q_init;
     prob_.v_init = v_init;
-
-    // Update the nominal trajectory for those DoFs that are relative to the
-    // initial condition
-    const VectorXd q_init_old = prob_.q_nom[0];
-    const VectorXd selector = params_.q_nom_relative_to_q_init.cast<double>();
-    for (VectorXd& qt_nom : prob_.q_nom) {
-      qt_nom += selector.cwiseProduct(q_init - q_init_old);
-    }
   }
 
   /**
