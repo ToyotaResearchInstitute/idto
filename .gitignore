@@ -4,3 +4,4 @@
 .vscode
 /bazel-*
 /user.bazelrc
+__pycache__

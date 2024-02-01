@@ -9,20 +9,22 @@
 #
 ##
 
-# Note: this could be added to the PYTHONPATH environment variable instead,
-# as a better long-term solution
-from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
-from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
-from pyidto.solver_parameters import SolverParameters
-from pyidto.problem_definition import ProblemDefinition
-from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pydrake.all import (StartMeshcat, DiagramBuilder,
                          AddMultibodyPlantSceneGraph, AddDefaultVisualization, Parser)
 import time
 import numpy as np
 import os
 import sys
+
+# Note: this could be added to the PYTHONPATH environment variable instead,
+# as a better long-term solution
 sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
+
+from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
+from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
+from pyidto.solver_parameters import SolverParameters
+from pyidto.problem_definition import ProblemDefinition
+from pyidto.trajectory_optimizer import TrajectoryOptimizer
 
 
 def define_spinner_optimization_problem():
