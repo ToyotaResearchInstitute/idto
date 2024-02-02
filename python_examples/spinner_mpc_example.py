@@ -60,7 +60,7 @@ def define_spinner_solver_parameters():
     """
     params = SolverParameters()
 
-    params.max_iterations = 200
+    params.max_iterations = 1
     params.scaling = True
     params.equality_constraints = True
     params.Delta0 = 1e1
@@ -183,9 +183,11 @@ class ModelPredictiveController(LeafSystem):
                 u_knots.append(self.B @ solution.tau[t])
 
         time_steps = np.array(time_steps)
+        print(time_steps)
         q_knots = np.array(q_knots).T
         v_knots = np.array(v_knots).T
         u_knots = np.array(u_knots).T
+        print(u_knots[0,:])
 
         # Create the StoredTrajectory object
         trajectory = StoredTrajectory()
@@ -222,21 +224,23 @@ class ModelPredictiveController(LeafSystem):
         self.optimizer.SolveFromWarmStart(self.warm_start, solution, stats)
 
         # Store the solution in the abstract state
-        state.set_value(
-            self.StoreOptimizerSolution(solution, context.get_time()))
+        state.get_mutable_abstract_state(0).SetFrom(
+            Value(self.StoreOptimizerSolution(solution, context.get_time())))
+        
+        print(f"At solve time {context.get_time()}, u0 = {solution.tau[0]}")
 
         return EventStatus.Succeeded()
 
 if __name__ == "__main__":
     # Set up a Drake diagram for simulation
     builder = DiagramBuilder()
-    plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 1e-2)
-    plant.set_discrete_contact_approximation(DiscreteContactApproximation.kLagged)
+    plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 1e-3)
+    plant.set_discrete_contact_approximation(DiscreteContactApproximation.kTamsi)
     models = Parser(plant).AddModels("../examples/models/spinner_friction.urdf")
 
     # Add implicit PD controllers (must use kLagged or kSimilar)
-    Kp = 100 * np.ones(plant.num_actuators())
-    Kd = 20  * np.ones(plant.num_actuators())
+    Kp = 1e-4 * np.ones(plant.num_actuators())
+    Kd = 1e-5 * np.ones(plant.num_actuators())
     actuator_indices = [JointActuatorIndex(i) for i in range(plant.num_actuators())]
     for actuator_index, Kp, Kd in zip(actuator_indices, Kp, Kd):
         plant.get_joint_actuator(actuator_index).set_controller_gains(
@@ -245,7 +249,7 @@ if __name__ == "__main__":
     plant.Finalize()
 
     # Create the MPC controller and interpolator systems
-    mpc_rate = 1  # Hz
+    mpc_rate = 200  # Hz
     controller = builder.AddSystem(ModelPredictiveController(mpc_rate))
     interpolator = builder.AddSystem(Interpolator(plant.num_actuators()))
 
