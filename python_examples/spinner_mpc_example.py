@@ -47,7 +47,7 @@ def define_spinner_optimization_problem():
     q_nom = []   # Can't use list comprehension here because of Eigen conversion
     v_nom = []
     for i in range(problem.num_steps + 1):
-        q_nom.append(np.array([0.3, 1.5, 2.0]))
+        q_nom.append(np.array([0.3, 1.5, 2.0 * i / problem.num_steps]))
         v_nom.append(np.array([0.0, 0.0, 0.0]))
     problem.q_nom = q_nom
     problem.v_nom = v_nom
@@ -207,7 +207,13 @@ class ModelPredictiveController(LeafSystem):
             self.q_guess[i] = last_trajectory.q.value(t).flatten()
         self.warm_start.set_q(self.q_guess)
 
-        # TODO: shift the nominal trajectory as needed
+        # Shift the nominal trajectory as needed
+        # TODO: abstract this into a separate method
+        q_nom = self.problem.q_nom
+        v_nom = self.problem.v_nom
+        for i in range(self.problem.num_steps + 1):
+            q_nom[i][2] = q_nom[i][2] + q0[2]
+        self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)
 
         # Solve the optimization problem
         solution = TrajectoryOptimizerSolution()
@@ -275,8 +281,8 @@ if __name__ == "__main__":
 
     # Simulate and play back on meshcat
     simulator = Simulator(diagram, diagram_context)
-    simulator.set_target_realtime_rate(1.0)
+    simulator.set_target_realtime_rate(-1.0)
     meshcat.StartRecording()
-    simulator.AdvanceTo(5.05)
+    simulator.AdvanceTo(5.0)
     meshcat.StopRecording()
     meshcat.PublishRecording()

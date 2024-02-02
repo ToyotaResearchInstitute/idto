@@ -80,6 +80,15 @@ class TrajectoryOptimizerPy {
     optimizer_->ResetInitialConditions(q0, v0);
   }
 
+  void UpdateNominalTrajectory(const std::vector<VectorXd>& q_nom,
+                               const std::vector<VectorXd>& v_nom) {
+    optimizer_->UpdateNominalTrajectory(q_nom, v_nom);
+  }
+
+  const SolverParameters& params() const { return optimizer_->params(); }
+
+  const ProblemDefinition& prob() const { return optimizer_->prob(); }
+
   double time_step() const { return optimizer_->time_step(); }
 
   int num_steps() const { return optimizer_->num_steps(); }
@@ -103,7 +112,10 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
       .def("SolveFromWarmStart", &TrajectoryOptimizerPy::SolveFromWarmStart)
       .def("MakeWarmStart", &TrajectoryOptimizerPy::MakeWarmStart)
       .def("ResetInitialConditions",
-           &TrajectoryOptimizerPy::ResetInitialConditions);
+           &TrajectoryOptimizerPy::ResetInitialConditions)
+      .def("UpdateNominalTrajectory", &TrajectoryOptimizerPy::UpdateNominalTrajectory)
+      .def("params", &TrajectoryOptimizerPy::params)
+      .def("prob", &TrajectoryOptimizerPy::prob);
   py::class_<WarmStart>(m, "WarmStart")
       // Warm start is not default constructible: it should be created
       // in python using the TrajectoryOptimizer.MakeWarmStart method.
