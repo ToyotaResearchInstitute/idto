@@ -125,11 +125,10 @@ class ModelPredictiveController(LeafSystem):
         self.nq = 3
         self.nv = 3
         self.nu = 2
-        self.B = np.array([[1, 0], [0, 1], [0, 0]]).T
 
         # Allocate a warm-start
-        q_guess = define_spinner_initial_guess(self.problem.num_steps)
-        self.warm_start = self.optimizer.MakeWarmStart(q_guess)
+        self.q_guess = define_spinner_initial_guess(self.problem.num_steps)
+        self.warm_start = self.optimizer.MakeWarmStart(self.q_guess)
 
         solution = TrajectoryOptimizerSolution()
         stats = TrajectoryOptimizerStats()
@@ -166,28 +165,13 @@ class ModelPredictiveController(LeafSystem):
         """
         # Create numpy arrays with knot points for iterpolation of the solution
         # along the actuated DoFs
-        time_steps = []
-        q_knots = []
-        v_knots = []
-        u_knots = []
-
-        for t in range(self.problem.num_steps + 1):
-            time_steps.append(t * self.time_step)
-            q_knots.append(self.B @ solution.q[t])
-            v_knots.append(self.B @ solution.v[t])
-
-            if t == self.problem.num_steps:
-                # Repeat the last control input
-                u_knots.append(self.B @ solution.tau[t - 1])
-            else:
-                u_knots.append(self.B @ solution.tau[t])
-
-        time_steps = np.array(time_steps)
-        print(time_steps)
-        q_knots = np.array(q_knots).T
-        v_knots = np.array(v_knots).T
-        u_knots = np.array(u_knots).T
-        print(u_knots[0,:])
+        time_steps = np.linspace(
+            0, self.time_step * self.problem.num_steps, self.problem.num_steps + 1)
+        q_knots = np.array(solution.q).T
+        v_knots = np.array(solution.v).T
+        tau_knots = solution.tau
+        tau_knots.append(solution.tau[-1])  # Repeat the last control input
+        tau_knots = np.array(tau_knots).T
 
         # Create the StoredTrajectory object
         trajectory = StoredTrajectory()
@@ -196,8 +180,8 @@ class ModelPredictiveController(LeafSystem):
             time_steps, q_knots)
         trajectory.v = PiecewisePolynomial.CubicWithContinuousSecondDerivatives(
             time_steps, v_knots)
-        trajectory.u = PiecewisePolynomial.CubicWithContinuousSecondDerivatives(
-            time_steps, u_knots)
+        trajectory.tau = PiecewisePolynomial.CubicWithContinuousSecondDerivatives(
+            time_steps, tau_knots)
         
         return trajectory
         
@@ -214,7 +198,14 @@ class ModelPredictiveController(LeafSystem):
         v0 = x0[self.nq:]
         self.optimizer.ResetInitialConditions(q0, v0)
 
-        # TODO: shift the warm-start based on the stored interpolation and time elapsed
+        # Shift the warm-start based on the stored interpolation and time elapsed
+        last_trajectory = state.get_abstract_state(0).get_value()
+        self.q_guess[0] = q0
+        start_time = context.get_time() - last_trajectory.start_time
+        for i in range(1, self.problem.num_steps + 1):
+            t = start_time + i * self.time_step
+            self.q_guess[i] = last_trajectory.q.value(t).flatten()
+        self.warm_start.set_q(self.q_guess)
 
         # TODO: shift the nominal trajectory as needed
 
@@ -227,8 +218,6 @@ class ModelPredictiveController(LeafSystem):
         state.get_mutable_abstract_state(0).SetFrom(
             Value(self.StoreOptimizerSolution(solution, context.get_time())))
         
-        print(f"At solve time {context.get_time()}, u0 = {solution.tau[0]}")
-
         return EventStatus.Succeeded()
 
 if __name__ == "__main__":
@@ -251,7 +240,10 @@ if __name__ == "__main__":
     # Create the MPC controller and interpolator systems
     mpc_rate = 200  # Hz
     controller = builder.AddSystem(ModelPredictiveController(mpc_rate))
-    interpolator = builder.AddSystem(Interpolator(plant.num_actuators()))
+
+    Bq = np.array([[1, 0, 0], [0, 1, 0]])
+    Bv = np.array([[1, 0, 0], [0, 1, 0]])
+    interpolator = builder.AddSystem(Interpolator(Bq, Bv))
 
     # Wire the systems together
     builder.Connect(
@@ -285,6 +277,6 @@ if __name__ == "__main__":
     simulator = Simulator(diagram, diagram_context)
     simulator.set_target_realtime_rate(1.0)
     meshcat.StartRecording()
-    simulator.AdvanceTo(5.0)
+    simulator.AdvanceTo(5.05)
     meshcat.StopRecording()
     meshcat.PublishRecording()

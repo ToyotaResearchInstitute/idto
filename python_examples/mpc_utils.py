@@ -14,18 +14,18 @@ class StoredTrajectory:
     that we might get from pyidto.
     """
     start_time = None  # The time at which the trajectory starts
-    q = None           # A PiecewisePolynomial representing the actuated joint positions
-    v = None           # A PiecewisePolynomial representing the actuated joint velocities
-    u = None           # A PiecewisePolynomial representing the control inputs (torques)
+    q = None           # A PiecewisePolynomial representing the generalized coordinates
+    v = None           # A PiecewisePolynomial representing the generalized velocities
+    tau = None         # A PiecewisePolynomial representing the generalized forces
 
 
 class Interpolator(LeafSystem):
     """
-    A simple Drake system that interpolates a StoredTrajectory to provice the
+    A simple Drake system that interpolates a StoredTrajectory to provide the
     actuated state reference x(t) and input u(t) at a given time t. This is
     useful for passing a reference trajectory to a low-level controller.
     """
-    def __init__(self, num_actuators):
+    def __init__(self, Bq, Bv):
         """
         Construct the interpolator system, which takes StoredTrajectory as input
         and produces the state and input at a given time.
@@ -37,11 +37,17 @@ class Interpolator(LeafSystem):
                              ------------------
 
         Args:
-            nq: The number of generalized coordinates
-            nv: The number of generalized velocities
-            nu: The number of control inputs
+            Bq: Actuated DoF selection matrix for generalized coordinates
+            Bv: Actuator selection matrix for generalized velocities and forces
         """
         LeafSystem.__init__(self)
+
+        # Check that the actuated selection matrices are the right size
+        num_actuators = Bq.shape[0]
+        assert Bv.shape[0] == num_actuators
+
+        self.Bq = Bq
+        self.Bv = Bv
 
         # Declare the input and output ports 
         trajectory_input_port = self.DeclareAbstractInputPort("trajectory",
@@ -70,8 +76,6 @@ class Interpolator(LeafSystem):
         Send the control input at the current time.
         """
         trajectory = self.EvalAbstractInput(context, 0).get_value()
-        u = trajectory.u.value(context.get_time() - trajectory.start_time)
-
-        print(f"At send time {context.get_time()}, t0 = {trajectory.start_time}, u = {u}")
-
+        u = self.Bv @ trajectory.tau.value(context.get_time() -
+                                           trajectory.start_time)
         output.SetFromVector(u)

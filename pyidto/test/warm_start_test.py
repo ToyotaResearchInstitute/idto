@@ -98,7 +98,7 @@ def solve_step_by_step():
 
     solve_time = np.sum(stats.iteration_times)
     print("Solved in ", solve_time, "seconds")
-    
+
     return solution, stats
 
 def reset_initial_conditions():

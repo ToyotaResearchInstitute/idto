@@ -107,6 +107,7 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
   py::class_<WarmStart>(m, "WarmStart")
       // Warm start is not default constructible: it should be created
       // in python using the TrajectoryOptimizer.MakeWarmStart method.
+      .def("set_q", &WarmStart::set_q)
       .def_readonly("Delta", &WarmStart::Delta)
       .def_readonly("dq", &WarmStart::dq)
       .def_readonly("dqH", &WarmStart::dqH);

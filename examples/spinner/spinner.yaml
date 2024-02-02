@@ -31,7 +31,7 @@ time_step : 0.05    # Discretization timestep (seconds)
 num_steps : 40      # number of timesteps
 
 # Solver parameters
-max_iters : 000             # maximum Gauss-Newton iterations
+max_iters : 001             # maximum Gauss-Newton iterations
 method : "trust_region"     # solver method, {linesearch, trust_region}
 linesearch : "backtracking" # linesearch strategy, {armino, backtracking}
 scaling : true
@@ -84,7 +84,7 @@ stiction_velocity: 0.05     # Regularization velocity, in m/s.
 mpc : true
 mpc_iters : 1
 controller_frequency : 200.0
-sim_time : 5
+sim_time : 0.05
 sim_time_step : 1e-3
 sim_realtime_rate : 0.0
 feed_forward : true
