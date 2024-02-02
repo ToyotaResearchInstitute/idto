@@ -84,9 +84,9 @@ stiction_velocity: 0.05     # Regularization velocity, in m/s.
 mpc : true
 mpc_iters : 1
 controller_frequency : 200.0
-sim_time : 5.0
+sim_time : 5
 sim_time_step : 1e-3
 sim_realtime_rate : 0.0
 feed_forward : true
-Kp : [10,0,0]
-Kd : [1,0,0]
+Kp : [10,10,0]
+Kd : [10,10,0]

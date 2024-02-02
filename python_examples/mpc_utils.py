@@ -63,13 +63,11 @@ class Interpolator(LeafSystem):
         """
         Send the state at the current time.
         """
-        raise NotImplementedError
-        #t = context.get_time()
-        #trajectory = self.EvalAbstractInput(context, 0).get_value()
-        #q = trajectory.q.value(t)
-        #v = trajectory.v.value(t)
-
-        #output.SetFromVector(np.concatenate((q, v)))
+        trajectory = self.EvalAbstractInput(context, 0).get_value()
+        t = context.get_time() - trajectory.start_time
+        q = self.Bq @ trajectory.q.value(t)
+        v = self.Bv @ trajectory.v.value(t)
+        output.SetFromVector(np.concatenate((q, v)))
 
     def SendControl(self, context, output):
         """

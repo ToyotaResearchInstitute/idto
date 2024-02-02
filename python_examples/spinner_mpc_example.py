@@ -209,10 +209,12 @@ class ModelPredictiveController(LeafSystem):
 
         # Shift the nominal trajectory as needed
         # TODO: abstract this into a separate method
-        q_nom = self.problem.q_nom
-        v_nom = self.problem.v_nom
+        prob = self.optimizer.prob()
+        q_nom = prob.q_nom
+        v_nom = prob.v_nom
+        q0_nom_old = prob.q_nom[0]
         for i in range(self.problem.num_steps + 1):
-            q_nom[i][2] = q_nom[i][2] + q0[2]
+            q_nom[i][2] += q0[2] - q0_nom_old[2]
         self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)
 
         # Solve the optimization problem
@@ -230,12 +232,12 @@ if __name__ == "__main__":
     # Set up a Drake diagram for simulation
     builder = DiagramBuilder()
     plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 1e-3)
-    plant.set_discrete_contact_approximation(DiscreteContactApproximation.kTamsi)
+    plant.set_discrete_contact_approximation(DiscreteContactApproximation.kLagged)
     models = Parser(plant).AddModels("../examples/models/spinner_friction.urdf")
 
     # Add implicit PD controllers (must use kLagged or kSimilar)
-    Kp = 1e-4 * np.ones(plant.num_actuators())
-    Kd = 1e-5 * np.ones(plant.num_actuators())
+    Kp = 100 * np.ones(plant.num_actuators())
+    Kd = 10 * np.ones(plant.num_actuators())
     actuator_indices = [JointActuatorIndex(i) for i in range(plant.num_actuators())]
     for actuator_index, Kp, Kd in zip(actuator_indices, Kp, Kd):
         plant.get_joint_actuator(actuator_index).set_controller_gains(
@@ -281,7 +283,7 @@ if __name__ == "__main__":
 
     # Simulate and play back on meshcat
     simulator = Simulator(diagram, diagram_context)
-    simulator.set_target_realtime_rate(-1.0)
+    simulator.set_target_realtime_rate(1.0)
     meshcat.StartRecording()
     simulator.AdvanceTo(5.0)
     meshcat.StopRecording()
