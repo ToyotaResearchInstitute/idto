@@ -89,4 +89,4 @@ sim_time_step : 1e-3
 sim_realtime_rate : 0.0
 feed_forward : true
 Kp : [10,10,0]
-Kd : [10,10,0]
+Kd : [1,1,0]
