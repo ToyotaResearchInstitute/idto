@@ -17,18 +17,16 @@ sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
 
 import numpy as np
 
-from pydrake.all import (AddDefaultVisualization, AddMultibodyPlantSceneGraph, 
-                         BasicVector, DiagramBuilder, LeafSystem, Parser, 
-                         Simulator, StartMeshcat, Value, EventStatus, PiecewisePolynomial,
-                         PdControllerGains, JointActuatorIndex, DiscreteContactApproximation)
+from pydrake.all import (AddDefaultVisualization, AddMultibodyPlantSceneGraph,
+                         DiagramBuilder, Parser, Simulator, StartMeshcat, 
+                         PdControllerGains, JointActuatorIndex, 
+                         DiscreteContactApproximation)
 
 from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pyidto.problem_definition import ProblemDefinition
 from pyidto.solver_parameters import SolverParameters
-from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
-from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
 
-from mpc_utils import StoredTrajectory, Interpolator
+from mpc_utils import Interpolator, ModelPredictiveController
 
 def define_spinner_optimization_problem():
     """
@@ -82,151 +80,32 @@ def define_spinner_initial_guess(num_steps):
     Create an initial guess for the spinner
     """
     q_guess = []
-    for i in range(num_steps + 1):
+    for _ in range(num_steps + 1):
         q_guess.append(np.array([0.3, 1.5, 0.0]))
 
     return q_guess
 
 
-class ModelPredictiveController(LeafSystem):
+class SpinnerMPC(ModelPredictiveController):
     """
-    A Drake system that implements an MPC controller.
+    Model predictive controller for the spinner.
     """
-    def __init__(self, mpc_rate):
-        """
-        Construct the MPC controller system, which takes the current state as
-        input and sends an optimial StoredTrajectory as output. 
-
-                         -------------------------------
-                         |                             |
-            state  --->  |  ModelPredictiveController  |  --->  trajectory
-                         |                             |
-                         -------------------------------
-
-        Args:
-            optimizer: A TrajectoryOptimizer object that can solve the MPC
-                       problem.
-        """
-        LeafSystem.__init__(self)
-
-        # Specify a cost function and target trajectory
-        self.problem = define_spinner_optimization_problem()
-
-        # Specify solver parameters, including contact modeling parameters
-        self.params = define_spinner_solver_parameters()
-
-        # Specify the timestep we'll use to discretize the trajectory
-        self.time_step = 0.05
-
-        # Create the optimizer object
-        model_file = "../examples/models/spinner_friction.urdf"
-        self.optimizer = TrajectoryOptimizer(model_file, self.problem, self.params, self.time_step)
-
-        self.nq = 3
-        self.nv = 3
-        self.nu = 2
-
-        # Allocate a warm-start
-        self.q_guess = define_spinner_initial_guess(self.problem.num_steps)
-        self.warm_start = self.optimizer.MakeWarmStart(self.q_guess)
-
-        solution = TrajectoryOptimizerSolution()
-        stats = TrajectoryOptimizerStats()
-        self.optimizer.SolveFromWarmStart(self.warm_start, solution, stats)
-
-        state = self.StoreOptimizerSolution(solution, 0.0)
-
-
-
-        # Declare an abstract-valued state that will hold the optimal trajectory
-        self.stored_trajectory = self.DeclareAbstractState(Value(state))
-
-        # Define a periodic update event that will trigger the optimizer to resolve
-        # the MPC problem.
-        self.DeclarePeriodicUnrestrictedUpdateEvent(
-            1. / mpc_rate, 0, self.UpdateAbstractState)
-
-        # Declare the input and output ports
-        self.state_input_port = self.DeclareVectorInputPort(
-            "state", BasicVector(self.nq + self.nv))
-        self.trajectory_output_port = self.DeclareStateOutputPort(
-            "optimal_trajectory", self.stored_trajectory)
+    def __init__(self, optimizer, q_guess, nq, nv, mpc_rate):
+        ModelPredictiveController.__init__(self, optimizer, q_guess, nq, nv, mpc_rate)
         
-    def StoreOptimizerSolution(self, solution, start_time):
+    def UpdateNominalTrajectory(self, q0, v0):
         """
-        Store a solution to the optimization problem in a StoredTrajectory object.
-
-        Args:
-            solution: A TrajectoryOptimizerSolution object
-            start_time: The time at which the trajectory starts
-
-        Returns:
-            A StoredTrajectory object containing an interpolation of the solution.
+        Shift the nominal trajectory to account for the current state,
+        so that the spinner's reference position is always ahead of the
+        current position.
         """
-        # Create numpy arrays with knot points for iterpolation of the solution
-        # along the actuated DoFs
-        time_steps = np.linspace(
-            0, self.time_step * self.problem.num_steps, self.problem.num_steps + 1)
-        q_knots = np.array(solution.q).T
-        v_knots = np.array(solution.v).T
-        tau_knots = solution.tau
-        tau_knots.append(solution.tau[-1])  # Repeat the last control input
-        tau_knots = np.array(tau_knots).T
-
-        # Create the StoredTrajectory object
-        trajectory = StoredTrajectory()
-        trajectory.start_time = start_time
-        trajectory.q = PiecewisePolynomial.CubicWithContinuousSecondDerivatives(
-            time_steps, q_knots)
-        trajectory.v = PiecewisePolynomial.CubicWithContinuousSecondDerivatives(
-            time_steps, v_knots)
-        trajectory.tau = PiecewisePolynomial.CubicWithContinuousSecondDerivatives(
-            time_steps, tau_knots)
-        
-        return trajectory
-        
-    def UpdateAbstractState(self, context, state):
-        """
-        Resolve the MPC problem and store the optimal trajectory in the abstract
-        state.
-        """
-        print(f"Resolving at t={context.get_time()}")
-
-        # Get the current state
-        x0 = self.state_input_port.Eval(context)
-        q0 = x0[:self.nq]
-        v0 = x0[self.nq:]
-        self.optimizer.ResetInitialConditions(q0, v0)
-
-        # Shift the warm-start based on the stored interpolation and time elapsed
-        last_trajectory = state.get_abstract_state(0).get_value()
-        self.q_guess[0] = q0
-        start_time = context.get_time() - last_trajectory.start_time
-        for i in range(1, self.problem.num_steps + 1):
-            t = start_time + i * self.time_step
-            self.q_guess[i] = last_trajectory.q.value(t).flatten()
-        self.warm_start.set_q(self.q_guess)
-
-        # Shift the nominal trajectory as needed
-        # TODO: abstract this into a separate method
         prob = self.optimizer.prob()
         q_nom = prob.q_nom
         v_nom = prob.v_nom
         q0_nom_old = prob.q_nom[0]
-        for i in range(self.problem.num_steps + 1):
+        for i in range(self.num_steps + 1):
             q_nom[i][2] += q0[2] - q0_nom_old[2]
         self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)
-
-        # Solve the optimization problem
-        solution = TrajectoryOptimizerSolution()
-        stats = TrajectoryOptimizerStats()
-        self.optimizer.SolveFromWarmStart(self.warm_start, solution, stats)
-
-        # Store the solution in the abstract state
-        state.get_mutable_abstract_state(0).SetFrom(
-            Value(self.StoreOptimizerSolution(solution, context.get_time())))
-        
-        return EventStatus.Succeeded()
 
 if __name__ == "__main__":
     # Set up a Drake diagram for simulation
@@ -245,9 +124,18 @@ if __name__ == "__main__":
 
     plant.Finalize()
 
+    # Set up the trajectory optimization problem
+    problem = define_spinner_optimization_problem()
+    params = define_spinner_solver_parameters()
+    q_guess = define_spinner_initial_guess(problem.num_steps)
+    model_file = "../examples/models/spinner_friction.urdf"
+    optimizer = TrajectoryOptimizer(model_file, problem, params, 0.05)
+
     # Create the MPC controller and interpolator systems
     mpc_rate = 200  # Hz
-    controller = builder.AddSystem(ModelPredictiveController(mpc_rate))
+    nq, nv = 3, 3
+    controller = builder.AddSystem(SpinnerMPC(
+        optimizer, q_guess, nq, nv, mpc_rate))
 
     Bq = np.array([[1, 0, 0], [0, 1, 0]])
     Bv = np.array([[1, 0, 0], [0, 1, 0]])
