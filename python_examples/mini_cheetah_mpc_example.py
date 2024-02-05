@@ -103,7 +103,7 @@ def create_optimizer():
 
     # Create the optimizer 
     time_step = 0.05
-    model_file = "../examples/models/mini_cheetah_simple_v2.urdf"
+    model_file = "../examples/models/mini_cheetah_with_ground.urdf"
     optimizer = TrajectoryOptimizer(model_file, problem, params, time_step)
 
     return optimizer
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     builder = DiagramBuilder()
     plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 1e-3)
     plant.set_discrete_contact_approximation(DiscreteContactApproximation.kLagged)
-    models = Parser(plant).AddModels("../examples/models/mini_cheetah_mesh.urdf")
+    models = Parser(plant).AddModels("../examples/models/mini_cheetah_with_ground.urdf")
 
     # Add implicit PD controllers (must use kLagged or kSimilar)
     Kp = 50 * np.ones(plant.num_actuators())
