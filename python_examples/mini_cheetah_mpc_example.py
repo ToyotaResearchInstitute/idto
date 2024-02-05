@@ -21,7 +21,8 @@ import time
 from pydrake.all import (AddDefaultVisualization, AddMultibodyPlantSceneGraph,
                          DiagramBuilder, Parser, Simulator, StartMeshcat, 
                          PdControllerGains, JointActuatorIndex, 
-                         DiscreteContactApproximation, LeafSystem, BasicVector)
+                         DiscreteContactApproximation, LeafSystem, BasicVector,
+                         RollPitchYaw, Quaternion, RotationMatrix)
 
 from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pyidto.problem_definition import ProblemDefinition
@@ -91,7 +92,7 @@ def create_optimizer():
 
     params.max_iterations = 1
     params.scaling = True
-    params.equality_constraints = False
+    params.equality_constraints = True
     params.num_threads = 4
 
     params.contact_stiffness = 2000
@@ -158,7 +159,7 @@ class GamepadCommand(LeafSystem):
         else:
             output[0] = - gamepad.axes[1]  # x velocity
             output[1] = - gamepad.axes[0]  # y velocity
-            output[2] = gamepad.axes[2]  # z angular velocity
+            output[2] = - gamepad.axes[2]  # z angular velocity
 
 
 class MiniCheetahMPC(ModelPredictiveController):
@@ -183,9 +184,15 @@ class MiniCheetahMPC(ModelPredictiveController):
 
         # Get the current gamepad command
         gamepad_command = self.gamepad_port.Eval(context)
-        vx = 0.5*gamepad_command[0]
-        vy = 0.2*gamepad_command[1]
-        wz = gamepad_command[2]
+        vx = 0.5 * gamepad_command[0]
+        vy = 0.2 * gamepad_command[1]
+        wz = 0.5 * gamepad_command[2]
+
+        # Translate velocity commands in the base frame to the world frame
+        current_quat = q0[:4]
+        current_quat = Quaternion(current_quat / np.linalg.norm(current_quat))
+        R = RotationMatrix(current_quat)
+        vx, vy, _ = R.multiply([vx, vy, 0.0])
 
         # Get the current nominal trajectory (most dimensions won't change)
         prob = self.optimizer.prob()
@@ -194,11 +201,19 @@ class MiniCheetahMPC(ModelPredictiveController):
 
         # Update the nominal trajectory to match the gamepad command
         for i in range(self.num_steps + 1):
+            # Forward/backward
             q_nom[i][4] = q0[4] + vx * i / self.num_steps
             v_nom[i][4] = vx
 
+            # Side-to-side
             q_nom[i][5] = q0[5] + vy * i / self.num_steps
             v_nom[i][5] = vy
+
+            # Orientation
+            current_rpy = RollPitchYaw(current_quat).vector()
+            target_rpy = np.array([0.0, 0.0, current_rpy[2] + wz * i / self.num_steps])
+            q_nom[i][:4] = RollPitchYaw(target_rpy).ToQuaternion().wxyz()
+            v_nom[i][3] = wz
 
         self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)
 
