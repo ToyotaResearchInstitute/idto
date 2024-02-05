@@ -250,7 +250,7 @@ if __name__ == "__main__":
     q_guess = create_initial_guess(optimizer.num_steps())
 
     # Create the MPC controller and interpolator systems
-    mpc_rate = 100  # Hz
+    mpc_rate = 60  # Hz
     nq, nv = plant.num_positions(), plant.num_velocities()
     controller = builder.AddSystem(MiniCheetahMPC(
         optimizer, q_guess, nq, nv, mpc_rate))
@@ -305,7 +305,4 @@ if __name__ == "__main__":
     # Simulate and play back on meshcat
     simulator = Simulator(diagram, diagram_context)
     simulator.set_target_realtime_rate(1.0)
-    meshcat.StartRecording()
-    simulator.AdvanceTo(50)
-    meshcat.StopRecording()
-    meshcat.PublishRecording()
+    simulator.AdvanceTo(np.inf)
