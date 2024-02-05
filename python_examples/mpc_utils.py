@@ -203,7 +203,7 @@ class ModelPredictiveController(LeafSystem):
         self.warm_start.set_q(self.q_guess)
 
         # Shift the nominal trajectory as needed
-        self.UpdateNominalTrajectory(q0, v0)
+        self.UpdateNominalTrajectory(context)
 
         # Solve the optimization problem
         solution = TrajectoryOptimizerSolution()
@@ -216,7 +216,7 @@ class ModelPredictiveController(LeafSystem):
         
         return EventStatus.Succeeded()
     
-    def UpdateNominalTrajectory(self, q0, v0):
+    def UpdateNominalTrajectory(self, context):
         """
         Shift the nominal trajectory to account for the current state.
         This may or may not be useful depending on the specifics of the task.

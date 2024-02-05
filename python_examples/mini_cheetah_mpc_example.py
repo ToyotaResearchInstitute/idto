@@ -16,11 +16,12 @@ import sys
 sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
 
 import numpy as np
+import time
 
 from pydrake.all import (AddDefaultVisualization, AddMultibodyPlantSceneGraph,
                          DiagramBuilder, Parser, Simulator, StartMeshcat, 
                          PdControllerGains, JointActuatorIndex, 
-                         DiscreteContactApproximation)
+                         DiscreteContactApproximation, LeafSystem, BasicVector)
 
 from pyidto.trajectory_optimizer import TrajectoryOptimizer
 from pyidto.problem_definition import ProblemDefinition
@@ -44,7 +45,7 @@ def create_optimizer():
            0.0,-0.8, 1.6])
     problem.v_init = np.zeros(18)
     problem.Qq = np.diag(np.concatenate([
-        1 * np.ones(4),   # base orientation
+        10 * np.ones(4),   # base orientation
         10 * np.ones(3),  # base position
         0 * np.ones(12),  # legs
     ]))
@@ -126,6 +127,39 @@ def create_initial_guess(num_steps):
 
     return q_guess
 
+class GamepadCommand(LeafSystem):
+    """
+    A system that reads commands from a gamepad controller conencted to meshcat.
+    """
+    def __init__(self, meshcat):
+        """
+        Construct the gamepad command system.
+
+        Args:
+            meshcat: The meshcat visualizer object.
+        """
+        LeafSystem.__init__(self)
+        
+        self._meshcat = meshcat
+        self.DeclareVectorOutputPort("command", 
+                                     BasicVector(3), 
+                                     self.CalcOutput)
+
+    def CalcOutput(self, context, output):
+        """
+        Output x velocity, y velocity, and z angular velocity commands.
+        """
+        gamepad = self._meshcat.GetGamepad()
+
+        if gamepad.index == None:
+            # If the gamepad is not connected, send zero commands
+            print("Gamepad not connected, sending zero commands.")
+            output.SetFromVector(np.zeros(3))
+        else:
+            output[0] = - gamepad.axes[1]  # x velocity
+            output[1] = - gamepad.axes[0]  # y velocity
+            output[2] = gamepad.axes[2]  # z angular velocity
+
 
 class MiniCheetahMPC(ModelPredictiveController):
     """
@@ -133,20 +167,44 @@ class MiniCheetahMPC(ModelPredictiveController):
     """
     def __init__(self, optimizer, q_guess, nq, nv, mpc_rate):
         ModelPredictiveController.__init__(self, optimizer, q_guess, nq, nv, mpc_rate)
+
+        # Declare an input port for the gamepad commands
+        self.gamepad_port = self.DeclareVectorInputPort("gamepad_command", 
+                                                        BasicVector(3))
         
-    def UpdateNominalTrajectory(self, q0, v0):
+    def UpdateNominalTrajectory(self, context):
         """
         Shift the nominal trajectory to move the robot forward.
         """
+        # Get the current state
+        x0 = self.state_input_port.Eval(context)
+        q0 = x0[:self.nq]
+        v0 = x0[self.nq:]
+
+        # Get the current gamepad command
+        gamepad_command = self.gamepad_port.Eval(context)
+        vx = 0.5*gamepad_command[0]
+        vy = 0.2*gamepad_command[1]
+        wz = gamepad_command[2]
+
+        # Get the current nominal trajectory (most dimensions won't change)
         prob = self.optimizer.prob()
         q_nom = prob.q_nom
         v_nom = prob.v_nom
+
+        # Update the nominal trajectory to match the gamepad command
         for i in range(self.num_steps + 1):
-            q_nom[i][4] = q0[4] + 0.4 * i / self.num_steps
-            v_nom[i][4] = v0[4]
+            q_nom[i][4] = q0[4] + vx * i / self.num_steps
+            v_nom[i][4] = vx
+
+            q_nom[i][5] = q0[5] + vy * i / self.num_steps
+            v_nom[i][5] = vy
+
         self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)
 
 if __name__ == "__main__":
+    meshcat = StartMeshcat()
+
     # Set up a Drake diagram for simulation
     builder = DiagramBuilder()
     plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 1e-3)
@@ -168,7 +226,7 @@ if __name__ == "__main__":
     q_guess = create_initial_guess(optimizer.num_steps())
 
     # Create the MPC controller and interpolator systems
-    mpc_rate = 60  # Hz
+    mpc_rate = 100  # Hz
     nq, nv = plant.num_positions(), plant.num_velocities()
     controller = builder.AddSystem(MiniCheetahMPC(
         optimizer, q_guess, nq, nv, mpc_rate))
@@ -177,6 +235,9 @@ if __name__ == "__main__":
     N = plant.MakeVelocityToQDotMap(plant.CreateDefaultContext())
     Bq = N@Bv
     interpolator = builder.AddSystem(Interpolator(Bq.T, Bv.T))
+    
+    # Add a gamepad command system
+    gamepad = builder.AddSystem(GamepadCommand(meshcat))
 
     # Wire the systems together
     builder.Connect(
@@ -192,9 +253,12 @@ if __name__ == "__main__":
         interpolator.GetOutputPort("state"), 
         plant.get_desired_state_input_port(models[0])
     )
+    builder.Connect(
+        gamepad.get_output_port(),
+        controller.GetInputPort("gamepad_command")
+    )
     
     # Connect the plant to meshcat for visualization
-    meshcat = StartMeshcat()
     AddDefaultVisualization(builder, meshcat)
 
     # Build the system diagram
@@ -218,6 +282,6 @@ if __name__ == "__main__":
     simulator = Simulator(diagram, diagram_context)
     simulator.set_target_realtime_rate(1.0)
     meshcat.StartRecording()
-    simulator.AdvanceTo(5.0)
+    simulator.AdvanceTo(50)
     meshcat.StopRecording()
     meshcat.PublishRecording()

@@ -93,12 +93,17 @@ class SpinnerMPC(ModelPredictiveController):
     def __init__(self, optimizer, q_guess, nq, nv, mpc_rate):
         ModelPredictiveController.__init__(self, optimizer, q_guess, nq, nv, mpc_rate)
         
-    def UpdateNominalTrajectory(self, q0, v0):
+    def UpdateNominalTrajectory(self, context):
         """
         Shift the nominal trajectory to account for the current state,
         so that the spinner's reference position is always ahead of the
         current position.
         """
+        # Get the current configuration
+        x0 = self.state_input_port.Eval(context)
+        q0 = x0[:self.nq]
+
+        # Update the nominal trajectory
         prob = self.optimizer.prob()
         q_nom = prob.q_nom
         v_nom = prob.v_nom
@@ -106,6 +111,7 @@ class SpinnerMPC(ModelPredictiveController):
         for i in range(self.num_steps + 1):
             q_nom[i][2] += q0[2] - q0_nom_old[2]
         self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)
+
 
 if __name__ == "__main__":
     # Set up a Drake diagram for simulation
