@@ -135,7 +135,16 @@ class MiniCheetahMPC(ModelPredictiveController):
         ModelPredictiveController.__init__(self, optimizer, q_guess, nq, nv, mpc_rate)
         
     def UpdateNominalTrajectory(self, q0, v0):
-        pass
+        """
+        Shift the nominal trajectory to move the robot forward.
+        """
+        prob = self.optimizer.prob()
+        q_nom = prob.q_nom
+        v_nom = prob.v_nom
+        for i in range(self.num_steps + 1):
+            q_nom[i][4] = q0[4] + 0.4 * i / self.num_steps
+            v_nom[i][4] = v0[4]
+        self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)
 
 if __name__ == "__main__":
     # Set up a Drake diagram for simulation
@@ -159,7 +168,7 @@ if __name__ == "__main__":
     q_guess = create_initial_guess(optimizer.num_steps())
 
     # Create the MPC controller and interpolator systems
-    mpc_rate = 0.10  # Hz
+    mpc_rate = 60  # Hz
     nq, nv = plant.num_positions(), plant.num_velocities()
     controller = builder.AddSystem(MiniCheetahMPC(
         optimizer, q_guess, nq, nv, mpc_rate))
