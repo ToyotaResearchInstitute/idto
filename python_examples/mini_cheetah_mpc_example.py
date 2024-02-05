@@ -182,6 +182,10 @@ class MiniCheetahMPC(ModelPredictiveController):
         q0 = x0[:self.nq]
         v0 = x0[self.nq:]
 
+        # Quit if the robot has fallen down
+        base_height = q0[6]
+        assert base_height > 0.0, "Oh no, the robot fell over!"
+
         # Get the current gamepad command
         gamepad_command = self.gamepad_port.Eval(context)
         vx = 0.5 * gamepad_command[0]
@@ -212,7 +216,12 @@ class MiniCheetahMPC(ModelPredictiveController):
             # Orientation
             current_rpy = RollPitchYaw(current_quat).vector()
             target_rpy = np.array([0.0, 0.0, current_rpy[2] + wz * i / self.num_steps])
-            q_nom[i][:4] = RollPitchYaw(target_rpy).ToQuaternion().wxyz()
+            target_quat = RollPitchYaw(target_rpy).ToQuaternion().wxyz()
+
+            if np.dot(current_quat.wxyz(), target_quat) < 0:
+                # Ensure the quaternion is always the shortest path
+                target_quat = -target_quat
+            q_nom[i][:4] = target_quat
             v_nom[i][3] = wz
 
         self.optimizer.UpdateNominalTrajectory(q_nom, v_nom)

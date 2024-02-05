@@ -33,20 +33,6 @@
             </geometry>
             <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
         </visual>
-        <collision>
-            <geometry>
-                <box size="0.23 0.19 0.1"/>
-            </geometry>
-            <!--
-            <drake:proximity_properties>
-                <drake:compliant_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.05"/>
-                <drake:hydroelastic_modulus value="1e4"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            -->
-            <origin rpy="0 0 0" xyz="0 0 0"/>
-        </collision>
     </link>
 
     <!--!!!!!!!!!!!! Front Left Leg !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
@@ -69,31 +55,6 @@
             </geometry>
             <origin rpy="0. 0. -1.5708" xyz="-0.055 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.02" radius = "0.0475"/>
-            </geometry>
-            <drake:proximity_properties>
-                <drake:compliant_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.05"/>
-                <drake:hydroelastic_modulus value="1e5"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            <origin rpy="0 1.5708 -1.5708" xyz="-0.055 0.0 0.0"/>
-        </collision>
-        <collision>
-            <geometry>
-                <cylinder length ="0.06" radius = "0.0475"/>
-            </geometry>
-            <drake:proximity_properties>
-                <drake:compliant_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.05"/>
-                <drake:hydroelastic_modulus value="1e5"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            <origin rpy="1.5708 0.0 0.0" xyz="0.0 0.0 0.0"/>
-        </collision>-->
     </link>
 
     <joint name="abduct_fl_to_thigh_fl_j" type="continuous">
@@ -115,19 +76,6 @@
             </geometry>
             <origin rpy="0.0 -1.5708 3.1415" xyz="0.0 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.21" radius = "0.025"/>
-            </geometry>
-            <drake:proximity_properties>
-                <drake:compliant_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.05"/>
-                <drake:hydroelastic_modulus value="1e3"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.105"/>
-        </collision>-->
     </link>
 
     <joint name="thigh_fl_to_knee_fl_j" type="continuous">
@@ -149,20 +97,6 @@
             </geometry>
             <origin rpy="0.0 3.141592 0.0" xyz="0.0 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.19" radius = "0.015"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0.0" xyz="0 0 -0.095"/>
-        </collision>
-        <collision>
-            <geometry>
-                <sphere radius = "0.0175"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0.0" xyz="0 0 -0.195"/>
-        </collision>
-        -->
     </link>
 
 
@@ -186,20 +120,6 @@
             </geometry>
             <origin rpy="3.141592 0.0 1.5708" xyz="-0.055 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.02" radius = "0.0475"/>
-            </geometry>
-            <origin rpy="3.141592 1.5708 1.5708" xyz="-0.055 0 0"/>
-        </collision>
-        <collision>
-            <geometry>
-                <cylinder length ="0.06" radius = "0.0475"/>
-            </geometry>
-            <origin rpy="1.5708 0.0 0.0" xyz="-0.055 0 0"/>
-        </collision>
-        -->
     </link>
 
     <joint name="abduct_fr_to_thigh_fr_j" type="continuous">
@@ -221,19 +141,6 @@
             </geometry>
             <origin rpy="0.0 -1.5708 0.0" xyz="0.0 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.21" radius = "0.025"/>
-            </geometry>
-            <drake:proximity_properties>
-                <drake:compliant_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.05"/>
-                <drake:hydroelastic_modulus value="1e4"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.105"/>
-        </collision>-->
     </link>
 
     <joint name="thigh_fr_to_knee_fr_j" type="continuous">
@@ -255,22 +162,7 @@
             </geometry>
             <origin rpy="0.0 3.141592 0.0" xyz="0.0 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.19" radius = "0.015"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0.0" xyz="0.0 0.0 -0.095"/>
-        </collision>
-        <collision>
-            <geometry>
-                <sphere radius = "0.0175"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0" xyz="0.0 0.0 -0.195"/>
-        </collision>
-        -->
     </link>
-
 
     <!--!!!!!!!!!!!! Hind Left Leg !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
     <joint name="torso_to_abduct_hl_j" type="continuous">
@@ -292,20 +184,6 @@
             </geometry>
             <origin rpy="3.141592 0.0 -1.5708" xyz="0.055 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.02" radius = "0.0475"/>
-            </geometry>
-            <origin rpy="3.141592 1.5708 -1.5708" xyz="0.055 0 0"/>
-        </collision>
-        <collision>
-            <geometry>
-                <cylinder length ="0.06" radius = "0.0475"/>
-            </geometry>
-            <origin rpy="1.5708 0.0 0.0" xyz="0.0 0.0 0.0"/>
-        </collision>
-        -->
     </link>
 
     <joint name="abduct_hl_to_thigh_hl_j" type="continuous">
@@ -327,19 +205,6 @@
             </geometry>
             <origin rpy="0.0 -1.5708 3.1415" xyz="0.0 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.21" radius = "0.025"/>
-            </geometry>
-            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.105"/>
-            <drake:proximity_properties>
-                <drake:compliant_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.05"/>
-                <drake:hydroelastic_modulus value="1e4"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-        </collision>-->
     </link>
 
     <joint name="thigh_hl_to_knee_hl_j" type="continuous">
@@ -361,20 +226,6 @@
             </geometry>
             <origin rpy="0.0 3.141592 0.0" xyz="0.0 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.19" radius = "0.015"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0.0" xyz="0.0 0.0 -0.095"/>
-        </collision>
-        <collision>
-            <geometry>
-                <sphere radius = "0.0175"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0.0" xyz="0.0 0.0 -0.195"/>
-        </collision>
-        -->
     </link>
 
 
@@ -398,20 +249,6 @@
             </geometry>
             <origin rpy="0.0 0.0 1.5708" xyz="0.055 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.02" radius = "0.0475"/>
-            </geometry>
-            <origin rpy="0.0 1.5708 1.5708" xyz="0.055 0.0 0.0"/>
-        </collision>
-        <collision>
-            <geometry>
-                <cylinder length ="0.06" radius = "0.0475"/>
-            </geometry>
-            <origin rpy="1.5708 0.0 0.0" xyz="0.0 0.0 0.0"/>
-        </collision>
-        -->
     </link>
 
     <joint name="abduct_hr_to_thigh_hr_j" type="continuous">
@@ -433,19 +270,6 @@
             </geometry>
             <origin rpy="0.0 -1.5708 0.0" xyz="0.0 0.0 0.0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.21" radius = "0.025"/>
-            </geometry>
-            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.105"/>
-            <drake:proximity_properties>
-                <drake:compliant_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.05"/>
-                <drake:hydroelastic_modulus value="1e4"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-        </collision>-->
     </link>
 
     <joint name="thigh_hr_to_knee_hr_j" type="continuous">
@@ -467,20 +291,6 @@
             </geometry>
             <origin rpy="0.0 3.141592 0.0" xyz="0 0 0"/>
         </visual>
-        <!--
-        <collision>
-            <geometry>
-                <cylinder length ="0.19" radius = "0.015"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0.0" xyz="0 0 -0.095"/>
-        </collision>
-        <collision>
-            <geometry>
-                <sphere radius = "0.0175"/>
-            </geometry>
-            <origin rpy="0.0 3.141592 0.0" xyz="0.0 0.0 -0.195"/>
-        </collision>
-        -->
     </link>
 
     <!-- Add foot links to enable relevent computations, including better collision detection -->
@@ -499,13 +309,6 @@
             <geometry>
                 <sphere radius = "0.0175"/>
             </geometry>
-            <!--
-            <drake:proximity_properties>
-                <drake:rigid_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.02"/>
-                <drake:hydroelastic_modulus value="5e6"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>-->
             <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
         </collision>
         <visual>
@@ -531,14 +334,6 @@
             <geometry>
                 <sphere radius = "0.0175"/>
             </geometry>
-            <!--
-            <drake:proximity_properties>
-                <drake:rigid_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.02"/>
-                <drake:hydroelastic_modulus value="5e6"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            -->
             <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
         </collision>
         <visual>
@@ -564,14 +359,6 @@
             <geometry>
                 <sphere radius = "0.0175"/>
             </geometry>
-            <!--
-            <drake:proximity_properties>
-                <drake:rigid_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.02"/>
-                <drake:hydroelastic_modulus value="5e6"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            -->
             <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
         </collision>
         <visual>
@@ -597,14 +384,6 @@
             <geometry>
                 <sphere radius = "0.0175"/>
             </geometry>
-            <!--
-            <drake:proximity_properties>
-                <drake:rigid_hydroelastic/>
-                <drake:mesh_resolution_hint value="0.02"/>
-                <drake:hydroelastic_modulus value="5e6"/>
-                <drake:hunt_crossley_dissipation value="1.25"/>
-            </drake:proximity_properties>
-            -->
             <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
         </collision>
         <visual>
