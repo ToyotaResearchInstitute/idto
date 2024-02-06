@@ -54,6 +54,11 @@ class WarmStart {
    */
   void set_q(const std::vector<VectorXd>& q_guess) { state.set_q(q_guess); }
 
+  /**
+   * Get the initial guess of the sequence of generalized positions.
+   */
+  const std::vector<VectorXd>& get_q() const { return state.q(); }
+
   // A state variable to store q and everything that is computed from q
   TrajectoryOptimizerState<double> state;
 

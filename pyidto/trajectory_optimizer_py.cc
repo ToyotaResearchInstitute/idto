@@ -113,13 +113,15 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
       .def("MakeWarmStart", &TrajectoryOptimizerPy::MakeWarmStart)
       .def("ResetInitialConditions",
            &TrajectoryOptimizerPy::ResetInitialConditions)
-      .def("UpdateNominalTrajectory", &TrajectoryOptimizerPy::UpdateNominalTrajectory)
+      .def("UpdateNominalTrajectory",
+           &TrajectoryOptimizerPy::UpdateNominalTrajectory)
       .def("params", &TrajectoryOptimizerPy::params)
       .def("prob", &TrajectoryOptimizerPy::prob);
   py::class_<WarmStart>(m, "WarmStart")
       // Warm start is not default constructible: it should be created
       // in python using the TrajectoryOptimizer.MakeWarmStart method.
       .def("set_q", &WarmStart::set_q)
+      .def("get_q", &WarmStart::get_q)
       .def_readonly("Delta", &WarmStart::Delta)
       .def_readonly("dq", &WarmStart::dq)
       .def_readonly("dqH", &WarmStart::dqH);
