@@ -204,18 +204,19 @@ class MiniCheetahMPC(ModelPredictiveController):
         v_nom = prob.v_nom
 
         # Update the nominal trajectory to match the gamepad command
+        dt = self.optimizer.time_step()
         for i in range(self.num_steps + 1):
             # Forward/backward
-            q_nom[i][4] = q0[4] + vx * i / self.num_steps
+            q_nom[i][4] = q0[4] + vx * i * dt
             v_nom[i][4] = vx
 
             # Side-to-side
-            q_nom[i][5] = q0[5] + vy * i / self.num_steps
+            q_nom[i][5] = q0[5] + vy * i * dt
             v_nom[i][5] = vy
 
             # Orientation
             current_rpy = RollPitchYaw(current_quat).vector()
-            target_rpy = np.array([0.0, 0.0, current_rpy[2] + wz * i / self.num_steps])
+            target_rpy = np.array([0.0, 0.0, current_rpy[2] + wz * i * dt])
             target_quat = RollPitchYaw(target_rpy).ToQuaternion().wxyz()
 
             if np.dot(current_quat.wxyz(), target_quat) < 0:
