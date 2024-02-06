@@ -2,31 +2,30 @@
 
 ##
 #
-# An example of using the python bindings to solve the spinner optimization 
+# An example of using the python bindings to solve the spinner optimization
 # problem. The project must be compiled with bazel first:
 #
 #  bazel build //...
 #
 ##
 
-# Note: this could be added to the PYTHONPATH environment variable instead, 
-# as a better long-term solution
+from pydrake.all import (StartMeshcat, DiagramBuilder,
+                         AddMultibodyPlantSceneGraph, AddDefaultVisualization, Parser)
+import time
+import numpy as np
 import os
 import sys
-sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
 
-import numpy as np
-import time
+# Note: this could be added to the PYTHONPATH environment variable instead,
+# as a better long-term solution
+sys.path.insert(-1, os.getcwd() + "../bazel-bin/")
 
-from pydrake.all import (StartMeshcat, DiagramBuilder,
-        AddMultibodyPlantSceneGraph, AddDefaultVisualization, Parser)
-
-from pyidto.trajectory_optimizer import TrajectoryOptimizer
-from pyidto.trajectory_optimizer import TrajectoryOptimizer
-from pyidto.problem_definition import ProblemDefinition
-from pyidto.solver_parameters import SolverParameters
-from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
 from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
+from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
+from pyidto.solver_parameters import SolverParameters
+from pyidto.problem_definition import ProblemDefinition
+from pyidto.trajectory_optimizer import TrajectoryOptimizer
+
 
 def define_spinner_optimization_problem():
     """
@@ -52,6 +51,7 @@ def define_spinner_optimization_problem():
 
     return problem
 
+
 def define_spinner_solver_parameters():
     """
     Create a set of solver parameters for the spinner.
@@ -75,6 +75,7 @@ def define_spinner_solver_parameters():
 
     return params
 
+
 def define_spinner_initial_guess(num_steps):
     """
     Create an initial guess for the spinner
@@ -84,6 +85,7 @@ def define_spinner_initial_guess(num_steps):
         q_guess.append(np.array([0.3, 1.5, 0.0]))
 
     return q_guess
+
 
 def visualize_trajectory(q, time_step, model_file, meshcat=None):
     """
@@ -103,8 +105,8 @@ def visualize_trajectory(q, time_step, model_file, meshcat=None):
     diagram_context = diagram.CreateDefaultContext()
     plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
     plant.get_actuation_input_port().FixValue(plant_context,
-            np.zeros(plant.num_actuators()))
-    
+                                              np.zeros(plant.num_actuators()))
+
     # Step through q, setting the plant positions at each step
     meshcat.StartRecording()
     for k in range(len(q)):
@@ -114,13 +116,14 @@ def visualize_trajectory(q, time_step, model_file, meshcat=None):
         time.sleep(time_step)
     meshcat.StopRecording()
     meshcat.PublishRecording()
-    
-if __name__=="__main__":
+
+
+if __name__ == "__main__":
     # Start up meshcat (for viewing the result)
     meshcat = StartMeshcat()
 
     # Relative path to the model file that we'll use
-    model_file = "./examples/models/spinner_friction.urdf"
+    model_file = "../examples/models/spinner_friction.urdf"
 
     # Specify a cost function and target trajectory
     problem = define_spinner_optimization_problem()
@@ -146,7 +149,6 @@ if __name__=="__main__":
 
     solve_time = np.sum(stats.iteration_times)
     print(f"Solved in {solve_time:.4f} seconds")
-   
+
     # Play back the solution on meshcat
     visualize_trajectory(solution.q, time_step, model_file, meshcat)
-

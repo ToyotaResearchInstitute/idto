@@ -52,8 +52,8 @@ export PYTHONPATH=${PYTHONPATH}:"/path/to/idto/bazel-bin"
 ```
 This line can be added to `.bashrc` if you want to permanently update the path.
 
-A simple example of using the python bindings can be found in
-`spinner_python_example.py`.
+Some examples of using these bindings for open-loop trajectory optimization and
+MPC can be found in the `python_examples` folder.
 
 ## Examples
 

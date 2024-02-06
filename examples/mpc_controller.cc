@@ -57,7 +57,18 @@ EventStatus ModelPredictiveController::UpdateAbstractState(
   std::vector<VectorXd> q_guess(num_steps_, VectorXd(nq_));
   UpdateInitialGuess(stored_trajectory, context.get_time(), &q_guess);
   q_guess[0] = q0;  // guess must be consistent with the initial condition
-  warm_start_.state.set_q(q_guess);
+  warm_start_.set_q(q_guess);
+
+  // Shift the nominal trajectory for some DoFs, if requested
+  const ProblemDefinition& prob = optimizer_.prob();
+  const SolverParameters& params = optimizer_.params();
+  const VectorXd q0_nom_old = prob.q_nom[0];
+  const VectorXd selector = params.q_nom_relative_to_q_init.cast<double>();
+  std::vector<VectorXd> q_nom_new = prob.q_nom;
+  for (VectorXd& qt_nom : q_nom_new) {
+    qt_nom += selector.cwiseProduct(q0 - q0_nom_old);
+  }
+  optimizer_.UpdateNominalTrajectory(q_nom_new, prob.v_nom);
 
   // Solve the trajectory optimization problem from the new initial condition
   optimizer_.ResetInitialConditions(q0, v0);

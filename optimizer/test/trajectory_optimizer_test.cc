@@ -1753,6 +1753,82 @@ GTEST_TEST(TrajectoryOptimizerTest, EqualityConstraintsAndScaling) {
   EXPECT_NEAR(trust_ratio, trust_ratio_scaled, kTolerance);
 }
 
+// Test updating the nominal trajectory
+GTEST_TEST(TrajectoryOptimizerTest, UpdateNominalTrajectory) {
+  // Define an optimization problem for the pendulum
+  const int num_steps = 20;
+  const double dt = 5e-2;
+
+  ProblemDefinition opt_prob;
+  opt_prob.num_steps = num_steps;
+  opt_prob.q_init = drake::Vector1d(0.1);
+  opt_prob.v_init = drake::Vector1d(0.0);
+  opt_prob.Qq = 1.0 * MatrixXd::Identity(1, 1);
+  opt_prob.Qv = 0.1 * MatrixXd::Identity(1, 1);
+  opt_prob.Qf_q = 1000 * MatrixXd::Identity(1, 1);
+  opt_prob.Qf_v = 1 * MatrixXd::Identity(1, 1);
+  opt_prob.R = 0.01 * MatrixXd::Identity(1, 1);
+  for (int t = 0; t <= num_steps; ++t) {
+    opt_prob.q_nom.push_back(drake::Vector1d(M_PI));
+    opt_prob.v_nom.push_back(drake::Vector1d(0));
+  }
+
+  // Create a system model
+  DiagramBuilder<double> builder;
+  MultibodyPlantConfig config;
+  config.time_step = dt;
+  auto [plant, scene_graph] =
+      drake::multibody::AddMultibodyPlant(config, &builder);
+  const std::string urdf_file =
+      drake::FindResourceOrThrow("drake/examples/pendulum/Pendulum.urdf");
+  Parser(&plant).AddModels(urdf_file);
+  plant.Finalize();
+  auto diagram = builder.Build();
+
+  // Create an optimizer
+  SolverParameters solver_params;
+  solver_params.max_iterations = 20;
+  solver_params.verbose = false;
+  solver_params.check_convergence = true;
+  solver_params.convergence_tolerances.rel_cost_reduction = 1e-5;
+  TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob,
+                                        solver_params);
+
+  // Set an initial guess
+  std::vector<VectorXd> q_guess;
+  for (int t = 0; t <= num_steps; ++t) {
+    q_guess.push_back(opt_prob.q_init);
+  }
+
+  // Solve the optimization problem
+  TrajectoryOptimizerSolution<double> solution;
+  TrajectoryOptimizerStats<double> stats;
+  SolverFlag status = optimizer.Solve(q_guess, &solution, &stats);
+  EXPECT_EQ(status, SolverFlag::kSuccess);
+
+  // Check that the final state is close to the target
+  const VectorXd& q_final = solution.q[num_steps];
+  EXPECT_NEAR(q_final(0), M_PI, 1e-3);
+
+  // Update the nominal trajectory
+  std::vector<VectorXd> q_nom_new;
+  std::vector<VectorXd> v_nom_new;
+  for (int t = 0; t <= num_steps; ++t) {
+    q_nom_new.push_back(drake::Vector1d(-1.2));
+    v_nom_new.push_back(drake::Vector1d(0.0));
+  }
+  optimizer.UpdateNominalTrajectory(q_nom_new, v_nom_new);
+
+  // Re-solve the optimization problem
+  stats = TrajectoryOptimizerStats<double>();  // clear solver stats
+  status = optimizer.Solve(q_guess, &solution, &stats);
+  EXPECT_EQ(status, SolverFlag::kSuccess);
+
+  // Check that the final state is close to the new target
+  const VectorXd& q_final_new = solution.q[num_steps];
+  EXPECT_NEAR(q_final_new(0), -1.2, 1e-3);
+}
+
 }  // namespace internal
 }  // namespace optimizer
 }  // namespace idto

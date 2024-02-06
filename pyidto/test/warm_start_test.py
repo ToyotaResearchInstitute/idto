@@ -98,7 +98,6 @@ def solve_step_by_step():
 
     solve_time = np.sum(stats.iteration_times)
     print("Solved in ", solve_time, "seconds")
-    
     return solution, stats
 
 def reset_initial_conditions():
@@ -116,6 +115,24 @@ def reset_initial_conditions():
     opt.Solve(q_guess, new_solution, new_stats)
     assert np.linalg.norm(new_solution.q[0] - new_q_init) < 1e-8
     assert np.linalg.norm(new_solution.v[0] - new_v_init) < 1e-8
+
+def set_q():
+    """
+    Test setting the joint trajectory stored in the warm start.
+    """
+    model_file, problem, params, q_guess = define_problem_parameters()
+    time_step = 0.05
+    opt = TrajectoryOptimizer(model_file, problem, params, time_step)
+    warm_start = opt.MakeWarmStart(q_guess)
+
+    assert np.all(q_guess[10] == np.array([0.3, 1.5, 0.0]))
+    assert np.all(warm_start.get_q()[10] == np.array([0.3, 1.5, 0.0]))
+
+    new_guess = q_guess.copy()
+    new_guess[10] = np.array([0.5, 1.2, -0.1])
+    warm_start.set_q(new_guess)
+
+    assert np.all(warm_start.get_q()[10] == np.array([0.5, 1.2, -0.1]))
     
 if __name__=="__main__":
     # Solve once open-loop and once with warm starts
@@ -136,3 +153,6 @@ if __name__=="__main__":
 
     # Test resetting initial conditions
     reset_initial_conditions()
+
+    # Test setting q in the warm start
+    set_q()

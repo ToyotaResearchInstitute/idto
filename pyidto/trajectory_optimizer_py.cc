@@ -50,7 +50,7 @@ class TrajectoryOptimizerPy {
     // q_nom_relative_to_q_init is false for all DoFs.
     SolverParameters py_params = params;
     py_params.q_nom_relative_to_q_init =
-        Eigen::VectorX<bool>::Zero(plant_->num_positions());
+        drake::VectorX<bool>::Zero(plant_->num_positions());
 
     optimizer_ = std::make_unique<TrajectoryOptimizer<double>>(
         diagram_.get(), plant_, problem, py_params);
@@ -80,6 +80,15 @@ class TrajectoryOptimizerPy {
     optimizer_->ResetInitialConditions(q0, v0);
   }
 
+  void UpdateNominalTrajectory(const std::vector<VectorXd>& q_nom,
+                               const std::vector<VectorXd>& v_nom) {
+    optimizer_->UpdateNominalTrajectory(q_nom, v_nom);
+  }
+
+  const SolverParameters& params() const { return optimizer_->params(); }
+
+  const ProblemDefinition& prob() const { return optimizer_->prob(); }
+
   double time_step() const { return optimizer_->time_step(); }
 
   int num_steps() const { return optimizer_->num_steps(); }
@@ -103,10 +112,16 @@ PYBIND11_MODULE(trajectory_optimizer, m) {
       .def("SolveFromWarmStart", &TrajectoryOptimizerPy::SolveFromWarmStart)
       .def("MakeWarmStart", &TrajectoryOptimizerPy::MakeWarmStart)
       .def("ResetInitialConditions",
-           &TrajectoryOptimizerPy::ResetInitialConditions);
+           &TrajectoryOptimizerPy::ResetInitialConditions)
+      .def("UpdateNominalTrajectory",
+           &TrajectoryOptimizerPy::UpdateNominalTrajectory)
+      .def("params", &TrajectoryOptimizerPy::params)
+      .def("prob", &TrajectoryOptimizerPy::prob);
   py::class_<WarmStart>(m, "WarmStart")
       // Warm start is not default constructible: it should be created
       // in python using the TrajectoryOptimizer.MakeWarmStart method.
+      .def("set_q", &WarmStart::set_q)
+      .def("get_q", &WarmStart::get_q)
       .def_readonly("Delta", &WarmStart::Delta)
       .def_readonly("dq", &WarmStart::dq)
       .def_readonly("dqH", &WarmStart::dqH);
