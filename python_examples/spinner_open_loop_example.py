@@ -18,7 +18,7 @@ import sys
 
 # Note: this could be added to the PYTHONPATH environment variable instead,
 # as a better long-term solution
-sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
+sys.path.insert(-1, os.getcwd() + "../bazel-bin/")
 
 from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
 from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution

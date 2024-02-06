@@ -13,7 +13,7 @@
 # as a better long-term solution
 import os
 import sys
-sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
+sys.path.insert(-1, os.getcwd() + "../bazel-bin/")
 
 import numpy as np
 
