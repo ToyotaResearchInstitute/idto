@@ -70,3 +70,24 @@ print("Solved in ", solve_time, "seconds")
 assert len(solution.q) == problem.num_steps + 1
 expected_qN = np.array([0.287, 1.497, 1.995])  # from CPP version
 assert np.linalg.norm(solution.q[-1]-expected_qN) < 1e-3
+
+# Get the problem definition
+problem = opt.prob()
+assert problem.num_steps == 40
+
+# Get the solver parameters
+params = opt.params()
+assert params.max_iterations == 200
+
+# Make sure we can change the nominal trajectory
+assert np.all(problem.q_nom[10] == np.array([0.3, 1.5, 2.0]))
+assert np.all(problem.v_nom[10] == np.array([0.0, 0.0, 0.0]))
+new_q_nom = problem.q_nom.copy()
+new_v_nom = problem.v_nom.copy()
+new_q_nom[10] = np.array([0.4, 1.6, 2.1])
+new_v_nom[10] = np.array([0.1, 0.1, 0.1])
+
+opt.UpdateNominalTrajectory(new_q_nom, new_v_nom)
+problem = opt.prob()
+assert np.all(problem.q_nom[10] == np.array([0.4, 1.6, 2.1]))
+assert np.all(problem.v_nom[10] == np.array([0.1, 0.1, 0.1]))
