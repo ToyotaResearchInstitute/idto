@@ -14,9 +14,9 @@ build --strip=never
 build --test_output=errors
 build --test_summary=terse
 
-# Use C++17.
-build --cxxopt=-std=c++17
-build --host_cxxopt=-std=c++17
+# Use C++20.
+build --cxxopt=-std=c++20
+build --host_cxxopt=-std=c++20
 
 # https://github.com/bazelbuild/bazel/issues/1164
 build --action_env=CCACHE_DISABLE=1
