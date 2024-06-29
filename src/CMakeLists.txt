@@ -1,2 +1,2 @@
 add_subdirectory(toy_example)
-add_subdirectory(pyidto)
+add_subdirectory(python_bindings)

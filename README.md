@@ -12,6 +12,8 @@ Ubuntu 22.04 and Drake 1.30.0.
 
 ## Installation
 
+### C++
+
 1. [Install](https://drake.mit.edu/installation.html) Drake 1.30.0. For example,
    for a binary installation at `$HOME/drake`:
   
@@ -19,6 +21,9 @@ Ubuntu 22.04 and Drake 1.30.0.
 cd $HOME
 wget https://github.com/RobotLocomotion/drake/releases/download/v1.30.0/drake-1.30.0-jammy.tar.gz
 tar -xvzf drake-1.30.0-jammy.tar.gz
+echo 'export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:${HOME}/drake' >> ~/.bashrc
+echo 'export PYTHON_PATH=${PYTHONPATH}:${HOME}/drake/lib/python3.10/site-packages' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 2. Install Drake dependencies:
@@ -49,4 +54,22 @@ make -j
 ```bash
 cd $HOME/idto/build
 ctest
+```
+
+### Python
+
+1. Install Drake 1.30.0 and clone this repository (steps 1-3 above).
+
+2. Build and install with pip:
+
+```bash
+cd $HOME/idto
+pip install .
+```
+
+3. (Optional) run unit tests:
+
+```bash
+cd $HOME/idto
+pytest
 ```

@@ -5,7 +5,7 @@ from pydrake.multibody.parsing import Parser
 from pydrake.common import FindResourceOrThrow
 
 
-if __name__=="__main__":
+def test_square_nq():
     plant = MultibodyPlant(0.0)
     urdf = FindResourceOrThrow('drake/examples/pendulum/Pendulum.urdf')
     Parser(plant).AddModels(urdf)

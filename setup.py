@@ -130,7 +130,7 @@ setup(
     version="0.0.1",
     author="Vince Kurtz",
     author_email="vjkurtz@gmail.com",
-    description="Inverse Dynamics Trajectory Optimization (IDTO) python bindings",
+    description="Inverse Dynamics Trajectory Optimization (IDTO)",
     long_description="",
     ext_modules=[CMakeExtension("cmake_example")],
     cmdclass={"build_ext": CMakeBuild},
