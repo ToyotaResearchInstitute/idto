@@ -1,6 +1,5 @@
-#include <pybind11/pybind11.h>
-
 #include "toy_example/my_fun_library.h"
+#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 using idto::toy_example::MyFunLibrary;
