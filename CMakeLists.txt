@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_compile_options(-Werror -Wall)
-add_compile_definitions(ENABLE_TIMERS)  # TODO: disable in python
+# add_compile_definitions(ENABLE_TIMERS)  # TODO: disable in python
 
 add_subdirectory(src)
 add_subdirectory(third_party)

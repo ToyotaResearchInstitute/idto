@@ -1,3 +1,7 @@
+add_library(eigen_matrix_compare
+            INTERFACE
+            eigen_matrix_compare.h)
+
 add_library(profiler profiler.cc profiler.h)
 target_link_libraries(profiler drake::drake)
 

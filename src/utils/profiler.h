@@ -229,7 +229,7 @@ std::string TableOfAverages();
 #define averageTimeInSec(index) ((void)index)
 #define TableOfAverages()    \
   ("Profiling turned off.\n" \
-  "Enable profiling by running with --copt=-DENABLE_TIMERS.")
+   "Enable profiling by running with --copt=-DENABLE_TIMERS.")
 #define INSTRUMENT_FUNCTION(details_string) ((void)details_string)
 
 #endif  // ENABLE_TIMERS
