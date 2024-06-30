@@ -14,8 +14,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# Set warning levels, and treat warnings as errors.
 add_compile_options(-Werror -Wall)
 # add_compile_definitions(ENABLE_TIMERS)  # TODO: disable in python
+
+# Allow us to find resources (e.g. urdfs) in the build directory.
+add_compile_definitions(IDTO_BINARY_DIR="${CMAKE_BINARY_DIR}")
 
 add_subdirectory(src)
 add_subdirectory(third_party)
