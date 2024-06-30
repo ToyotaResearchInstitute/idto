@@ -11,6 +11,7 @@
 #include "optimizer/trajectory_optimizer_workspace.h"
 #include "optimizer/velocity_partials.h"
 #include "utils/eigen_matrix_compare.h"
+#include "utils/find_resource.h"
 
 #include <drake/common/find_resource.h>
 #include <drake/multibody/parsing/parser.h>
@@ -23,6 +24,9 @@
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;
 
 namespace idto {
+
+using utils::FindIdtoResource;
+
 namespace optimizer {
 
 class TrajectoryOptimizerTester {
@@ -518,8 +522,8 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianAcrobot) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/examples/acrobot/Acrobot.urdf");
+  const std::string urdf_file =
+      FindIdtoResource("idto/models/acrobot/acrobot.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1257,8 +1261,8 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcCost) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  const std::string urdf_file =
+      FindIdtoResource("idto/models/acrobot/acrobot.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1400,8 +1404,8 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcVelocities) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  const std::string urdf_file =
+      FindIdtoResource("idto/models/acrobot/acrobot.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();

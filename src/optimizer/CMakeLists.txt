@@ -82,6 +82,7 @@ target_include_directories(trajectory_optimizer_test PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/src")
 target_link_libraries(trajectory_optimizer_test 
                       trajectory_optimizer
+                      find_resource
                       drake::drake
                       gtest)
 add_test(NAME trajectory_optimizer_test COMMAND trajectory_optimizer_test)
