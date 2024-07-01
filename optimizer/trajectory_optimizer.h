@@ -115,7 +115,7 @@ class TrajectoryOptimizer {
   const ProblemDefinition& prob() const { return prob_; }
 
   /**
-   * Create a state object which contains the decision variables (generalized
+   * Create a state object that contains the decision variables (generalized
    * positions at each timestep), along with a cache of other things that are
    * computed from positions, such as velocities, accelerations, forces, and
    * various derivatives.
@@ -127,6 +127,17 @@ class TrajectoryOptimizer {
     return TrajectoryOptimizerState<T>(num_steps(), diagram(), plant(),
                                        num_equality_constraints());
   }
+
+  /**
+   * Create a warm-start object that contains the initial guess, trust region
+   * radius, and other state variables for the optimization problem.
+   * 
+   * @param q_guess Initial guess of the sequence of generalized positions
+   *
+   * @return WarmStart
+   */ 
+  std::unique_ptr<WarmStart> CreateWarmStart(
+      const std::vector<VectorX<T>>& q_guess) const;
 
   /**
    * Compute the gradient of the unconstrained cost L(q).
