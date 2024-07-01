@@ -19,6 +19,7 @@ using drake::multibody::ModelInstanceIndex;
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Vector3d;
+using utils::FindIdtoResource;
 
 class KukaExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
@@ -36,7 +37,7 @@ class KukaExample : public TrajOptExample {
 
     // Add a manipuland
     std::string manipuland_file =
-        FindIdtoResourceOrThrow("idto/examples/models/box_intel_nuc.sdf");
+        FindIdtoResource("idto/models/box_intel_nuc.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
