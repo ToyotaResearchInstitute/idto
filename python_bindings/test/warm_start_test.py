@@ -1,11 +1,11 @@
 import numpy as np
 
 from pyidto import (
-    TrajectoryOptimizer, 
-    ProblemDefinition, 
-    SolverParameters, 
-    TrajectoryOptimizerSolution, 
-    TrajectoryOptimizerStats, 
+    TrajectoryOptimizer,
+    ProblemDefinition,
+    SolverParameters,
+    TrajectoryOptimizerSolution,
+    TrajectoryOptimizerStats,
     FindIdtoResource
 )
 
@@ -82,7 +82,7 @@ def solve_once():
     solution = TrajectoryOptimizerSolution()
     stats = TrajectoryOptimizerStats()
     opt.Solve(q_guess, solution, stats)
-    
+
     solve_time = np.sum(stats.iteration_times)
     print("Solved in ", solve_time, "seconds")
 
@@ -115,10 +115,11 @@ def solve_step_by_step():
     print("Solved in ", solve_time, "seconds")
     return solution, stats
 
+
 def test_reset_initial_conditions():
     """Test resetting the initial conditions."""
     model_file, problem, params, q_guess = define_problem_parameters()
-    
+
     time_step = 0.05
     builder = DiagramBuilder()
     plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step)
@@ -137,6 +138,7 @@ def test_reset_initial_conditions():
     assert np.linalg.norm(new_solution.q[0] - new_q_init) < 1e-8
     assert np.linalg.norm(new_solution.v[0] - new_v_init) < 1e-8
 
+
 def test_set_q():
     """Test setting the joint trajectory stored in the warm start."""
     model_file, problem, params, q_guess = define_problem_parameters()
@@ -147,7 +149,7 @@ def test_set_q():
     plant.Finalize()
     diagram = builder.Build()
     opt = TrajectoryOptimizer(diagram, plant, problem, params)
-    
+
     warm_start = opt.CreateWarmStart(q_guess)
 
     assert np.all(q_guess[10] == np.array([0.3, 1.5, 0.0]))
@@ -158,20 +160,23 @@ def test_set_q():
     warm_start.set_q(new_guess)
 
     assert np.all(warm_start.get_q()[10] == np.array([0.5, 1.2, -0.1]))
-    
+
+
 def test_compare_warm_start():
     """Make sure open-loop and warm-start solutions are the same."""
     one_shot_solution, one_shot_stats = solve_once()
     warm_stat_solution, warm_start_stats = solve_step_by_step()
 
     # Solutions should be the same
-    assert np.linalg.norm(one_shot_solution.q[-1] - warm_stat_solution.q[-1]) < 1e-8
-    assert np.linalg.norm(one_shot_solution.v[-1] - warm_stat_solution.v[-1]) < 1e-8
+    assert np.linalg.norm(
+        one_shot_solution.q[-1] - warm_stat_solution.q[-1]) < 1e-8
+    assert np.linalg.norm(
+        one_shot_solution.v[-1] - warm_stat_solution.v[-1]) < 1e-8
 
     # Stats should be the same
-    assert np.linalg.norm(np.array(one_shot_stats.iteration_costs) 
+    assert np.linalg.norm(np.array(one_shot_stats.iteration_costs)
                           - np.array(warm_start_stats.iteration_costs)) < 1e-8
-    assert np.linalg.norm(np.array(one_shot_stats.trust_region_radii) 
+    assert np.linalg.norm(np.array(one_shot_stats.trust_region_radii)
                           - np.array(warm_start_stats.trust_region_radii)) < 1e-8
     assert np.linalg.norm(np.array(one_shot_stats.gradient_norms)
                           - np.array(warm_start_stats.gradient_norms)) < 1e-8

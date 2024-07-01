@@ -1,6 +1,6 @@
 import numpy as np
 
-from pyidto import(
+from pyidto import (
     TrajectoryOptimizer,
     ProblemDefinition,
     SolverParameters,

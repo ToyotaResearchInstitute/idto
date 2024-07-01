@@ -1,5 +1,6 @@
 from pyidto import SolverParameters
 
+
 def test_solver_parameters():
     """Smoke test for IDTO solver parameters."""
     params = SolverParameters()
