@@ -25,3 +25,4 @@ target_link_libraries(example_base
 add_subdirectory(acrobot)
 add_subdirectory(airhockey)
 add_subdirectory(allegro_hand)
+add_subdirectory(dual_jaco)

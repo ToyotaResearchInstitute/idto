@@ -24,6 +24,7 @@ using drake::multibody::ModelInstanceIndex;
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Vector3d;
+using utils::FindIdtoResource;
 
 class DualJacoExample : public TrajOptExample {
  public:
@@ -37,8 +38,8 @@ class DualJacoExample : public TrajOptExample {
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
     // Add jaco arms
-    std::string robot_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
+    std::string robot_file = FindIdtoResource(
+        "idto/models/j2s7s300_arm_sphere_collision_v2.sdf");
 
     ModelInstanceIndex jaco_left = Parser(plant).AddModels(robot_file)[0];
     plant->RenameModelInstance(jaco_left, "jaco_left");
@@ -58,7 +59,7 @@ class DualJacoExample : public TrajOptExample {
 
     // Add a manipuland
     std::string manipuland_file =
-        idto::FindIdtoResourceOrThrow("idto/examples/models/box_15cm.sdf");
+        FindIdtoResource("idto/models/box_15cm.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
@@ -78,8 +79,8 @@ class DualJacoExample : public TrajOptExample {
   void CreatePlantModelForSimulation(
       MultibodyPlant<double>* plant) const final {
     // Add jaco arms, including gravity
-    std::string robot_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/j2s7s300_arm_hydro_collision.sdf");
+    std::string robot_file = FindIdtoResource(
+        "idto/models/j2s7s300_arm_hydro_collision.sdf");
 
     ModelInstanceIndex jaco_left = Parser(plant).AddModels(robot_file)[0];
     plant->RenameModelInstance(jaco_left, "jaco_left");
@@ -98,8 +99,8 @@ class DualJacoExample : public TrajOptExample {
     plant->set_gravity_enabled(jaco_right, false);
 
     // Add a manipuland with compliant hydroelastic contact
-    std::string manipuland_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/box_15cm_hydro.sdf");
+    std::string manipuland_file = FindIdtoResource(
+        "idto/models/box_15cm_hydro.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
