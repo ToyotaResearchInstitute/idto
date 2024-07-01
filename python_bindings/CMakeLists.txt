@@ -13,3 +13,6 @@ set_target_properties(pyidto PROPERTIES CXX_VISIBILITY_PRESET default)
 
 target_compile_definitions(pyidto
                            PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+
+add_test(NAME test_toy_example_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
+         ${CMAKE_CURRENT_SOURCE_DIR}/test)
