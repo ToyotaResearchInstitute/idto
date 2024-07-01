@@ -25,6 +25,7 @@ using idto::optimizer::TrajectoryOptimizer;
 using idto::optimizer::TrajectoryOptimizerSolution;
 using idto::optimizer::TrajectoryOptimizerStats;
 using idto::optimizer::WarmStart;
+using idto::optimizer::ConvergenceReason;
 
 void bind_trajectory_optimizer(py::module_& m) {
   py::module::import("pydrake.multibody.plant");
@@ -35,10 +36,16 @@ void bind_trajectory_optimizer(py::module_& m) {
                     const ProblemDefinition&, const SolverParameters&>())
       .def("time_step", &TrajectoryOptimizer<double>::time_step)
       .def("num_steps", &TrajectoryOptimizer<double>::num_steps)
-      .def("Solve", &TrajectoryOptimizer<double>::Solve)
+      .def("Solve",
+           [](TrajectoryOptimizer<double>& optimizer,
+              const std::vector<VectorXd>& q_guess,
+              TrajectoryOptimizerSolution<double>* solution,
+              TrajectoryOptimizerStats<double>* stats) {
+             optimizer.Solve(q_guess, solution, stats);
+           })
       .def("SolveFromWarmStart",
            &TrajectoryOptimizer<double>::SolveFromWarmStart)
-      //.def("MakeWarmStart", &TrajectoryOptimizerPy::MakeWarmStart)
+      .def("CreateWarmStart", &TrajectoryOptimizer<double>::CreateWarmStart)
       .def("ResetInitialConditions",
            &TrajectoryOptimizer<double>::ResetInitialConditions)
       .def("UpdateNominalTrajectory",
@@ -47,7 +54,7 @@ void bind_trajectory_optimizer(py::module_& m) {
       .def("prob", &TrajectoryOptimizer<double>::prob);
   py::class_<WarmStart>(m, "WarmStart")
       // Warm start is not default constructible: it should be created
-      // in python using the TrajectoryOptimizer.MakeWarmStart method.
+      // in python using the TrajectoryOptimizer.CreateWarmStart method.
       .def("set_q", &WarmStart::set_q)
       .def("get_q", &WarmStart::get_q)
       .def_readonly("Delta", &WarmStart::Delta)

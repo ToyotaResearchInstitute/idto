@@ -26,3 +26,5 @@ add_test(NAME trajectory_optimizer_stats_test_py COMMAND ${PYTHON_EXECUTABLE} -m
          ${CMAKE_CURRENT_SOURCE_DIR}/test/trajectory_optimizer_stats_test.py)
 add_test(NAME find_resource_test_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
          ${CMAKE_CURRENT_SOURCE_DIR}/test/find_resource_test.py)
+add_test(NAME trajectory_optimizer_test_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
+         ${CMAKE_CURRENT_SOURCE_DIR}/test/trajectory_optimizer_test.py)
