@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <model name="box_15cm">
+    <!-- The model for a solid box of uniform density. -->
+    <link name="box">
+      <inertial>
+        <mass>0.55</mass>
+        <inertia>
+          <ixx>0.0020625</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0020625</iyy>
+          <iyz>0</iyz>
+          <izz>0.0020625</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="box_visual">
+        <geometry>
+          <box>
+            <size>0.15 0.15 0.15</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 0 0 0.8</diffuse>
+        </material>
+      </visual>
+
+      <collision name="box_collision">
+        <pose> 0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.15 0.15 0.15</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
+        <drake:proximity_properties>
+          <drake:compliant_hydroelastic/>
+          <drake:mesh_resolution_hint>0.1</drake:mesh_resolution_hint>
+          <drake:hydroelastic_modulus>5e6</drake:hydroelastic_modulus>
+          <drake:hunt_crossley_dissipation>3.0</drake:hunt_crossley_dissipation>
+        </drake:proximity_properties>
+      </collision>
+    </link>
+  </model>
+</sdf>

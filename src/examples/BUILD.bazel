@@ -1,0 +1,82 @@
+# -*- python -*-
+
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:shared_library.bzl", "idto_cc_shared_library")
+load("//tools/lint:lint.bzl", "add_lint_tests")
+
+idto_cc_shared_library(
+    name = "mpc_controller",
+    srcs = ["mpc_controller.cc"],
+    hdrs = ["mpc_controller.h"],
+    deps = [
+        "//optimizer:problem_definition",
+        "//optimizer:trajectory_optimizer",
+        "//optimizer:warm_start",
+        "@drake//common/trajectories:piecewise_polynomial",
+        "@drake//multibody/plant",
+        "@drake//systems/framework:diagram",
+        "@drake//systems/framework:leaf_system",
+        "@drake//systems/framework:vector",
+    ],
+)
+
+idto_cc_shared_library(
+    name = "pd_plus_controller",
+    srcs = ["pd_plus_controller.cc"],
+    hdrs = ["pd_plus_controller.h"],
+    deps = [
+        "@drake//systems/framework:leaf_system",
+        "@drake//systems/framework:vector",
+    ],
+)
+
+idto_cc_shared_library(
+    name = "example_base",
+    srcs = ["example_base.cc"],
+    hdrs = ["example_base.h"],
+    deps = [
+        ":mpc_controller",
+        ":pd_plus_controller",
+        ":yaml_config",
+        "//utils:find_resource",
+        "//optimizer:problem_definition",
+        "//optimizer:trajectory_optimizer",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+        "@drake//systems/analysis:simulator",
+        "@drake//systems/framework:diagram",
+        "@drake//systems/primitives:constant_vector_source",
+        "@drake//systems/primitives:discrete_time_delay",
+        "@drake//visualization:visualization_config_functions",
+    ],
+)
+
+idto_cc_shared_library(
+    name = "yaml_config",
+    srcs = [],
+    hdrs = ["yaml_config.h"],
+    deps = [
+        "@drake//common:essential",
+        "@drake//common/yaml",
+    ],
+)
+
+idto_cc_shared_library(
+  name = "examples",
+  deps = [
+    ":example_base",
+    ":mpc_controller",
+    ":pd_plus_controller",
+    ":yaml_config",
+  ],
+)
+
+filegroup(
+    name = "models",
+    srcs = glob([
+        "models/**",
+    ]),
+)
+
+add_lint_tests()

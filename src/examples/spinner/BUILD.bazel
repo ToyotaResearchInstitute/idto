@@ -1,0 +1,40 @@
+# -*- python -*-
+
+package(default_visibility = ["//visibility:public"])
+
+load("//tools/lint:lint.bzl", "add_lint_tests")
+
+cc_binary(
+    name = "spinner",
+    srcs = ["spinner.cc"],
+    data = [
+        "//examples:models",
+        ":spinner.yaml",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+        "@gflags",
+    ],
+)
+
+cc_test(
+    name = "spinner_test",
+    srcs = ["spinner.cc"],
+    args = ["--test"],
+    data = [
+        "//examples:models",
+        ":spinner.yaml",
+    ],
+    deps = [
+        "//examples:example_base",
+        "//utils:find_resource",
+        "@drake//multibody/parsing",
+        "@drake//multibody/plant",
+        "@gflags",
+    ],
+)
+
+add_lint_tests()
