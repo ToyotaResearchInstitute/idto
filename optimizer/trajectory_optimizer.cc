@@ -57,7 +57,7 @@ TrajectoryOptimizer<T>::TrajectoryOptimizer(const Diagram<T>* diagram,
     const Joint<T>& joint = plant_->get_joint(j);
     const int velocity_start = joint.velocity_start();
     const int nv = joint.num_velocities();
-    joint_damping_.segment(velocity_start, nv) = joint.damping_vector(); // TODO: update to 1.30
+    joint_damping_.segment(velocity_start, nv) = joint.default_damping_vector();
   }
 
   // Define unactuated degrees of freedom

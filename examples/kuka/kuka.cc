@@ -28,10 +28,10 @@ class KukaExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a kuka arm
-    std::string robot_file = drake::FindResourceOrThrow(
-        "drake/manipulation/models/iiwa_description/urdf/"
-        "iiwa14_spheres_collision.urdf");
-    ModelInstanceIndex kuka = Parser(plant).AddModels(robot_file)[0];
+    std::string url =
+        "package://drake_models/iiwa_description/urdf/"
+        "iiwa14_spheres_collision.urdf";
+    ModelInstanceIndex kuka = Parser(plant).AddModelsFromUrl(url)[0];
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
     plant->set_gravity_enabled(kuka, false);
 

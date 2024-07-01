@@ -783,10 +783,10 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientKuka) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/manipulation/models/iiwa_description/urdf/"
-      "iiwa14_no_collision.urdf");
-  Parser(&plant).AddModels(urdf_file);
+  std::string url =
+      "package://drake_models/iiwa_description/urdf/"
+      "iiwa14_spheres_collision.urdf";
+  Parser(&plant).AddModelsFromUrl(url);
   plant.WeldFrames(plant.world_frame(), plant.GetFrameByName("base"));
   plant.Finalize();
   auto diagram = builder.Build();

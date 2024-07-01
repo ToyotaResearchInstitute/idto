@@ -9,7 +9,7 @@
   unofficial ROS package of Allegro Hand (https://github.com/felixduvallet/
   allegro-hand-ros/tree/master/allegro_hand_description). The conversion is
   applied using the ROS package xacro to convert into urdf files, then
-  converted to sdf files. The model files (.obj files and .mtl files) are
+  converted to sdf files. The model files (.gltf files and .mtl files) are
   converted from the .STL files from the same source. The physical parameters
   of the model in the cited unofficial fork of the Allegro hand have
   non-physical values. More precisely, many of the inertia matrices are not
@@ -73,7 +73,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/base_link_left.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/base_link_left.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -116,7 +116,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_0.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_0.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -174,7 +174,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_1.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_1.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -232,7 +232,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_2.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_2.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -311,7 +311,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -320,7 +320,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0_tip.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0_tip.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -379,7 +379,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_12.0_left.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_12.0_left.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -416,7 +416,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_13.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_13.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -474,7 +474,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_14.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_14.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -554,7 +554,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_15.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_15.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -563,7 +563,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_15.0_tip.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_15.0_tip.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -621,7 +621,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_0.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_0.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -679,7 +679,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_1.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_1.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -737,7 +737,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_2.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_2.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -816,7 +816,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -825,7 +825,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0_tip.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0_tip.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -883,7 +883,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_0.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_0.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -941,7 +941,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_1.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_1.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -999,7 +999,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_2.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_2.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -1078,7 +1078,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0.gltf</uri>
           </mesh>
         </geometry>
       </visual>
@@ -1087,7 +1087,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0_tip.obj</uri>
+            <uri>package://drake_models/allegro_hand_description/meshes/link_3.0_tip.gltf</uri>
           </mesh>
         </geometry>
       </visual>
