@@ -42,6 +42,8 @@ ModelPredictiveController::ModelPredictiveController(
 
 EventStatus ModelPredictiveController::UpdateAbstractState(
     const Context<double>& context, State<double>* state) const {
+  DRAKE_DEMAND(optimizer_.params().q_nom_relative_to_q_init.size() ==
+                optimizer_.plant().num_positions());
   std::cout << "Resolving at t=" << context.get_time() << std::endl;
 
   // Get the latest initial condition

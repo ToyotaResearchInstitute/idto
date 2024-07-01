@@ -44,7 +44,12 @@ void bind_trajectory_optimizer(py::module_& m) {
              optimizer.Solve(q_guess, solution, stats);
            })
       .def("SolveFromWarmStart",
-           &TrajectoryOptimizer<double>::SolveFromWarmStart)
+           [](TrajectoryOptimizer<double>& optimizer,
+              WarmStart* warm_start,
+              TrajectoryOptimizerSolution<double>* solution,
+              TrajectoryOptimizerStats<double>* stats) {
+             optimizer.SolveFromWarmStart(warm_start, solution, stats);
+           })
       .def("CreateWarmStart", &TrajectoryOptimizer<double>::CreateWarmStart)
       .def("ResetInitialConditions",
            &TrajectoryOptimizer<double>::ResetInitialConditions)

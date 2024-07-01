@@ -1,11 +1,13 @@
 import numpy as np
 
-from pyidto import TrajectoryOptimizer
-from pyidto import ProblemDefinition
-from pyidto import SolverParameters
-from pyidto import TrajectoryOptimizerSolution
-from pyidto import TrajectoryOptimizerStats
-from pyidto import FindIdtoResource
+from pyidto import(
+    TrajectoryOptimizer,
+    ProblemDefinition,
+    SolverParameters,
+    TrajectoryOptimizerSolution,
+    TrajectoryOptimizerStats,
+    FindIdtoResource
+)
 
 from pydrake.systems.framework import DiagramBuilder
 from pydrake.multibody.plant import AddMultibodyPlantSceneGraph

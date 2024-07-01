@@ -463,8 +463,6 @@ class TrajectoryOptimizer {
   void ResetInitialConditions(const VectorXd& q_init, const VectorXd& v_init) {
     DRAKE_DEMAND(q_init.size() == plant().num_positions());
     DRAKE_DEMAND(v_init.size() == plant().num_velocities());
-    DRAKE_DEMAND(params_.q_nom_relative_to_q_init.size() ==
-                 plant().num_positions());
     prob_.q_init = q_init;
     prob_.v_init = v_init;
   }
