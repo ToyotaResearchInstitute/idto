@@ -23,3 +23,4 @@ target_link_libraries(example_base
                       find_resource)
 
 add_subdirectory(acrobot)
+add_subdirectory(airhockey)
