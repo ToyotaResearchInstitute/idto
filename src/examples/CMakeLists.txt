@@ -21,3 +21,5 @@ target_link_libraries(example_base
                       mpc_controller
                       yaml_config
                       find_resource)
+
+add_subdirectory(acrobot)
