@@ -1,6 +1,0 @@
-add_subdirectory(toy_example)
-add_subdirectory(python_bindings)
-add_subdirectory(utils)
-add_subdirectory(optimizer)
-add_subdirectory(models)
-add_subdirectory(examples)

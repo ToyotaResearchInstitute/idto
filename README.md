@@ -64,15 +64,12 @@ ctest
 
 ### Python
 
-Clone this repository:
-
-```bash
-git clone https://github.com/ToyotaResearchInstitute/idto/
-```
+A limited subset of functionality is available via python bindings.
 
 Build and install with pip:
 
 ```bash
+git clone https://github.com/ToyotaResearchInstitute/idto/
 cd idto
 pip install .
 ```
@@ -81,4 +78,13 @@ pip install .
 
 ```bash
 pytest
+```
+
+## Examples
+
+```
+cd build
+cmake ..
+make -j
+./examples/spinner/spinner
 ```

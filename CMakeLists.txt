@@ -16,11 +16,16 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_compile_options(-Werror -Wall)  # treat warnings as errors
 add_compile_options(-O3)
-
 # add_compile_definitions(ENABLE_TIMERS)  # extra profiling
 
 # Allow us to find resources (e.g. urdfs) in the build directory.
 add_compile_definitions(IDTO_BINARY_DIR="${CMAKE_BINARY_DIR}")
 
-add_subdirectory(src)
 add_subdirectory(third_party)
+add_subdirectory(toy_example)
+add_subdirectory(python_bindings)
+add_subdirectory(utils)
+add_subdirectory(optimizer)
+add_subdirectory(models)
+add_subdirectory(examples)
+
