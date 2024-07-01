@@ -14,5 +14,11 @@ set_target_properties(pyidto PROPERTIES CXX_VISIBILITY_PRESET default)
 target_compile_definitions(pyidto
                            PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
 
-add_test(NAME test_toy_example_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
-         ${CMAKE_CURRENT_SOURCE_DIR}/test)
+add_test(NAME problem_definition_test_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
+         ${CMAKE_CURRENT_SOURCE_DIR}/test/problem_definition_test.py)
+add_test(NAME solver_parameters_test_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
+         ${CMAKE_CURRENT_SOURCE_DIR}/test/solver_parameters_test.py)
+add_test(NAME trajectory_optimizer_solution_test_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
+         ${CMAKE_CURRENT_SOURCE_DIR}/test/trajectory_optimizer_solution_test.py)
+add_test(NAME trajectory_optimizer_stats_test_py COMMAND ${PYTHON_EXECUTABLE} -m pytest
+         ${CMAKE_CURRENT_SOURCE_DIR}/test/trajectory_optimizer_stats_test.py)
