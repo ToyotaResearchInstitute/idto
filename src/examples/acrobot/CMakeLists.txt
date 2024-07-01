@@ -9,3 +9,5 @@ target_link_libraries(acrobot
 
 configure_file(acrobot.yaml 
                ${CMAKE_BINARY_DIR}/idto/examples/acrobot/acrobot.yaml COPYONLY)
+
+add_test(NAME acrobot_test COMMAND acrobot --test)
