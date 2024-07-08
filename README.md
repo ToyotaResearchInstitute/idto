@@ -82,11 +82,21 @@ pytest
 
 ## Examples
 
+All of the examples use meshcat for visualization. A link will appear in the
+terminal, or just go ahead and open http://localhost:7000 in a browser.
+
 ### C++
 
+After building, run the spinner example with:
+
 ```
-cd build
-cmake ..
-make -j
-./examples/spinner/spinner
+./build/examples/spinner/spinner
+```
+
+### Python
+
+After installing with pip, run the spinner example with:
+
+```
+python python_examples/spinner_open_loop.py
 ```
