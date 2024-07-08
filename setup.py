@@ -132,7 +132,7 @@ setup(
     author_email="vjkurtz@gmail.com",
     description="Inverse Dynamics Trajectory Optimization (IDTO)",
     long_description="",
-    ext_modules=[CMakeExtension("cmake_example")],
+    ext_modules=[CMakeExtension("pyidto")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     extras_require={"test": ["pytest>=6.0"]},

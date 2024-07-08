@@ -98,5 +98,5 @@ After building, run the spinner example with:
 After installing with pip, run the spinner example with:
 
 ```
-python python_examples/spinner_open_loop.py
+./python_examples/spinner_open_loop.py
 ```
