@@ -82,6 +82,8 @@ pytest
 
 ## Examples
 
+### C++
+
 ```
 cd build
 cmake ..

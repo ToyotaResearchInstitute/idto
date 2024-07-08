@@ -10,7 +10,7 @@ pybind11_add_module(pyidto MODULE pyidto.cc
                     trajectory_optimizer_stats_py.cc
                     find_resource_py.cc)
 target_link_libraries(pyidto PUBLIC 
-        my_fun_library trajectory_optimizer drake::drake find_resource)
+        trajectory_optimizer drake::drake find_resource)
 set_target_properties(pyidto PROPERTIES CXX_VISIBILITY_PRESET default)
 
 target_compile_definitions(pyidto

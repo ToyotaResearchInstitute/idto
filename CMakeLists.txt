@@ -41,7 +41,6 @@ add_compile_options(-O3)
 add_compile_definitions(IDTO_BINARY_DIR="${CMAKE_BINARY_DIR}")
 
 add_subdirectory(third_party)
-add_subdirectory(toy_example)
 add_subdirectory(python_bindings)
 add_subdirectory(utils)
 add_subdirectory(optimizer)
