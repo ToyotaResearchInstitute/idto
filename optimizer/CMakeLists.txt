@@ -1,5 +1,7 @@
 include_directories(${PROJECT_SOURCE_DIR})
 
+find_package(OpenMP)
+
 add_library(convergence_criteria_tolerances 
             INTERFACE
             convergence_criteria_tolerances.h)
@@ -49,18 +51,36 @@ target_link_libraries(trajectory_optimizer_workspace drake::drake)
 add_library(trajectory_optimizer
             trajectory_optimizer.cc
             trajectory_optimizer.h)
-target_link_libraries(trajectory_optimizer 
-                      inverse_dynamics_partials
-                      penta_diagonal_matrix
-                      penta_diagonal_solver
-                      problem_definition
-                      solver_parameters
-                      trajectory_optimizer_solution
-                      trajectory_optimizer_state
-                      trajectory_optimizer_workspace
-                      velocity_partials
-                      warm_start
-                      drake::drake)
+if (OpenMP_CXX_FOUND)
+    target_link_libraries(trajectory_optimizer 
+                        inverse_dynamics_partials
+                        penta_diagonal_matrix
+                        penta_diagonal_solver
+                        problem_definition
+                        solver_parameters
+                        trajectory_optimizer_solution
+                        trajectory_optimizer_state
+                        trajectory_optimizer_workspace
+                        velocity_partials
+                        warm_start
+                        drake::drake
+                        OpenMP::OpenMP_CXX)
+else()
+    message(WARNING "OpenMP not found. Trajectory optimizer will not be parallelized.")
+    target_link_libraries(trajectory_optimizer 
+                        inverse_dynamics_partials
+                        penta_diagonal_matrix
+                        penta_diagonal_solver
+                        problem_definition
+                        solver_parameters
+                        trajectory_optimizer_solution
+                        trajectory_optimizer_state
+                        trajectory_optimizer_workspace
+                        velocity_partials
+                        warm_start
+                        drake::drake)
+endif()
+
 
 add_library(velocity_partials velocity_partials.cc velocity_partials.h)
 target_link_libraries(velocity_partials drake::drake)
