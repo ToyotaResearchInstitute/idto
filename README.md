@@ -6,11 +6,11 @@ Implements the contact-implicit trajectory optimization algorithm described in
 Control](https://idto.github.io/) by Vince Kurtz, Alejandro Castro, Aykut Özgün
 Önol, and Hai Lin. https://arxiv.org/abs/2309.01813.
 
-<img src="img/mini_cheetah.png" width="300"><img src="img/dual_jaco.png" width="300"><img src="img/allegro.png" width="300">
+<img src="img/mini_cheetah.png" width="200"><img src="img/dual_jaco.png" width="200"><img src="img/allegro.png" width="200">
 
-<img src="img/spinner.png" width="300"><img src="img/jaco_ball.png" width="300"><img src="img/hopper.png" width="300">
+<img src="img/spinner.png" width="200"><img src="img/jaco_ball.png" width="200"><img src="img/hopper.png" width="200">
 
-<img src="img/jaco.png" width="300"><img src="img/acrobot.png" width="300"><img src="img/punyo.png" width="300">
+<img src="img/jaco.png" width="200"><img src="img/acrobot.png" width="200"><img src="img/punyo.png" width="200">
 
 ## Docker Quickstart
 
