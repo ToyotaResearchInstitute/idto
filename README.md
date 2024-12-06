@@ -1,23 +1,16 @@
 # Inverse Dynamics Trajectory Optimization 
 
-Implements the contact-implicit trajectory optimization algorithm described in
+Implements the contact-implicit trajectory optimization algorithm described in 
 
 [Inverse Dynamics Trajectory Optimization for Contact-Implicit Model Predictive
 Control](https://idto.github.io/) by Vince Kurtz, Alejandro Castro, Aykut Özgün
 Önol, and Hai Lin. https://arxiv.org/abs/2309.01813.
 
-<img src="img/mini_cheetah.png" width="200">
-<img src="img/dual_jaco.png" width="200">
-<img src="img/allegro.png" width="200">
+<img src="img/mini_cheetah.png" width="300"><img src="img/dual_jaco.png" width="300"><img src="img/allegro.png" width="300">
 
-<img src="img/spinner.png" width="200">
-<img src="img/jaco_ball.png" width="200">
-<img src="img/hopper.png" width="200">
+<img src="img/spinner.png" width="300"><img src="img/jaco_ball.png" width="300"><img src="img/hopper.png" width="300">
 
-<img src="img/jaco.png" width="200">
-<img src="img/acrobot.png" width="200">
-<img src="img/punyo.png" width="200">
-
+<img src="img/jaco.png" width="300"><img src="img/acrobot.png" width="300"><img src="img/punyo.png" width="300">
 
 ## Docker Quickstart
 
@@ -160,11 +153,38 @@ terminal, or just go ahead and open http://localhost:7000 in a browser.
 
 ### C++
 
-After building, run the spinner example with:
-
+The `examples` folder contains various examples, including those described in
+[our paper](https://idto.github.io). After building, run them with, e.g.,
 ```
 ./build/examples/spinner/spinner
 ```
+
+Most of the examples (e.g., `spinner`) run a simulation with contact-implicit
+model predictive control. Some others (e.g., `kuka`) perform a single open-loop
+trajectory optimization.
+
+Problem definitions, solver parameters, whether to run MPC, etc. are set in YAML
+config files, e.g., `spinner.yaml`. Here are some common options:
+
+- `mpc : {true, false}` choose whether or not to run MPC. If this is set to
+  true, Meshcat will show and record a simulation where IDTO is used as an MPC
+  controller. 
+- `num_threads : N` sets the number of threads used for parallel derivative
+  computations.
+- `play_target_trajectory : {true, false}` whether to play an animation of the
+  target trajectory over Meshcat. 
+- `play_initial_guess : {true, false}` whether to play an animation of the
+  initial guess over Meshcat.
+- `play_optimal_trajectory : {true, false}` whether to play an animation of the
+  optimal trajectory over Meshcat. This is not a simulation: the generated
+  trajectory may or may not be dynamically feasible. 
+
+**NOTE** 
+If Meshcat plays multiple things, only the last one will be recorded for
+playback via the dropdown menu. For example, if `play_target_trajectory`,
+`play_optimal_trajectory`, and `mpc` are all set to `true`, Meshcat will first
+play the target trajectory, followed by the open-loop solution, followed by a
+simulation with MPC. Only the simulation will be saved for playback.
 
 ### Python
 
