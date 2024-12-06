@@ -21,7 +21,7 @@ git clone https://github.com/ToyotaResearchInstitute/idto/
 cd idto
 ```
 
-Build the docker image, which compiles the C++ bindings.
+Build the docker image, compiling the C++ code and python bindings.
 
 ```bash
 docker build -t idto .
@@ -65,6 +65,9 @@ $ ./build/examples/jaco/jaco
 
 # A compliant humanoid lifts a large ball
 $ ./build/examples/punyo/punyo
+
+# Drive the quadruped around with a joystick
+$ ./python_examples/mini_cheetah_mpc.py
 ```
 
 Open a web browser to http://localhost:7000 to see the visualization.
@@ -188,8 +191,19 @@ simulation with MPC. Only the simulation will be saved for playback.
 
 ### Python
 
-After installing with pip, run the spinner example with:
+Examples that use the python bindings are in the `python_examples` folder. 
 
-```
+For instance, to run open-loop optimization with the spinner:
+```bash
 ./python_examples/spinner_open_loop.py
 ```
+
+To run quaduped MPC, with the target velocity read from joystick commands:
+```bash
+./python_examples/mini_cheetah_mpc.py
+```
+
+**WARNING**
+The python bindings do not currently perform all the size checks that the C++
+version does. If you implement a new system, be sure to check the dimensions
+of the cost matrices and target configurations carefully.

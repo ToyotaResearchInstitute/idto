@@ -25,17 +25,21 @@ RUN wget https://github.com/RobotLocomotion/drake/releases/download/v1.30.0/drak
     rm drake-1.30.0-jammy.tar.gz
 WORKDIR /home/drake
 RUN ./share/drake/setup/install_prereqs -y && \
-    apt-get install -y libgflags-dev && \
-    pip install scipy==1.12 && \ 
-    pip install scikit-learn #Scipy install is after the numpy installation from Drake, for some python examples
+    apt-get install -y libgflags-dev ninja-build && \
+    pip install scipy==1.12
 RUN echo 'export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/drake' >> ~/.bashrc && \
     echo 'export PYTHONPATH=${PYTHONPATH}:/home/drake/lib/python3.10/site-packages' >> ~/.bashrc && \
     source ~/.bashrc
  
-# Copy the current directory contents into the container, then build IDTO
+# Copy the current directory contents into the container
 COPY . /home/idto
 WORKDIR /home/idto
+
+# Build the C++ binaries
 RUN mkdir build 
 WORKDIR /home/idto/build
 RUN cmake .. && make -j
+
+# Build the python bindings
 WORKDIR /home/idto/
+RUN pip install .
