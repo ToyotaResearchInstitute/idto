@@ -23,6 +23,7 @@ using Eigen::Matrix4d;
 using mpc::Interpolator;
 using mpc::ModelPredictiveController;
 using pd_plus::PdPlusController;
+using utils::FindIdtoResource;
 
 void TrajOptExample::RunExample(const std::string options_file,
                                 const bool test) const {
@@ -30,7 +31,7 @@ void TrajOptExample::RunExample(const std::string options_file,
   TrajOptExampleParams default_options;
   TrajOptExampleParams options =
       drake::yaml::LoadYamlFile<TrajOptExampleParams>(
-          idto::FindIdtoResourceOrThrow(options_file), {}, default_options);
+          FindIdtoResource(options_file), {}, default_options);
 
   if (test) {
     // Use simplified options for a smoke test

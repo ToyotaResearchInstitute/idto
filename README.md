@@ -1,69 +1,166 @@
 # Inverse Dynamics Trajectory Optimization 
 
-Implements the contact-implicit trajectory optimization algorithm described in
+Implements the contact-implicit trajectory optimization algorithm described in 
 
 [Inverse Dynamics Trajectory Optimization for Contact-Implicit Model Predictive
 Control](https://idto.github.io/) by Vince Kurtz, Alejandro Castro, Aykut Özgün
 Önol, and Hai Lin. https://arxiv.org/abs/2309.01813.
 
-## Dependencies
+<img src="img/mini_cheetah.png" width="200"><img src="img/dual_jaco.png" width="200"><img src="img/allegro.png" width="200">
 
-This software is built on [Drake](https://drake.mit.edu). You do not need a
-separate Drake installation, but all the requirements for [building Drake from
-source](https://drake.mit.edu/from_source.html) apply. Most notably, that
-includes Bazel and a C++17 compiler. 
+<img src="img/spinner.png" width="200"><img src="img/jaco_ball.png" width="200"><img src="img/hopper.png" width="200">
 
-The easiest way to install these dependencies is with Drake's
-[`install_prereqs.sh`](https://drake.mit.edu/from_source.html#mandatory-platform-specific-instructions)
-script:
+<img src="img/jaco.png" width="200"><img src="img/acrobot.png" width="200"><img src="img/punyo.png" width="200">
 
-```
-git clone https://github.com/RobotLocomotion/drake.git
-cd drake
-sudo ./setup/ubuntu/install_prereqs.sh
-```
-
-For Mac OS, replace the last line with `./setup/mac/install_prereqs.sh`.
-
-## Installation
-
-Install the dependencies (see above).
+## Docker Quickstart
 
 Clone this repository:
-```
-git clone https://github.com/ToyotaResearchInstitute/idto
+
+```bash
+git clone https://github.com/ToyotaResearchInstitute/idto/
 cd idto
 ```
 
-Compile the package:
-```
-bazel build //...
+Build the docker image, compiling the C++ code and python bindings.
+
+```bash
+docker build -t idto .
 ```
 
-## Python Bindings
+Enter the docker container, forwarding
+port 7000 for meshcat visualization:
 
-A limited subset of solver functionality is available in python via
-[pybind11](https://github.com/pybind/pybind11). To use the python bindings,
-first install the dependencies and compile with bazel, as described above.
-
-Then update the python path:
+```bash
+docker run -p 7000:7000 -it idto
 ```
-export PYTHONPATH=${PYTHONPATH}:"/path/to/idto/bazel-bin"
-```
-This line can be added to `.bashrc` if you want to permanently update the path.
 
-Some examples of using these bindings for open-loop trajectory optimization and
-MPC can be found in the `python_examples` folder.
+Inside the container, you can run any of the examples, for instance:
+```bash
+# Quadruped locomotion
+$ ./build/examples/mini_cheetah/mini_cheetah
+
+# Bi-manual box manipulation
+$ ./build/examples/dual_jaco/dual_jaco
+
+# A robot hand rotates a sphere
+$ ./build/examples/allegro_hand/allegro_hand
+
+# A two-link finger flicks a spinner
+$ ./build/examples/spinner/spinner
+
+# A robot arm rolls a ball
+$ ./build/examples/jaco_ball/jaco_ball
+
+# A simple planar hopping robot
+$ ./build/examples/hopper/hopper
+
+# Pendulum swingup
+$ ./build/examples/pendulum/pendulum
+
+# Acrobot swingup
+$ ./build/examples/acrobot/acrobot
+
+# Single arm box manipulation
+$ ./build/examples/jaco/jaco
+
+# A compliant humanoid lifts a large ball
+$ ./build/examples/punyo/punyo
+
+# Drive the quadruped around with a joystick
+$ ./python_examples/mini_cheetah_mpc.py
+```
+
+Open a web browser to http://localhost:7000 to see the visualization.
+
+## Local Installation
+
+The only dependency is [Drake](https://drake.mit.edu/installation.html). 
+We recommend Ubuntu 22.04 and Drake v1.30.0. Other configurations may work
+but are untested.
+
+For example, for a binary Drake installation at `$HOME/drake`:
+
+Download and extract the binaries:
+
+```bash
+cd $HOME
+wget https://github.com/RobotLocomotion/drake/releases/download/v1.30.0/drake-1.30.0-jammy.tar.gz
+tar -xvzf drake-1.30.0-jammy.tar.gz
+```
+
+Install Drake dependencies and gflags:
+
+```bash
+cd $HOME/drake
+sudo ./share/drake/setup/install_prereqs
+sudo apt-get install libgflags-dev
+```
+
+Update environment variables:
+
+```bash
+echo 'export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:${HOME}/drake' >> ~/.bashrc
+echo 'export PYTHONPATH=${PYTHONPATH}:${HOME}/drake/lib/python3.10/site-packages' >> ~/.bashrc
+source ~/.bashrc
+```
+
+### C++
+
+Clone this repository:
+
+```bash
+git clone https://github.com/ToyotaResearchInstitute/idto/
+```
+
+Configure and build:
+
+```bash
+cd idto
+mkdir build && cd build
+cmake ..
+make -j
+```
+
+(Optional) run unit tests:
+
+```bash
+ctest
+```
+
+### Python
+
+A limited subset of functionality is available via python bindings.
+
+Build and install with pip:
+
+```bash
+git clone https://github.com/ToyotaResearchInstitute/idto/
+cd idto
+pip install .
+```
+
+(Optional) run unit tests:
+
+```bash
+pytest
+```
+
+**Note:** The python bindings assume that the `pydrake` version you are using 
+is the one used to build `pyidto`. A separate `pydrake` installation (e.g.,
+from `pip install drake`) may not work.
 
 ## Examples
 
+All of the examples use meshcat for visualization. A link will appear in the
+terminal, or just go ahead and open http://localhost:7000 in a browser.
+
+### C++
+
 The `examples` folder contains various examples, including those described in
-[our paper](https://idto.github.io). Run them with, e.g.,
+[our paper](https://idto.github.io). After building, run them with, e.g.,
 ```
-bazel run //examples/spinner:spinner
+./build/examples/spinner/spinner
 ```
-A link will appear (e.g., `http://localhost:7000`), which you can use to open
-the Meshcat visualizer in a web browser. 
 
 Most of the examples (e.g., `spinner`) run a simulation with contact-implicit
 model predictive control. Some others (e.g., `kuka`) perform a single open-loop
@@ -92,37 +189,21 @@ playback via the dropdown menu. For example, if `play_target_trajectory`,
 play the target trajectory, followed by the open-loop solution, followed by a
 simulation with MPC. Only the simulation will be saved for playback.
 
-## Other Tips and Tricks
+### Python
 
-### Use an existing Drake installation
+Examples that use the python bindings are in the `python_examples` folder. 
 
-By default, Bazel pulls in a copy of Drake as an external and compiles it. If
-you have an existing local checkout at `/home/user/stuff/drake` that you would
-like to use instead, set the environment variable
-```
-export IDTO_LOCAL_DRAKE_PATH=/home/user/stuff/drake
-```
-before building.
-
-### Run unit tests
-
-Run a (fairly minimal) set of unit tests and lint checks with
-```
-bazel test //...
+For instance, to run open-loop optimization with the spinner:
+```bash
+./python_examples/spinner_open_loop.py
 ```
 
-## Contributing
+To run quaduped MPC, with the target velocity read from joystick commands:
+```bash
+./python_examples/mini_cheetah_mpc.py
+```
 
-We welcome your contributions, whether they are bug fixes, solver improvements,
-or new features! To make a contribution:
-
-1. Open a new pull request
-2. Make sure all the unit tests and lint checks pass
-3. Obtain a review from a code owner (e.g., @vincekurtz, @amcastro-tri, or
-   @aykut-tri)
-4. Once the review is approved, we'll merge it into the `main` branch!
-
-Since this is research code, we will not review to the same production-quality
-standards as Drake. Nonetheless, new contributions should be clean and
-well-documented, and unit tests are encouraged. The standard of review should be
-*improving the health of the codebase* rather than perfection.
+**WARNING**
+The python bindings do not currently perform all the size checks that the C++
+version does. If you implement a new system, be sure to check the dimensions
+of the cost matrices and target configurations carefully.

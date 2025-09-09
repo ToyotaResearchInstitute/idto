@@ -2,21 +2,19 @@
 
 #include <string>
 
-#include <drake/common/find_runfiles.h>
-
 namespace idto {
+namespace utils {
 
-/// Attempts to locate an IDTO resource named by the given `idto_resource_path`.
-/// The path refers to the relative path within the source repository, e.g.,
-/// `apps/home/foo.yaml`. If there is an Rlocation error, it is indicated in
-/// the return value.
-/// If there is a user error (i.e. empty string or absolute path), an exception
-/// is thrown.
-drake::RlocationOrError FindIdtoResource(
-    const std::string& idto_resource_path);
+/**
+ * Find the absolute path of a resource (e.g. urdf file) given its name.
+ *
+ * Resources are copied to the idto/ folder in the binary directory.
+ *
+ * @param idto_resource_path The name of the file to find, must start with
+ * "idto/".
+ * @return std::string The absolute path to the resource.
+ */
+std::string FindIdtoResource(const std::string& idto_resource_path);
 
-/// Same as `FindIdtoResource`, but throws if there is an error, otherwise
-/// returns a string to the resource's absolute path.
-std::string FindIdtoResourceOrThrow(const std::string& idto_resource_path);
-
+}  // namespace utils
 }  // namespace idto

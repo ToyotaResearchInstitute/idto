@@ -5,24 +5,19 @@
 In the source.cc you want to profile:
   1. #include "utils/profiler.h"
   2. At the top of your function, insert INSTRUMENT_FUNCTION("Description");
-  3. Add "//utils:profiler", in the BAZEL.build deps = [].
 
 In the main application:
   1. Include #include "utils/profiler.h"
   2. Print with: std::cout << TableOfAverages() << "\n";
-  3. Add "//utils:profiler", to the depencies.
-  4. Add copts = ["-DENABLE_TIMERS"],
-
-Building:
-Compile with `bazel build --copt=-DENABLE_TIMERS path/to:target`.
+  3. Update CMakeLists.txt to include "add_compile_definitions(ENABLE_TIMERS)"
 
 TableOfAverages() report per column:
-  - Time/sample: Per call average time in secons (i.e.=[Total time]/[Samples]).
+  - Time/sample: Per call average time in seconds (i.e.=[Total time]/[Samples]).
   - Samples: Number of calls.
   - Total time: Total time spent by the specific function. This includes self
     time plus time spent in any other functions called within scope.
   - Self: Time spent in the scope of the instrumented function. This time does
-    not inlclude the time spent in other instrumented functions, called whether
+    not include the time spent in other instrumented functions, called whether
     from the scope of this function or transitevely.
   - Label: label provided to the INSTRUMENT_FUNCTION macro.
 
@@ -234,7 +229,7 @@ std::string TableOfAverages();
 #define averageTimeInSec(index) ((void)index)
 #define TableOfAverages()    \
   ("Profiling turned off.\n" \
-  "Enable profiling by running with --copt=-DENABLE_TIMERS.")
+   "Enable profiling with the ENABLE_TIMERS flag in CMakeLists.txt.")
 #define INSTRUMENT_FUNCTION(details_string) ((void)details_string)
 
 #endif  // ENABLE_TIMERS

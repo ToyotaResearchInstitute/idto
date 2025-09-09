@@ -30,6 +30,7 @@ using drake::multibody::RigidBody;
 using drake::multibody::SpatialInertia;
 using drake::multibody::UnitInertia;
 using Eigen::Vector3d;
+using utils::FindIdtoResource;
 
 class PunyoExample : public TrajOptExample {
  public:
@@ -47,8 +48,7 @@ class PunyoExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a humanoid model
-    std::string sdf_file =
-        idto::FindIdtoResourceOrThrow("idto/examples/models/punyoid.sdf");
+    std::string sdf_file = FindIdtoResource("idto/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModels(sdf_file)[0];
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
     plant->set_gravity_enabled(humanoid, false);
@@ -99,8 +99,7 @@ class PunyoExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a humanoid model
-    std::string sdf_file =
-        FindIdtoResourceOrThrow("idto/examples/models/punyoid.sdf");
+    std::string sdf_file = FindIdtoResource("idto/models/punyoid.sdf");
     ModelInstanceIndex humanoid = Parser(plant).AddModels(sdf_file)[0];
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
     plant->set_gravity_enabled(humanoid, false);

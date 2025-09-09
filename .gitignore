@@ -1,7 +1,5 @@
-# SPDX-License-Identifier: MIT-0
-
 *.swp
 .vscode
-/bazel-*
-/user.bazelrc
 __pycache__
+build
+*.egg-info

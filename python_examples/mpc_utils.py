@@ -5,19 +5,15 @@
 ##
 
 import numpy as np
-from pydrake.all import LeafSystem, Value, BasicVector
+from pydrake.all import (
+    LeafSystem,
+    BasicVector,
+    EventStatus,
+    PiecewisePolynomial,
+    Value,
+)
 
-from pydrake.all import EventStatus, PiecewisePolynomial, LeafSystem, BasicVector, Value
-
-
-# Note: this could be added to the PYTHONPATH environment variable instead, 
-# as a better long-term solution
-import os
-import sys
-sys.path.insert(-1, os.getcwd() + "/bazel-bin/")
-
-from pyidto.trajectory_optimizer_solution import TrajectoryOptimizerSolution
-from pyidto.trajectory_optimizer_stats import TrajectoryOptimizerStats
+from pyidto import TrajectoryOptimizerSolution, TrajectoryOptimizerStats
 
 
 class StoredTrajectory:
@@ -37,6 +33,7 @@ class Interpolator(LeafSystem):
     actuated state reference x(t) and input u(t) at a given time t. This is
     useful for passing a reference trajectory to a low-level controller.
     """
+
     def __init__(self, Bq, Bv):
         """
         Construct the interpolator system, which takes StoredTrajectory as input
@@ -61,16 +58,18 @@ class Interpolator(LeafSystem):
         self.Bq = Bq
         self.Bv = Bv
 
-        # Declare the input and output ports 
+        # Declare the input and output ports
         trajectory_input_port = self.DeclareAbstractInputPort("trajectory",
                                                               Value(StoredTrajectory()))
-        state_output_port = self.DeclareVectorOutputPort("state", 
-                                                         BasicVector(2 * num_actuators), 
+        state_output_port = self.DeclareVectorOutputPort("state",
+                                                         BasicVector(
+                                                             2 * num_actuators),
                                                          self.SendState)
         control_output_port = self.DeclareVectorOutputPort("control",
-                                                         BasicVector(num_actuators),
-                                                         self.SendControl)
-        
+                                                           BasicVector(
+                                                               num_actuators),
+                                                           self.SendControl)
+
     def SendState(self, context, output):
         """
         Send the state at the current time.
@@ -95,6 +94,7 @@ class ModelPredictiveController(LeafSystem):
     """
     A Drake system that implements an MPC controller.
     """
+
     def __init__(self, optimizer, q_guess, nq, nv, mpc_rate):
         """
         Construct the MPC controller system, which takes the current state as
@@ -118,11 +118,11 @@ class ModelPredictiveController(LeafSystem):
 
         self.optimizer = optimizer
         self.nq = nq
-        
+
         # Allocate a warm-start
         self.q_guess = q_guess
-        self.warm_start = self.optimizer.MakeWarmStart(self.q_guess)
-        
+        self.warm_start = self.optimizer.CreateWarmStart(self.q_guess)
+
         # Specify the timestep we'll use to discretize the trajectory
         self.time_step = self.optimizer.time_step()
         self.num_steps = self.optimizer.num_steps()
@@ -146,7 +146,7 @@ class ModelPredictiveController(LeafSystem):
             "state", BasicVector(nq + nv))
         self.trajectory_output_port = self.DeclareStateOutputPort(
             "optimal_trajectory", self.stored_trajectory)
-        
+
     def StoreOptimizerSolution(self, solution, start_time):
         """
         Store a solution to the optimization problem in a StoredTrajectory object.
@@ -177,9 +177,9 @@ class ModelPredictiveController(LeafSystem):
             time_steps, v_knots)
         trajectory.tau = PiecewisePolynomial.CubicWithContinuousSecondDerivatives(
             time_steps, tau_knots)
-        
+
         return trajectory
-        
+
     def UpdateAbstractState(self, context, state):
         """
         Resolve the MPC problem and store the optimal trajectory in the abstract
@@ -213,9 +213,9 @@ class ModelPredictiveController(LeafSystem):
         # Store the solution in the abstract state
         state.get_mutable_abstract_state(0).SetFrom(
             Value(self.StoreOptimizerSolution(solution, context.get_time())))
-        
+
         return EventStatus.Succeeded()
-    
+
     def UpdateNominalTrajectory(self, context):
         """
         Shift the nominal trajectory to account for the current state.

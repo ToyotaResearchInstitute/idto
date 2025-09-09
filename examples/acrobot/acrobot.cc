@@ -4,6 +4,8 @@
 #include <drake/multibody/plant/multibody_plant.h>
 #include <gflags/gflags.h>
 
+#include "utils/find_resource.h"
+
 DEFINE_bool(test, false,
             "whether this example is being run in test mode, where we solve a "
             "simpler problem");
@@ -15,6 +17,7 @@ namespace acrobot {
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Vector3d;
+using idto::utils::FindIdtoResource;
 
 class AcrobotExample : public TrajOptExample {
  public:
@@ -28,9 +31,8 @@ class AcrobotExample : public TrajOptExample {
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const {
     const std::string urdf_file =
-        "external/drake/examples/acrobot/Acrobot_no_collision.urdf";
+        FindIdtoResource("idto/models/acrobot/acrobot.urdf");
     Parser(plant).AddModels(urdf_file);
-    plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base_link"));
   }
 };
 

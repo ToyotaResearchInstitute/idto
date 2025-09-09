@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include <gtest/gtest.h>
 #include "optimizer/inverse_dynamics_partials.h"
 #include "optimizer/penta_diagonal_matrix.h"
 #include "optimizer/penta_diagonal_solver.h"
@@ -10,21 +9,23 @@
 #include "optimizer/trajectory_optimizer_state.h"
 #include "optimizer/trajectory_optimizer_workspace.h"
 #include "optimizer/velocity_partials.h"
-
+#include "utils/eigen_matrix_compare.h"
+#include "utils/find_resource.h"
 #include <drake/common/find_resource.h>
-#include <drake/common/test_utilities/eigen_matrix_compare.h>
-#include <drake/common/test_utilities/limit_malloc.h>
 #include <drake/multibody/parsing/parser.h>
 #include <drake/multibody/plant/multibody_plant.h>
 #include <drake/multibody/plant/multibody_plant_config_functions.h>
 #include <drake/multibody/tree/planar_joint.h>
 #include <drake/systems/framework/diagram_builder.h>
-#include "utils/find_resource.h"
+#include <gtest/gtest.h>
 
 #define PRINT_VAR(a) std::cout << #a ": " << a << std::endl;
 #define PRINT_VARn(a) std::cout << #a ":\n" << a << std::endl;
 
 namespace idto {
+
+using utils::FindIdtoResource;
+
 namespace optimizer {
 
 class TrajectoryOptimizerTester {
@@ -101,7 +102,6 @@ using drake::multibody::Parser;
 using drake::multibody::PlanarJoint;
 using drake::multibody::RigidBody;
 using drake::systems::DiagramBuilder;
-using drake::test::LimitMalloc;
 using Eigen::Matrix2d;
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
@@ -141,7 +141,6 @@ GTEST_TEST(TrajectoryOptimizerTest, QuaternionDofs) {
   opt_prob.v_init = drake::Vector6d::Zero();
   opt_prob.q_nom.resize(num_steps + 1, VectorXd::Zero(nq));
   opt_prob.v_nom.resize(num_steps + 1, VectorXd::Zero(nv));
-
 
   TrajectoryOptimizer<double> optimizer(diagram.get(), &plant, opt_prob);
   TrajectoryOptimizerState<double> state = optimizer.CreateState();
@@ -188,8 +187,7 @@ GTEST_TEST(TrajectoryOptimizerTest, ContactGradientMethods) {
   config.time_step = 1.0;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  Parser(&plant).AddModels(idto::FindIdtoResourceOrThrow(
-      "idto/examples/models/spinner_sphere.urdf"));
+  Parser(&plant).AddModels(FindIdtoResource("idto/models/spinner_sphere.urdf"));
   plant.Finalize();
   auto diagram = builder.Build();
 
@@ -521,8 +519,8 @@ GTEST_TEST(TrajectoryOptimizerTest, HessianAcrobot) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  const std::string urdf_file =
+      FindIdtoResource("idto/models/acrobot/acrobot.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -785,10 +783,10 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcGradientKuka) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/manipulation/models/iiwa_description/urdf/"
-      "iiwa14_no_collision.urdf");
-  Parser(&plant).AddModels(urdf_file);
+  std::string url =
+      "package://drake_models/iiwa_description/urdf/"
+      "iiwa14_spheres_collision.urdf";
+  Parser(&plant).AddModelsFromUrl(url);
   plant.WeldFrames(plant.world_frame(), plant.GetFrameByName("base"));
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1260,8 +1258,8 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcCost) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  const std::string urdf_file =
+      FindIdtoResource("idto/models/acrobot/acrobot.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1403,8 +1401,8 @@ GTEST_TEST(TrajectoryOptimizerTest, CalcVelocities) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = drake::FindResourceOrThrow(
-      "drake/multibody/benchmarks/acrobot/acrobot.urdf");
+  const std::string urdf_file =
+      FindIdtoResource("idto/models/acrobot/acrobot.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1477,7 +1475,7 @@ GTEST_TEST(TrajectoryOptimizerTest, SpinnerEqualityConstraints) {
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
   const std::string urdf_file =
-      FindIdtoResourceOrThrow("idto/examples/models/spinner_friction.urdf");
+      FindIdtoResource("idto/models/spinner_friction.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1571,8 +1569,8 @@ GTEST_TEST(TrajectoryOptimizerTest, HopperEqualityConstraints) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = idto::FindIdtoResourceOrThrow(
-      "idto/examples/models/hopper.urdf");
+  const std::string urdf_file =
+      idto::FindIdtoResource("idto/models/hopper.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1668,8 +1666,7 @@ GTEST_TEST(TrajectoryOptimizerTest, EqualityConstraintsAndScaling) {
   config.time_step = dt;
   auto [plant, scene_graph] =
       drake::multibody::AddMultibodyPlant(config, &builder);
-  const std::string urdf_file = idto::FindIdtoResourceOrThrow(
-      "idto/examples/models/hopper.urdf");
+  const std::string urdf_file = FindIdtoResource("idto/models/hopper.urdf");
   Parser(&plant).AddModels(urdf_file);
   plant.Finalize();
   auto diagram = builder.Build();
@@ -1832,3 +1829,8 @@ GTEST_TEST(TrajectoryOptimizerTest, UpdateNominalTrajectory) {
 }  // namespace internal
 }  // namespace optimizer
 }  // namespace idto
+
+int main(int argc, char** argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}

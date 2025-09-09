@@ -1,4 +1,4 @@
-#include "optimizer/velocity_partials.h"
+#include "velocity_partials.h"
 
 #include <drake/common/default_scalars.h>
 

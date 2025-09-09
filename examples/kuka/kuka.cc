@@ -19,6 +19,7 @@ using drake::multibody::ModelInstanceIndex;
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Vector3d;
+using utils::FindIdtoResource;
 
 class KukaExample : public TrajOptExample {
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
@@ -27,16 +28,16 @@ class KukaExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a kuka arm
-    std::string robot_file = drake::FindResourceOrThrow(
-        "drake/manipulation/models/iiwa_description/urdf/"
-        "iiwa14_spheres_collision.urdf");
-    ModelInstanceIndex kuka = Parser(plant).AddModels(robot_file)[0];
+    std::string url =
+        "package://drake_models/iiwa_description/urdf/"
+        "iiwa14_spheres_collision.urdf";
+    ModelInstanceIndex kuka = Parser(plant).AddModelsFromUrl(url)[0];
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("base"));
     plant->set_gravity_enabled(kuka, false);
 
     // Add a manipuland
     std::string manipuland_file =
-        FindIdtoResourceOrThrow("idto/examples/models/box_intel_nuc.sdf");
+        FindIdtoResource("idto/models/box_intel_nuc.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground

@@ -18,6 +18,7 @@ using drake::multibody::CoulombFriction;
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Vector3d;
+using utils::FindIdtoResource;
 
 /**
  * A simple planar hopper, inspired by https://youtu.be/uWADBSmHebA?t=893.
@@ -36,8 +37,7 @@ class HopperExample : public TrajOptExample {
     const drake::Vector4<double> green(0.3, 0.6, 0.4, 1.0);
 
     // Add a hopper
-    std::string urdf_file =
-        idto::FindIdtoResourceOrThrow("idto/examples/models/hopper.urdf");
+    std::string urdf_file = FindIdtoResource("idto/models/hopper.urdf");
     Parser(plant).AddModels(urdf_file);
 
     // Add collision with the ground

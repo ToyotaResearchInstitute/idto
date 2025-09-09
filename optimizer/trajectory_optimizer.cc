@@ -1054,10 +1054,10 @@ void TrajectoryOptimizer<T>::CalcGradient(
     if (t == num_steps() - 1) {
       // The terminal cost needs to be handled differently
       gt += (v[t + 1] - prob_.v_nom[t + 1]).transpose() * 2 * prob_.Qf_v *
-                dvt_dqm[t + 1];
+            dvt_dqm[t + 1];
     } else {
-      gt += (v[t + 1] - prob_.v_nom[t + 1]).transpose() * 2 * prob_.Qv *
-                dt * dvt_dqm[t + 1];
+      gt += (v[t + 1] - prob_.v_nom[t + 1]).transpose() * 2 * prob_.Qv * dt *
+            dvt_dqm[t + 1];
     }
 
     // Contribution from control cost
@@ -1073,7 +1073,7 @@ void TrajectoryOptimizer<T>::CalcGradient(
   // exist
   auto gT = g->tail(nq);
   gT = tau[num_steps() - 1].transpose() * 2 * prob_.R * dt *
-              dtau_dqp[num_steps() - 1];
+       dtau_dqp[num_steps() - 1];
   gT +=
       (q[num_steps()] - prob_.q_nom[num_steps()]).transpose() * 2 * prob_.Qf_q;
   gT += (v[num_steps()] - prob_.v_nom[num_steps()]).transpose() * 2 *
@@ -1273,7 +1273,7 @@ void TrajectoryOptimizer<T>::CalcEqualityConstraintViolations(
 
   for (int t = 0; t < num_steps(); ++t) {
     for (int j = 0; j < num_unactuated_dofs; ++j) {
-      (*violations)(t* num_unactuated_dofs + j) = tau[t][unactuated_dofs()[j]];
+      (*violations)(t * num_unactuated_dofs + j) = tau[t][unactuated_dofs()[j]];
     }
   }
 }
@@ -1342,6 +1342,22 @@ const MatrixX<T>& TrajectoryOptimizer<T>::EvalEqualityConstraintJacobian(
     state.mutable_cache().constraint_jacobian_up_to_date = true;
   }
   return state.cache().constraint_jacobian;
+}
+
+template <typename T>
+std::unique_ptr<WarmStart> TrajectoryOptimizer<T>::CreateWarmStart(
+    const std::vector<VectorX<T>>&) const {
+  throw std::runtime_error("CreateWarmStart() only supports T=double.");
+}
+
+template <>
+std::unique_ptr<WarmStart> TrajectoryOptimizer<double>::CreateWarmStart(
+    const std::vector<VectorXd>& q_guess) const {
+  DRAKE_DEMAND(static_cast<int>(q_guess.size()) == num_steps() + 1);
+  DRAKE_DEMAND(static_cast<int>(q_guess[0].size()) == plant().num_positions());
+  return std::make_unique<WarmStart>(num_steps(), diagram(), plant(),
+                                     num_equality_constraints(), q_guess,
+                                     params().Delta0);
 }
 
 template <typename T>
@@ -2416,10 +2432,9 @@ SolverFlag TrajectoryOptimizer<double>::SolveWithTrustRegion(
 
   // Allocate a warm start, which includes the initial guess along with state
   // variables and the trust region radius.
-  WarmStart warm_start(num_steps(), diagram(), plant(),
-                       num_equality_constraints(), q_guess, params_.Delta0);
+  std::unique_ptr<WarmStart> warm_start = CreateWarmStart(q_guess);
 
-  return SolveFromWarmStart(&warm_start, solution, stats, reason_out);
+  return SolveFromWarmStart(warm_start.get(), solution, stats, reason_out);
   return SolverFlag::kSuccess;
 }
 

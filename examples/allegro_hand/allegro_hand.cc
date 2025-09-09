@@ -33,6 +33,7 @@ using drake::multibody::RigidBody;
 using drake::multibody::SpatialInertia;
 using drake::multibody::UnitInertia;
 using Eigen::Vector3d;
+using utils::FindIdtoResource;
 
 class AllegroHandExample : public TrajOptExample {
  public:
@@ -84,8 +85,7 @@ class AllegroHandExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a model of the hand
-    std::string sdf_file =
-        idto::FindIdtoResourceOrThrow("idto/examples/models/allegro_hand.sdf");
+    std::string sdf_file = FindIdtoResource("idto/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),
@@ -150,8 +150,7 @@ class AllegroHandExample : public TrajOptExample {
     const drake::Vector4<double> black(0.0, 0.0, 0.0, 1.0);
 
     // Add a model of the hand
-    std::string sdf_file =
-        idto::FindIdtoResourceOrThrow("idto/examples/models/allegro_hand.sdf");
+    std::string sdf_file = FindIdtoResource("idto/models/allegro_hand.sdf");
     Parser(plant).AddModels(sdf_file);
     RigidTransformd X_hand(RollPitchYawd(0, -M_PI_2, 0), Vector3d(0, 0, 0));
     plant->WeldFrames(plant->world_frame(), plant->GetFrameByName("hand_root"),

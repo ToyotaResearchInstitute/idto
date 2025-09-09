@@ -24,6 +24,7 @@ using drake::multibody::ModelInstanceIndex;
 using drake::multibody::MultibodyPlant;
 using drake::multibody::Parser;
 using Eigen::Vector3d;
+using utils::FindIdtoResource;
 
 class JacoExample : public TrajOptExample {
  public:
@@ -37,8 +38,8 @@ class JacoExample : public TrajOptExample {
  private:
   void CreatePlantModel(MultibodyPlant<double>* plant) const final {
     // Add a jaco arm without gravity
-    std::string robot_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/j2s7s300_arm_sphere_collision_v2.sdf");
+    std::string robot_file =
+        FindIdtoResource("idto/models/j2s7s300_arm_sphere_collision_v2.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
@@ -47,8 +48,7 @@ class JacoExample : public TrajOptExample {
     plant->set_gravity_enabled(jaco, false);
 
     // Add a manipuland with sphere contact
-    std::string manipuland_file =
-        idto::FindIdtoResourceOrThrow("idto/examples/models/box_15cm.sdf");
+    std::string manipuland_file = FindIdtoResource("idto/models/box_15cm.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground
@@ -71,8 +71,8 @@ class JacoExample : public TrajOptExample {
     plant->set_contact_model(drake::multibody::ContactModel::kHydroelastic);
 
     // Add a jaco arm, including gravity, with rigid hydroelastic contact
-    std::string robot_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/j2s7s300_arm_hydro_collision.sdf");
+    std::string robot_file =
+        FindIdtoResource("idto/models/j2s7s300_arm_hydro_collision.sdf");
     ModelInstanceIndex jaco = Parser(plant).AddModels(robot_file)[0];
     RigidTransformd X_jaco(RollPitchYaw<double>(0, 0, M_PI_2),
                            Vector3d(0, 0.27, 0.11));
@@ -81,8 +81,8 @@ class JacoExample : public TrajOptExample {
     plant->set_gravity_enabled(jaco, false);
 
     // Add a manipuland with compliant hydroelastic contact
-    std::string manipuland_file = idto::FindIdtoResourceOrThrow(
-        "idto/examples/models/box_15cm_hydro.sdf");
+    std::string manipuland_file =
+        FindIdtoResource("idto/models/box_15cm_hydro.sdf");
     Parser(plant).AddModels(manipuland_file);
 
     // Add the ground with compliant hydroelastic contact
